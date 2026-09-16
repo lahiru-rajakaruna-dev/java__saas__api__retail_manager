@@ -16,7 +16,7 @@ spring:
     compose:
       enabled: false
   datasource:
-    url: jdbc:h2:file:./h2DB;AUTO_SERVE=TRUE
+    url: jdbc:h2:file:./H2DB.db;
     username: retail_manager
     password: retail_manager
     driver-class-name: org.h2.Driver
