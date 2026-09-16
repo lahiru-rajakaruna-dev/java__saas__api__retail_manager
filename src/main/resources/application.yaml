@@ -30,7 +30,7 @@ spring:
     connect-retries-interval: 5s
     driver-class-name: jdbc:h2:file:./H2DB.db
     clean-disabled: true
-    enabled: true
+    enabled: false
     execute-in-transaction: true
   jpa:
     hibernate:
