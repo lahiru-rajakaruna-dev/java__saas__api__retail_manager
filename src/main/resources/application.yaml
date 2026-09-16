@@ -37,7 +37,7 @@ spring:
       ddl-auto: update
     show-sql: true
     bootstrap: default
-    database: h2 
+    database: h2
     database-platform: org.hibernate.dialect.H2Dialect
   data:
     redis:
