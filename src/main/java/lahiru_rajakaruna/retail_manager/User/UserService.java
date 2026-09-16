@@ -52,4 +52,29 @@ public class UserService {
 
         return UserDTO.convertToDTO(this.userRepo.save(user));
     }
+
+    public UserDTO putUser(UUID id, UserDTO replacement) throws RuntimeException {
+        User user = this.userRepo.findById(id).orElseThrow(() -> new RuntimeException("Could not find the user"));
+
+        if (replacement.getName().isPresent()) {
+            user.setName(replacement.getName().get());
+        } else {
+            user.setName(null);
+        }
+
+        if (replacement.getPhone().isPresent()) {
+            user.setPhone(replacement.getPhone().get());
+        } else {
+            user.setPhone(null);
+        }
+
+        if (replacement.getShopId().isPresent()) {
+            Shop shop = this.shopRepo.findById(replacement.getShopId().get()).orElseThrow(() -> new RuntimeException("Could not find the shop"));
+            user.setShop(shop);
+        } else {
+            user.setShop(null);
+        }
+
+        return UserDTO.convertToDTO(this.userRepo.save(user));
+    }
 }
