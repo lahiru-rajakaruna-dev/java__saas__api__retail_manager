@@ -58,3 +58,7 @@ spring:
           max-wait: 1ms
           min-idle: 0
           time-between-eviction-runs: 5ms
+management:
+  health:
+    redis:
+      enabled: false
