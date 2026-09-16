@@ -17,20 +17,22 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public List<User> getAllUsers() {
-        List<User> users = this.userService.getAllUsers();
+    public List<UserDTO> getAllUsers() {
+        List<UserDTO> users = this.userService.getAllUsers();
         return users;
     }
 
     @GetMapping("/{id}")
-    public User getUserDetails(@PathVariable UUID id) throws Exception {
-        User user = this.userService.getUserById(id);
+    public UserDTO getUserDetails(@PathVariable UUID id) throws RuntimeException {
+        UserDTO user = this.userService.getUserById(id);
         return user;
     }
 
 
     @PatchMapping("/{id}")
-    public User updateUser(@RequestBody User userUpdates, @PathVariable UUID id, @RequestParam(name = "field", required = true) String field) throws Exception {
+    public UserDTO patchUser(@RequestBody UserDTO updates, @PathVariable UUID id) throws RuntimeException {
+        UserDTO updatedUser = this.userService.patchUser(id, updates);
+        return updatedUser;
     }
 
 
