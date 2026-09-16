@@ -17,29 +17,29 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
-    public List<UserDTO> getAllUsers() {
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = this.userService.getAllUsers();
-        return users;
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUserDetails(@PathVariable UUID id) throws RuntimeException {
+    public ResponseEntity<UserDTO> getUserDetails(@PathVariable UUID id) throws RuntimeException {
         UserDTO user = this.userService.getUserById(id);
-        return user;
+        return ResponseEntity.ok(user);
     }
 
 
     @PatchMapping("/{id}")
-    public UserDTO patchUser(@RequestBody UserDTO updates, @PathVariable UUID id) throws RuntimeException {
+    public ResponseEntity<UserDTO> patchUser(@RequestBody UserDTO updates, @PathVariable UUID id) throws RuntimeException {
         UserDTO updatedUser = this.userService.patchUser(id, updates);
-        return updatedUser;
+        return ResponseEntity.ok(updatedUser);
     }
 
     @PutMapping("/{id}")
-    public UserDTO putUser(@RequestBody UserDTO updates, @PathVariable UUID id) {
+    public ResponseEntity<UserDTO> putUser(@RequestBody UserDTO updates, @PathVariable UUID id) {
         UserDTO replacedUser = this.userService.putUser(id, updates);
-        return replacedUser;
+        return ResponseEntity.ok(replacedUser);
     }
 
 }
