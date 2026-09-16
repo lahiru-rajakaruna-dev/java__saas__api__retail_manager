@@ -28,7 +28,7 @@ spring:
       - classpath:db/migrations/{vendor}
     connect-retries: 3
     connect-retries-interval: 5s
-    driver-class-name: jdbc:h2:file:./AUTO_SERVE=TRUE
+    driver-class-name: jdbc:h2:file:./H2DB.db
     clean-disabled: true
     enabled: true
     execute-in-transaction: true
