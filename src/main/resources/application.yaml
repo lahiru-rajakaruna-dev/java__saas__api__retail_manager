@@ -48,6 +48,8 @@ spring:
       password: retail_cache
       timeout: 3000ms
       database: 0
+      repositories:
+        enabled: false
       lettuce:
         pool:
           enabled: true
