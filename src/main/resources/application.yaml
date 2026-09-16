@@ -25,7 +25,7 @@ spring:
       maximum-pool-size: 5
   flyway:
     locations:
-    - classpath:db/migrations/{vendor}
+      - classpath:db/migrations/{vendor}
     connect-retries: 3
     connect-retries-interval: 5s
     driver-class-name: jdbc:h2:file:./AUTO_SERVE=TRUE
