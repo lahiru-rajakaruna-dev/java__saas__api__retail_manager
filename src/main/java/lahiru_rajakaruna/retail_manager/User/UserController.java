@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("/user")
+@Slf4j
+@RestController("/api/v1/users")
 public class UserController {
     private final UserService userService;
 
