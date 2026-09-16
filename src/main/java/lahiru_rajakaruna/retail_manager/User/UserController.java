@@ -35,5 +35,10 @@ public class UserController {
         return updatedUser;
     }
 
+    @PutMapping("/{id}")
+    public UserDTO putUser(@RequestBody UserDTO updates, @PathVariable UUID id) {
+        UserDTO replacedUser = this.userService.putUser(id, updates);
+        return replacedUser;
+    }
 
 }
