@@ -8,6 +8,13 @@ spring:
     allow-circular-references: false
     lazy-initialization: false
     log-startup-info: true
+  autoconfigure:
+    exclude:
+      - org.springframework.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+  docker:
+    compose:
+      enabled: false
   datasource:
     url: jdbc:h2:file:./h2DB;AUTO_SERVE=TRUE
     username: retail_manager
