@@ -24,8 +24,8 @@ public class UserService {
         return this.userRepo.findAll().stream().map(UserDTO::convertToDTO).toList();
     }
 
-    public UserDTO getUserById(UUID id) throws Exception {
-        User user = this.userRepo.findById(id).orElseThrow(() -> new Exception("User not found"));
+    public UserDTO getUserById(UUID id) throws RuntimeException {
+        User user = this.userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         return UserDTO.convertToDTO(user);
     }
 
