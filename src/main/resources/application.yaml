@@ -10,7 +10,7 @@ spring:
     log-startup-info: true
   autoconfigure:
     exclude:
-      - org.springframework.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
   docker:
     compose:
