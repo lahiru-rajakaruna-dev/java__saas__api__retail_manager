@@ -1,14 +1,12 @@
 package lahiru_rajakaruna.retail_manager.User;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.HashCodeExclude;
 
 import java.util.Optional;
 
@@ -16,18 +14,19 @@ import java.util.Optional;
 @AllArgsConstructor
 @Setter
 @Entity
+@Table(name = "users")
 public class User extends BaseEntity {
-    @OneToOne
-    @JoinColumn(name = "shop_id")
+    @OneToOne()
+    @JoinColumn(name = "shop_id", referencedColumnName = "id")
     private Shop shop;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false, updatable = true)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false, updatable = true)
     private String passwordHash;
 
-    @Column(nullable = false)
+    @Column(name = "phone", nullable = false, updatable = true)
     private String phone;
 
     public Optional<String> getName() {
