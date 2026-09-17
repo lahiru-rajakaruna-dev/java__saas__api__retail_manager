@@ -24,13 +24,13 @@ spring:
       allow-pool-suspension: false
       maximum-pool-size: 5
   flyway:
+    enabled: false
     locations:
       - classpath:db/migrations/{vendor}
     connect-retries: 3
     connect-retries-interval: 5s
     driver-class-name: jdbc:h2:file:./H2DB.db
     clean-disabled: true
-    enabled: false
     execute-in-transaction: true
   jpa:
     hibernate:
@@ -52,7 +52,7 @@ spring:
         enabled: false
       lettuce:
         pool:
-          enabled: true
+          enabled: false
           max-active: 4
           max-idle: 4
           max-wait: 1ms
