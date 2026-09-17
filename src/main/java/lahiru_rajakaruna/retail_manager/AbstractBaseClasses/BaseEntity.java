@@ -1,12 +1,6 @@
 package lahiru_rajakaruna.retail_manager.AbstractBaseClasses;
 
-import java.time.Instant;
-import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
@@ -23,10 +17,12 @@ public abstract class BaseEntity {
     @UuidGenerator(style = UuidGenerator.Style.TIME)
     @Column(name = "id")
     protected UUID id;
-    @Column(nullable = false)
+
+    @Column(name = "time_stamp", nullable = false, updatable = true)
     protected Instant timestamp;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     protected Instant createdAt;
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false, updatable = true)
     protected Instant updatedAt;
 }
