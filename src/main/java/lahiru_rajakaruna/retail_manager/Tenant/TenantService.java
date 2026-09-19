@@ -34,6 +34,10 @@ public class TenantService {
     }
 
     public TenantDTO patchUser(UUID id, TenantDTO updates) {
+        if (id == null) {
+            throw new RuntimeException("ID parameter is null");
+        }
+
         Tenant tenant = this.tenantRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
         if (updates.getName().isPresent()) {
@@ -58,6 +62,10 @@ public class TenantService {
     }
 
     public TenantDTO putUser(UUID id, TenantDTO replacement) throws RuntimeException {
+        if (id == null) {
+            throw new RuntimeException("ID parameter is null");
+        }
+
         Tenant tenant = this.tenantRepo.findById(id).orElseThrow(() -> new RuntimeException("Could not find the user"));
 
         if (replacement.getName().isPresent()) {
