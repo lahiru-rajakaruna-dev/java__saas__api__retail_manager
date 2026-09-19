@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: ${SPRING_PROFILE:dev}
   application:
     name: retail_manager
   main:
