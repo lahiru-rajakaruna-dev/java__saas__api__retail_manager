@@ -1,4 +1,4 @@
-package lahiru_rajakaruna.retail_manager.User;
+package lahiru_rajakaruna.retail_manager.Tenant;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Setter
 @EqualsAndHashCode
-public class UserDTO {
+public class TenantDTO {
     private UUID id;
     private String name;
     private String phone;
@@ -20,21 +20,21 @@ public class UserDTO {
     private String passwordHash;
     private UUID shopId;
 
-    public static UserDTO convertToDTO(User userEntity) {
-        UserDTO dto = new UserDTO();
-        dto.setId(userEntity.getId());
+    public static TenantDTO convertToDTO(Tenant tenantEntity) {
+        TenantDTO dto = new TenantDTO();
+        dto.setId(tenantEntity.getId());
 
-        if (userEntity.getName() != null) {
-            dto.setName(userEntity.getName());
+        if (tenantEntity.getName() != null) {
+            dto.setName(tenantEntity.getName());
         }
-        if (userEntity.getPhone() != null) {
-            dto.setPhone(userEntity.getPhone());
+        if (tenantEntity.getPhone() != null) {
+            dto.setPhone(tenantEntity.getPhone());
         }
-        if (userEntity.getPasswordHash() != null) {
-            dto.setPasswordHash(userEntity.getPasswordHash());
+        if (tenantEntity.getPasswordHash() != null) {
+            dto.setPasswordHash(tenantEntity.getPasswordHash());
         }
-        if (userEntity.getShop() != null) {
-            dto.setShopId(userEntity.getShop().getId());
+        if (tenantEntity.getShop() != null) {
+            dto.setShopId(tenantEntity.getShop().getId());
         }
         return dto;
     }

@@ -1,4 +1,4 @@
-package lahiru_rajakaruna.retail_manager.User;
+package lahiru_rajakaruna.retail_manager.Tenant;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -18,23 +18,23 @@ import java.util.List;
 
 @Slf4j
 @Repository
-public class UserRepositoryImpl implements ISearchable<User, UserSearchDTO> {
+public class TenantRepositoryImpl implements ISearchable<Tenant, TenantSearchDTO> {
     private final EntityManager entityManager;
 
-    public UserRepositoryImpl(EntityManager entityManager) {
+    public TenantRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
     @Override
-    public List<User> search(UserSearchDTO parameters) throws Exception {
-        TypedQuery<User> query = buildQuery(parameters);
+    public List<Tenant> search(TenantSearchDTO parameters) throws Exception {
+        TypedQuery<Tenant> query = buildQuery(parameters);
         return query.getResultList();
     }
 
-    private TypedQuery<User> buildQuery(UserSearchDTO parameters) throws Exception {
+    private TypedQuery<Tenant> buildQuery(TenantSearchDTO parameters) throws Exception {
         CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
-        CriteriaQuery<User> query = cb.createQuery(User.class);
-        Root<User> table = query.from(User.class);
+        CriteriaQuery<Tenant> query = cb.createQuery(Tenant.class);
+        Root<Tenant> table = query.from(Tenant.class);
 
         HashMap<Field, Object> parameterValues = new HashMap<Field, Object>();
 

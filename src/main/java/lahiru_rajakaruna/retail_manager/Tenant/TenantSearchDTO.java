@@ -1,14 +1,14 @@
-package lahiru_rajakaruna.retail_manager.User;
+package lahiru_rajakaruna.retail_manager.Tenant;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserSearchDTO {
+public class TenantSearchDTO {
     private String name;
     private String phone;
     private UUID storeId;
 
-    public UserSearchDTO() {
+    public TenantSearchDTO() {
     }
 
     public void setName(String name) {

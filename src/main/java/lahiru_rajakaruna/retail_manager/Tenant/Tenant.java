@@ -1,4 +1,4 @@
-package lahiru_rajakaruna.retail_manager.User;
+package lahiru_rajakaruna.retail_manager.Tenant;
 
 import jakarta.persistence.*;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @Table
-public class User extends BaseEntity {
+public class Tenant extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "shop_id", referencedColumnName = "id")
     private Shop shop;
