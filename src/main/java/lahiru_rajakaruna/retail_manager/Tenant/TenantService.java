@@ -1,7 +1,7 @@
 package lahiru_rajakaruna.retail_manager.Tenant;
 
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
-import lahiru_rajakaruna.retail_manager.Shop.ShopRepository;
+import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,10 @@ import java.util.UUID;
 @Service
 public class TenantService {
     private final ITenantRepository tenantRepo;
-    private final ShopRepository shopRepo;
+    private final IShopRepository shopRepo;
     private final PasswordEncoder passwordEncoder;
 
-    public TenantService(ITenantRepository tenantRepo, PasswordEncoder passwordEncoder, ShopRepository shopRepo) {
+    public TenantService(ITenantRepository tenantRepo, PasswordEncoder passwordEncoder, IShopRepository shopRepo) {
         this.tenantRepo = tenantRepo;
         this.passwordEncoder = passwordEncoder;
         this.shopRepo = shopRepo;

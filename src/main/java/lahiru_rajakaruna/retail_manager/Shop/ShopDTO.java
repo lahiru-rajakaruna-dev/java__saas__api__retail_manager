@@ -16,6 +16,10 @@ public class ShopDTO {
     private UUID id;
     private String name;
 
+    public UUID getId() {
+        return this.id;
+    }
+
     public Optional<String> getName() {
         return Optional.ofNullable(this.name);
     }
