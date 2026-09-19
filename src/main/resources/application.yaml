@@ -18,49 +18,25 @@ spring:
     compose:
       enabled: false
   datasource:
-    url: jdbc:h2:file:./H2DB.db;
-    username: retail_manager
-    password: retail_manager
-    driver-class-name: org.h2.Driver
+    url: "jdbc:h2:file:./target/db/H2DB.db;DATABASE_TO_UPPER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;"
+    username: dev
+    password: dev
     hikari:
       allow-pool-suspension: false
       maximum-pool-size: 5
   flyway:
-    enabled: false
+    enabled: true
+    table: production_flyway_migrations
+    output-query-results: true
+    out-of-order: false
     locations:
-      - classpath:db/migrations/{vendor}
-    connect-retries: 3
-    connect-retries-interval: 5s
-    driver-class-name: jdbc:h2:file:./H2DB.db
-    clean-disabled: true
+      - classpath:db/migration
     execute-in-transaction: true
+    validate-on-migrate: true
   jpa:
-    hibernate:
-      ddl-auto: update
     show-sql: true
-    bootstrap: default
-    database: h2
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategySnakeCaseImpl
     database-platform: org.hibernate.dialect.H2Dialect
-  data:
-    redis:
-      client-type: lettuce
-      host: localhost
-      port: 5000
-      username: retail_cache
-      password: retail_cache
-      timeout: 3000ms
-      database: 0
-      repositories:
-        enabled: false
-      lettuce:
-        pool:
-          enabled: false
-          max-active: 4
-          max-idle: 4
-          max-wait: 1ms
-          min-idle: 0
-          time-between-eviction-runs: 5ms
-management:
-  health:
-    redis:
-      enabled: false

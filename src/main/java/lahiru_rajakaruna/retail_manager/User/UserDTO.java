@@ -24,17 +24,17 @@ public class UserDTO {
         UserDTO dto = new UserDTO();
         dto.setId(userEntity.getId());
 
-        if (userEntity.getName().isPresent()) {
-            dto.setName(userEntity.getName().get());
+        if (userEntity.getName() != null) {
+            dto.setName(userEntity.getName());
         }
-        if (userEntity.getPhone().isPresent()) {
-            dto.setPhone(userEntity.getPhone().get());
+        if (userEntity.getPhone() != null) {
+            dto.setPhone(userEntity.getPhone());
         }
-        if (userEntity.getPasswordHash().isPresent()) {
-            dto.setPasswordHash(userEntity.getPasswordHash().get());
+        if (userEntity.getPasswordHash() != null) {
+            dto.setPasswordHash(userEntity.getPasswordHash());
         }
-        if (userEntity.getShop().isPresent()) {
-            dto.setShopId(userEntity.getShop().get().getId());
+        if (userEntity.getShop() != null) {
+            dto.setShopId(userEntity.getShop().getId());
         }
         return dto;
     }
@@ -44,15 +44,15 @@ public class UserDTO {
     }
 
     public Optional<String> getName() {
-        return Optional.of(this.name);
+        return Optional.ofNullable(this.name);
     }
 
     public Optional<String> getPhone() {
-        return Optional.of(this.phone);
+        return Optional.ofNullable(this.phone);
     }
 
     public Optional<String> getPasswordHash() {
-        return Optional.of(this.passwordHash);
+        return Optional.ofNullable(this.passwordHash);
     }
 
     public Optional<UUID> getShopId() {

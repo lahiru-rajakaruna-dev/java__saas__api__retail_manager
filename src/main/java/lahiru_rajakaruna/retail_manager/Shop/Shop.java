@@ -4,7 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Optional;
 
@@ -12,7 +14,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Setter
 @Entity
-@Table(name = "shops")
+@Table
 public class Shop extends BaseEntity {
     @Column(name = "name")
     private String name;
