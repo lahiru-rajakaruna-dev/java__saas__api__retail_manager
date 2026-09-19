@@ -9,7 +9,7 @@ spring:
     cloud-platform: none
     allow-circular-references: false
     lazy-initialization: false
-    log-startup-info: true
+    log-startup-info: false
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
