@@ -10,27 +10,31 @@ import java.util.UUID;
 
 @Service
 public class TenantService {
-    private final ITenantRepository userRepo;
+    private final ITenantRepository tenantRepo;
     private final ShopRepository shopRepo;
     private final PasswordEncoder passwordEncoder;
 
-    public TenantService(ITenantRepository userRepo, PasswordEncoder passwordEncoder, ShopRepository shopRepo) {
-        this.userRepo = userRepo;
+    public TenantService(ITenantRepository tenantRepo, PasswordEncoder passwordEncoder, ShopRepository shopRepo) {
+        this.tenantRepo = tenantRepo;
         this.passwordEncoder = passwordEncoder;
         this.shopRepo = shopRepo;
     }
 
     public List<TenantDTO> getAllUsers() {
-        return this.userRepo.findAll().stream().map(TenantDTO::convertToDTO).toList();
+        return this.tenantRepo.findAll().stream().map(TenantDTO::convertToDTO).toList();
     }
 
     public TenantDTO getUserById(UUID id) throws RuntimeException {
-        Tenant tenant = this.userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        if (id == null) {
+            throw new RuntimeException("ID parameter is null");
+        }
+
+        Tenant tenant = this.tenantRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         return TenantDTO.convertToDTO(tenant);
     }
 
     public TenantDTO patchUser(UUID id, TenantDTO updates) {
-        Tenant tenant = this.userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        Tenant tenant = this.tenantRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
         if (updates.getName().isPresent()) {
             tenant.setName(updates.getName().get());
@@ -50,11 +54,11 @@ public class TenantService {
             tenant.setShop(shop);
         }
 
-        return TenantDTO.convertToDTO(this.userRepo.save(tenant));
+        return TenantDTO.convertToDTO(this.tenantRepo.save(tenant));
     }
 
     public TenantDTO putUser(UUID id, TenantDTO replacement) throws RuntimeException {
-        Tenant tenant = this.userRepo.findById(id).orElseThrow(() -> new RuntimeException("Could not find the user"));
+        Tenant tenant = this.tenantRepo.findById(id).orElseThrow(() -> new RuntimeException("Could not find the user"));
 
         if (replacement.getName().isPresent()) {
             tenant.setName(replacement.getName().get());
@@ -75,6 +79,6 @@ public class TenantService {
             tenant.setShop(null);
         }
 
-        return TenantDTO.convertToDTO(this.userRepo.save(tenant));
+        return TenantDTO.convertToDTO(this.tenantRepo.save(tenant));
     }
 }
