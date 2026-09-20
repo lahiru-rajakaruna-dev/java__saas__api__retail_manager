@@ -18,4 +18,7 @@ import lombok.Setter;
 public class Shop extends BaseEntity {
     @Column(name = "name", nullable = false, updatable = true)
     private String name;
+
+    @Column(name = "is_active", nullable = false, updatable = true)
+    private boolean isActive;
 }
