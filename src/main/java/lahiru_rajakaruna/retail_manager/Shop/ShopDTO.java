@@ -11,6 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
+@Getter
 @EqualsAndHashCode
 public class ShopDTO {
     private UUID id;
