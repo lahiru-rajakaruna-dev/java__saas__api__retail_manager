@@ -37,7 +37,7 @@ public class ShopService {
                                                                  ))));
     }
 
-    public ShopDTO updateShopName(UUID id, ShopDTO updates) {
+    public ShopDTO updateShopName(UUID id, String name) {
         if (id == null) {
             throw new RuntimeException("ID parameter is null");
         }
@@ -49,9 +49,10 @@ public class ShopService {
                                                      ));
         });
 
-        if (updates.getName().isPresent()) {
-            shop.setName(updates.getName().get());
+        if (name == null) {
+            throw new RuntimeException("Name parameter is null");
         }
+        shop.setName(name);
 
         return ShopDTO.convertToDTO(shopRepo.saveAndFlush(shop));
     }
