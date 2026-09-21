@@ -40,7 +40,120 @@ public class TenantService {
         return TenantDTO.convertToDTO(tenant);
     }
 
-    public TenantDTO patchUser(UUID id, TenantDTO updates) {
+    public TenantDTO updateNameById(UUID id, String name) {
+        if (id == null) {
+            throw new RuntimeException("ID parameter is null");
+        }
+
+        if (name == null) {
+            throw new RuntimeException("Name parameter is null");
+        }
+
+        Tenant tenant = tenantRepo.findById(id)
+                                  .orElseThrow(() -> new RuntimeException(String.format(
+                                          "Could not find tenant with ID: %s",
+                                          id.toString()
+                                                                                       )));
+
+        tenant.setName(name);
+        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+    }
+
+    public TenantDTO updatePhoneById(UUID id, String phone) {
+        if (id == null) {
+            throw new RuntimeException("ID parameter is null");
+        }
+
+        if (phone == null) {
+            throw new RuntimeException("Name parameter is null");
+        }
+
+        Tenant tenant = tenantRepo.findById(id)
+                                  .orElseThrow(() -> new RuntimeException(String.format(
+                                          "Could not find tenant with ID: %s",
+                                          id.toString()
+                                                                                       )));
+
+        tenant.setPhone(phone);
+        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+    }
+
+    public TenantDTO setShopById(UUID id, UUID shopId) {
+        if (id == null) {
+            throw new RuntimeException("ID parameter is null");
+        }
+
+        if (shopId == null) {
+            throw new RuntimeException("ShopId parameter is null");
+        }
+        Shop shop = shopRepo.findById(id)
+                            .orElseThrow(() -> new RuntimeException(String.format(
+                                    "Could not find shop with ID: %s",
+                                    id.toString()
+                                                                                 )));
+
+        Tenant tenant = tenantRepo.findById(id)
+                                  .orElseThrow(() -> new RuntimeException(String.format(
+                                          "Could not find tenant with ID: %s",
+                                          id.toString()
+                                                                                       )));
+
+        tenant.setShop(shop);
+        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+    }
+
+    public TenantDTO updatePassword(UUID id, String password) {
+        if (id == null) {
+            throw new RuntimeException("ID parameter is null");
+        }
+
+        if (password == null) {
+            throw new RuntimeException("Password parameter is null");
+        }
+
+        String passwordHash = passwordEncoder.encode(password);
+
+        Tenant tenant = tenantRepo.findById(id)
+                                  .orElseThrow(() -> new RuntimeException(String.format(
+                                          "Could not find tenant with ID: %s",
+                                          id.toString()
+                                                                                       )));
+
+        tenant.setPasswordHash(passwordHash);
+        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+    }
+
+    public TenantDTO disableTenantProfileById(UUID id) {
+        if (id == null) {
+            throw new RuntimeException("ID parameter is null");
+        }
+
+        Tenant tenant = tenantRepo.findById(id)
+                                  .orElseThrow(() -> new RuntimeException(String.format(
+                                          "Could not find tenant with ID: %s",
+                                          id.toString()
+                                                                                       )));
+
+        tenant.setActive(false);
+        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+    }
+
+    public TenantDTO enableTenantProfileById(UUID id) {
+        if (id == null) {
+            throw new RuntimeException("ID parameter is null");
+        }
+
+        Tenant tenant = tenantRepo.findById(id)
+                                  .orElseThrow(() -> new RuntimeException(String.format(
+                                          "Could not find tenant with ID: %s",
+                                          id.toString()
+                                                                                       )));
+
+        tenant.setActive(true);
+        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+    }
+
+    public TenantDTO updateProfile(UUID id, TenantDTO updates) {
         if (id == null) {
             throw new RuntimeException("ID parameter is null");
         }
