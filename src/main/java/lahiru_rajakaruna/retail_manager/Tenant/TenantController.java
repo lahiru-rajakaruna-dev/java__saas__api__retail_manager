@@ -24,7 +24,12 @@ public class TenantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TenantDTO> getUserDetails(@PathVariable UUID id) throws RuntimeException {
+    public ResponseEntity<TenantDTO> getUserDetails(@PathVariable UUID id)
+    throws RuntimeException {
+        if (id == null) {
+            throw new RuntimeException("ID is not provided");
+        }
+
         TenantDTO user = this.tenantService.getUserById(id);
         return ResponseEntity.ok(user);
     }
@@ -37,9 +42,13 @@ public class TenantController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TenantDTO> putUser(@RequestBody TenantDTO updates, @PathVariable UUID id) {
-        TenantDTO replacedUser = this.tenantService.putUser(id, updates);
-        return ResponseEntity.ok(replacedUser);
+    public ResponseEntity<TenantDTO> putUser(@RequestBody TenantDTO updates,
+                                             @PathVariable UUID id) {
+        if (id == null) {
+            throw new RuntimeException("ID not provided");
+        }
+
+        return ResponseEntity.ok(tenantService.updateProfile(id, updates));
     }
 
 }
