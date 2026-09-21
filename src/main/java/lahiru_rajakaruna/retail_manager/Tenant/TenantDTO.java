@@ -18,6 +18,7 @@ public class TenantDTO {
     private String phone;
     private String password;
     private String passwordHash;
+    private boolean isActive;
     private UUID shopId;
 
     public static TenantDTO convertToDTO(Tenant tenantEntity) {
@@ -35,6 +36,11 @@ public class TenantDTO {
         }
         if (tenantEntity.getShop() != null) {
             dto.setShopId(tenantEntity.getShop().getId());
+        }
+        if (tenantEntity.isActive()) {
+            dto.setActive(true);
+        } else {
+            dto.setActive(false);
         }
         return dto;
     }
@@ -61,5 +67,9 @@ public class TenantDTO {
 
     public Optional<String> getPassword() {
         return Optional.ofNullable(this.password);
+    }
+
+    public Optional<Boolean> isActive() {
+        return Optional.ofNullable(isActive);
     }
 }
