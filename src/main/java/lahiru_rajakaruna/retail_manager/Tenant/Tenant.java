@@ -27,4 +27,7 @@ public class Tenant extends BaseEntity {
 
     @Column(name = "phone", nullable = false, updatable = true)
     private String phone;
+
+    @Column(name = "is_active", nullable = false, updatable = true)
+    private boolean isActive;
 }
