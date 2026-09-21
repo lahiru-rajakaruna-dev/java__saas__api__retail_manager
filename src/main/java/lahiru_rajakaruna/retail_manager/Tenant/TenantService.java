@@ -158,7 +158,11 @@ public class TenantService {
             throw new RuntimeException("ID parameter is null");
         }
 
-        Tenant tenant = this.tenantRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        Tenant tenant = tenantRepo.findById(id)
+                                  .orElseThrow(() -> new RuntimeException(String.format(
+                                          "Could not find tenant with ID: %s",
+                                          id.toString()
+                                                                                       )));
 
         if (updates.getName().isPresent()) {
             tenant.setName(updates.getName().get());
