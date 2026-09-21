@@ -14,14 +14,19 @@ public class TenantService {
     private final IShopRepository shopRepo;
     private final PasswordEncoder passwordEncoder;
 
-    public TenantService(ITenantRepository tenantRepo, PasswordEncoder passwordEncoder, IShopRepository shopRepo) {
+    public TenantService(ITenantRepository tenantRepo,
+                         PasswordEncoder passwordEncoder,
+                         IShopRepository shopRepo) {
         this.tenantRepo = tenantRepo;
         this.passwordEncoder = passwordEncoder;
         this.shopRepo = shopRepo;
     }
 
     public List<TenantDTO> getAllUsers() {
-        return this.tenantRepo.findAll().stream().map(TenantDTO::convertToDTO).toList();
+        return this.tenantRepo.findAll()
+                              .stream()
+                              .map(TenantDTO::convertToDTO)
+                              .toList();
     }
 
     public TenantDTO getUserById(UUID id) throws RuntimeException {
@@ -29,7 +34,9 @@ public class TenantService {
             throw new RuntimeException("ID parameter is null");
         }
 
-        Tenant tenant = this.tenantRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        Tenant tenant = this.tenantRepo.findById(id)
+                                       .orElseThrow(() -> new RuntimeException(
+                                               "User not found"));
         return TenantDTO.convertToDTO(tenant);
     }
 
