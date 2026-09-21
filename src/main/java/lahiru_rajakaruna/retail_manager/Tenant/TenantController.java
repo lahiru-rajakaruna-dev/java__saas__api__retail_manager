@@ -36,9 +36,54 @@ public class TenantController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TenantDTO> patchUser(@RequestBody TenantDTO updates, @PathVariable UUID id) throws RuntimeException {
-        TenantDTO updatedUser = this.tenantService.patchUser(id, updates);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<TenantDTO> patchUser(@RequestBody TenantDTO updates,
+                                               @PathVariable UUID id)
+    throws RuntimeException {
+        if (id == null) {
+            throw new RuntimeException("ID is not provided");
+        }
+
+        if (updates.getName().isPresent()) {
+            return ResponseEntity.ok(tenantService.updateNameById(
+                    id,
+                    updates.getName()
+                           .get()
+                                                                 ));
+        }
+        if (updates.getPhone().isPresent()) {
+            return ResponseEntity.ok(tenantService.updatePhoneById(
+                    id,
+                    updates.getPhone()
+                           .get()
+                                                                  ));
+        }
+        if (updates.getPassword().isPresent()) {
+            return ResponseEntity.ok(tenantService.updatePassword(
+                    id,
+                    updates.getPassword()
+                           .get()
+                                                                 ));
+        }
+        if (updates.getShopId().isPresent()) {
+            return ResponseEntity.ok(tenantService.setShopById(
+                    id,
+                    updates.getShopId()
+                           .get()
+                                                              ));
+        }
+        if (updates.isActive().isPresent()) {
+            if (updates.isActive().get()) {
+                return ResponseEntity.ok(
+                        tenantService.enableTenantProfileById(id)
+                                        );
+            } else {
+                return ResponseEntity.ok(
+                        tenantService.disableTenantProfileById(id)
+                                        );
+            }
+        }
+
+        throw new RuntimeException("Invalid Request");
     }
 
     @PutMapping("/{id}")
