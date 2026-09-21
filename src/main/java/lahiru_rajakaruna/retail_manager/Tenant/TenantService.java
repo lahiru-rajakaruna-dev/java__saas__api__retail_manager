@@ -1,7 +1,7 @@
 package lahiru_rajakaruna.retail_manager.Tenant;
 
-import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
+import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -166,51 +166,47 @@ public class TenantService {
 
         if (updates.getName().isPresent()) {
             tenant.setName(updates.getName().get());
+        } else {
+            throw new RuntimeException("Name cannot be empty");
         }
 
         if (updates.getPhone().isPresent()) {
             tenant.setPhone(updates.getPhone().get());
+        } else {
+            throw new RuntimeException("Phone number cannot be empty");
         }
 
         if (updates.getPassword().isPresent()) {
-            String hash = this.passwordEncoder.encode(updates.getPassword().get());
-            tenant.setPasswordHash(hash);
+            String passwordHash = passwordEncoder.encode(updates.getPassword()
+                                                                .get());
+            tenant.setPasswordHash(passwordHash);
+        } else {
+            throw new RuntimeException("Password cannot be empty");
         }
 
         if (updates.getShopId().isPresent()) {
-            Shop shop = this.shopRepo.findById(updates.getShopId().get()).orElseThrow(() -> new RuntimeException("Could not find the shop"));
-            tenant.setShop(shop);
-        }
+            Shop shop = shopRepo.findById(updates.getShopId().get())
+                                .orElseThrow(() -> new RuntimeException(
+                                        String.format(
+                                                "Could not find the shop with ID: %s",
+                                                id
+                                                     )));
 
-        return TenantDTO.convertToDTO(this.tenantRepo.save(tenant));
-    }
-
-    public TenantDTO putUser(UUID id, TenantDTO replacement) throws RuntimeException {
-        if (id == null) {
-            throw new RuntimeException("ID parameter is null");
-        }
-
-        Tenant tenant = this.tenantRepo.findById(id).orElseThrow(() -> new RuntimeException("Could not find the user"));
-
-        if (replacement.getName().isPresent()) {
-            tenant.setName(replacement.getName().get());
-        } else {
-            tenant.setName(null);
-        }
-
-        if (replacement.getPhone().isPresent()) {
-            tenant.setPhone(replacement.getPhone().get());
-        } else {
-            tenant.setPhone(null);
-        }
-
-        if (replacement.getShopId().isPresent()) {
-            Shop shop = this.shopRepo.findById(replacement.getShopId().get()).orElseThrow(() -> new RuntimeException("Could not find the shop"));
             tenant.setShop(shop);
         } else {
             tenant.setShop(null);
         }
 
-        return TenantDTO.convertToDTO(this.tenantRepo.save(tenant));
+        if (updates.isActive().isPresent()) {
+            if (updates.isActive().get()) {
+                tenant.setActive(true);
+            } else {
+                tenant.setActive(false);
+            }
+        } else {
+            throw new RuntimeException("Profile state cannot be null");
+        }
+
+        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
     }
 }
