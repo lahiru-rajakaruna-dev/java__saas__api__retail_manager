@@ -14,29 +14,51 @@ public class TenantService {
     private final IShopRepository shopRepo;
     private final PasswordEncoder passwordEncoder;
 
-    public TenantService(ITenantRepository tenantRepo,
-                         PasswordEncoder passwordEncoder,
-                         IShopRepository shopRepo) {
+    public TenantService(
+            ITenantRepository tenantRepo,
+            PasswordEncoder passwordEncoder,
+            IShopRepository shopRepo
+                        ) {
         this.tenantRepo = tenantRepo;
         this.passwordEncoder = passwordEncoder;
         this.shopRepo = shopRepo;
     }
 
-    public List<TenantDTO> getAllUsers() {
+    public TenantDTO createTenant(TenantDTO tenant) {
+        if (tenant.getName().isEmpty()) {
+            throw new RuntimeException("Name not provided");
+        }
+        if (tenant.getPhone().isEmpty()) {
+            throw new RuntimeException("Phone not provided");
+        }
+        if (tenant.getPassword().isEmpty()) {
+            throw new RuntimeException("Password not provided");
+        }
+
+        return TenantDTO.convertToDTO(
+                this.tenantRepo.save(
+                        TenantDTO.convertToEntity(
+                                tenant, passwordEncoder
+                                                 )
+                                    )
+                                     );
+    }
+
+    public List<TenantDTO> getAllTenants() {
         return this.tenantRepo.findAll()
                               .stream()
                               .map(TenantDTO::convertToDTO)
                               .toList();
     }
 
-    public TenantDTO getUserById(UUID id) throws RuntimeException {
+    public TenantDTO getTenantById(UUID id) throws RuntimeException {
         if (id == null) {
             throw new RuntimeException("ID parameter is null");
         }
 
         Tenant tenant = this.tenantRepo.findById(id)
                                        .orElseThrow(() -> new RuntimeException(
-                                               "User not found"));
+                                               "Tenant not found"));
         return TenantDTO.convertToDTO(tenant);
     }
 
