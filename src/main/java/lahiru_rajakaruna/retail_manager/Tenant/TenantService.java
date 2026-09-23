@@ -26,13 +26,13 @@ public class TenantService {
 
     public TenantDTO createTenant(TenantDTO tenant) {
         if (tenant.getName().isEmpty()) {
-            throw new RuntimeException("Name not provided");
+            throw new IllegalArgumentException("Name not provided");
         }
         if (tenant.getPhone().isEmpty()) {
-            throw new RuntimeException("Phone not provided");
+            throw new IllegalArgumentException("Phone not provided");
         }
         if (tenant.getPassword().isEmpty()) {
-            throw new RuntimeException("Password not provided");
+            throw new IllegalArgumentException("Password not provided");
         }
 
         return TenantDTO.convertToDTO(
@@ -53,7 +53,7 @@ public class TenantService {
 
     public TenantDTO getTenantById(UUID id) throws RuntimeException {
         if (id == null) {
-            throw new RuntimeException("ID parameter is null");
+            throw new IllegalArgumentException("ID parameter is null");
         }
 
         Tenant tenant = this.tenantRepo.findById(id)
@@ -64,11 +64,11 @@ public class TenantService {
 
     public TenantDTO updateNameById(UUID id, String name) {
         if (id == null) {
-            throw new RuntimeException("ID parameter is null");
+            throw new IllegalArgumentException("ID parameter is null");
         }
 
         if (name == null) {
-            throw new RuntimeException("Name parameter is null");
+            throw new IllegalArgumentException("Name parameter is null");
         }
 
         Tenant tenant = tenantRepo.findById(id)
@@ -83,11 +83,11 @@ public class TenantService {
 
     public TenantDTO updatePhoneById(UUID id, String phone) {
         if (id == null) {
-            throw new RuntimeException("ID parameter is null");
+            throw new IllegalArgumentException("ID parameter is null");
         }
 
         if (phone == null) {
-            throw new RuntimeException("Name parameter is null");
+            throw new IllegalArgumentException("Name parameter is null");
         }
 
         Tenant tenant = tenantRepo.findById(id)
@@ -102,11 +102,11 @@ public class TenantService {
 
     public TenantDTO setShopById(UUID id, UUID shopId) {
         if (id == null) {
-            throw new RuntimeException("ID parameter is null");
+            throw new IllegalArgumentException("ID parameter is null");
         }
 
         if (shopId == null) {
-            throw new RuntimeException("ShopId parameter is null");
+            throw new IllegalArgumentException("ShopId parameter is null");
         }
         Shop shop = shopRepo.findById(id)
                             .orElseThrow(() -> new RuntimeException(String.format(
@@ -126,11 +126,11 @@ public class TenantService {
 
     public TenantDTO updatePassword(UUID id, String password) {
         if (id == null) {
-            throw new RuntimeException("ID parameter is null");
+            throw new IllegalArgumentException("ID parameter is null");
         }
 
         if (password == null) {
-            throw new RuntimeException("Password parameter is null");
+            throw new IllegalArgumentException("Password parameter is null");
         }
 
         String passwordHash = passwordEncoder.encode(password);
@@ -147,7 +147,7 @@ public class TenantService {
 
     public TenantDTO disableTenantProfileById(UUID id) {
         if (id == null) {
-            throw new RuntimeException("ID parameter is null");
+            throw new IllegalArgumentException("ID parameter is null");
         }
 
         Tenant tenant = tenantRepo.findById(id)
@@ -162,7 +162,7 @@ public class TenantService {
 
     public TenantDTO enableTenantProfileById(UUID id) {
         if (id == null) {
-            throw new RuntimeException("ID parameter is null");
+            throw new IllegalArgumentException("ID parameter is null");
         }
 
         Tenant tenant = tenantRepo.findById(id)
@@ -177,7 +177,21 @@ public class TenantService {
 
     public TenantDTO updateProfile(UUID id, TenantDTO updates) {
         if (id == null) {
-            throw new RuntimeException("ID parameter is null");
+            throw new IllegalArgumentException("ID parameter is null");
+        }
+
+        boolean isNameNull = updates.getName().isEmpty();
+        boolean isPhoneNull = updates.getPhone().isEmpty();
+        boolean isPasswordNull = updates.getPassword().isEmpty();
+        boolean isActiveStateNull = updates.isActive().isEmpty();
+        boolean isShopNull = updates.getShopId().isEmpty();
+
+        if (isActiveStateNull ||
+            isNameNull ||
+            isPasswordNull ||
+            isPhoneNull ||
+            isShopNull) {
+            throw new IllegalArgumentException("All Fields Must Be Present");
         }
 
         Tenant tenant = tenantRepo.findById(id)
@@ -186,25 +200,13 @@ public class TenantService {
                                           id.toString()
                                                                                        )));
 
-        if (updates.getName().isPresent()) {
-            tenant.setName(updates.getName().get());
-        } else {
-            throw new RuntimeException("Name cannot be empty");
-        }
+        tenant.setName(updates.getName().get());
 
-        if (updates.getPhone().isPresent()) {
-            tenant.setPhone(updates.getPhone().get());
-        } else {
-            throw new RuntimeException("Phone number cannot be empty");
-        }
+        tenant.setPhone(updates.getPhone().get());
 
-        if (updates.getPassword().isPresent()) {
-            String passwordHash = passwordEncoder.encode(updates.getPassword()
-                                                                .get());
-            tenant.setPasswordHash(passwordHash);
-        } else {
-            throw new RuntimeException("Password cannot be empty");
-        }
+        String passwordHash = passwordEncoder.encode(updates.getPassword()
+                                                            .get());
+        tenant.setPasswordHash(passwordHash);
 
         if (updates.getShopId().isPresent()) {
             Shop shop = shopRepo.findById(updates.getShopId().get())
@@ -226,7 +228,7 @@ public class TenantService {
                 tenant.setActive(false);
             }
         } else {
-            throw new RuntimeException("Profile state cannot be null");
+            throw new IllegalArgumentException("Profile state cannot be null");
         }
 
         return TenantDTO.convertToDTO(tenantRepo.save(tenant));
