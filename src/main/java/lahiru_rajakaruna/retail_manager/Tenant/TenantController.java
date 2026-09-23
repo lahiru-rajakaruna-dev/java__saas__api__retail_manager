@@ -18,26 +18,28 @@ public class TenantController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TenantDTO>> getAllUsers() {
-        List<TenantDTO> users = this.tenantService.getAllUsers();
+    public ResponseEntity<List<TenantDTO>> getAllTenants() {
+        List<TenantDTO> users = this.tenantService.getAllTenants();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TenantDTO> getUserDetails(@PathVariable UUID id)
+    public ResponseEntity<TenantDTO> getTenantDetails(@PathVariable UUID id)
     throws RuntimeException {
         if (id == null) {
             throw new RuntimeException("ID is not provided");
         }
 
-        TenantDTO user = this.tenantService.getUserById(id);
+        TenantDTO user = this.tenantService.getTenantById(id);
         return ResponseEntity.ok(user);
     }
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TenantDTO> patchUser(@RequestBody TenantDTO updates,
-                                               @PathVariable UUID id)
+    public ResponseEntity<TenantDTO> patchTenant(
+            @RequestBody TenantDTO updates,
+            @PathVariable UUID id
+                                                )
     throws RuntimeException {
         if (id == null) {
             throw new RuntimeException("ID is not provided");
@@ -87,8 +89,10 @@ public class TenantController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TenantDTO> putUser(@RequestBody TenantDTO updates,
-                                             @PathVariable UUID id) {
+    public ResponseEntity<TenantDTO> putTenant(
+            @RequestBody TenantDTO updates,
+            @PathVariable UUID id
+                                              ) {
         if (id == null) {
             throw new RuntimeException("ID not provided");
         }
