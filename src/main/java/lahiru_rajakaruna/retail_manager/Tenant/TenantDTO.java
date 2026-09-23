@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -43,6 +44,34 @@ public class TenantDTO {
             dto.setActive(false);
         }
         return dto;
+    }
+
+    public static Tenant convertToEntity(TenantDTO dto,
+                                         PasswordEncoder passwordEncoder) {
+        Tenant tenant = new Tenant();
+
+        if (dto.getName().isPresent()) {
+            tenant.setName(dto.getName().get());
+        } else {
+            throw new RuntimeException("Cannot Convert: Name not provided");
+        }
+
+        if (dto.getPhone().isPresent()) {
+            tenant.setPhone(dto.getPhone().get());
+        } else {
+            throw new RuntimeException("Cannot Convert: Phone not provided");
+        }
+
+        if (dto.getPasswordHash().isPresent()) {
+            tenant.setPasswordHash(dto.getPasswordHash().get());
+        } else if (dto.getPassword().isPresent()) {
+            tenant.setPasswordHash(passwordEncoder.encode(dto.getPassword()
+                                                             .get()));
+        } else {
+            throw new RuntimeException("Cannot Convert:  Password not provided");
+        }
+
+        return tenant;
     }
 
     public UUID getId() {
