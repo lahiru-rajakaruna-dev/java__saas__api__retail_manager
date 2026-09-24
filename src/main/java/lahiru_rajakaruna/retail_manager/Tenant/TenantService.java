@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -25,6 +26,8 @@ public class TenantService {
     }
 
     public TenantDTO createTenant(TenantDTO tenant) {
+        checkIfInternalComponentsNull();
+
         if (tenant.getName().isEmpty()) {
             throw new IllegalArgumentException("Name not provided");
         }
@@ -45,6 +48,8 @@ public class TenantService {
     }
 
     public List<TenantDTO> getAllTenants() {
+        checkIfInternalComponentsNull();
+
         return this.tenantRepo.findAll()
                               .stream()
                               .map(TenantDTO::convertToDTO)
@@ -52,6 +57,8 @@ public class TenantService {
     }
 
     public TenantDTO getTenantById(UUID id) throws RuntimeException {
+        checkIfInternalComponentsNull();
+
         if (id == null) {
             throw new IllegalArgumentException("ID parameter is null");
         }
@@ -63,6 +70,8 @@ public class TenantService {
     }
 
     public TenantDTO updateNameById(UUID id, String name) {
+        checkIfInternalComponentsNull();
+
         if (id == null) {
             throw new IllegalArgumentException("ID parameter is null");
         }
@@ -82,6 +91,8 @@ public class TenantService {
     }
 
     public TenantDTO updatePhoneById(UUID id, String phone) {
+        checkIfInternalComponentsNull();
+
         if (id == null) {
             throw new IllegalArgumentException("ID parameter is null");
         }
@@ -101,6 +112,8 @@ public class TenantService {
     }
 
     public TenantDTO setShopById(UUID id, UUID shopId) {
+        checkIfInternalComponentsNull();
+
         if (id == null) {
             throw new IllegalArgumentException("ID parameter is null");
         }
@@ -125,6 +138,8 @@ public class TenantService {
     }
 
     public TenantDTO updatePassword(UUID id, String password) {
+        checkIfInternalComponentsNull();
+
         if (id == null) {
             throw new IllegalArgumentException("ID parameter is null");
         }
@@ -146,6 +161,8 @@ public class TenantService {
     }
 
     public TenantDTO disableTenantProfileById(UUID id) {
+        checkIfInternalComponentsNull();
+
         if (id == null) {
             throw new IllegalArgumentException("ID parameter is null");
         }
@@ -161,6 +178,8 @@ public class TenantService {
     }
 
     public TenantDTO enableTenantProfileById(UUID id) {
+        checkIfInternalComponentsNull();
+
         if (id == null) {
             throw new IllegalArgumentException("ID parameter is null");
         }
@@ -176,6 +195,8 @@ public class TenantService {
     }
 
     public TenantDTO updateProfile(UUID id, TenantDTO updates) {
+        checkIfInternalComponentsNull();
+
         if (id == null) {
             throw new IllegalArgumentException("ID parameter is null");
         }
@@ -201,9 +222,7 @@ public class TenantService {
                                                                                        )));
 
         tenant.setName(updates.getName().get());
-
         tenant.setPhone(updates.getPhone().get());
-
         String passwordHash = passwordEncoder.encode(updates.getPassword()
                                                             .get());
         tenant.setPasswordHash(passwordHash);
@@ -232,5 +251,11 @@ public class TenantService {
         }
 
         return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+    }
+
+    private void checkIfInternalComponentsNull() {
+        Objects.requireNonNull(tenantRepo, "Tenant Repo Not Found");
+        Objects.requireNonNull(shopRepo, "Shop Repo Not Found");
+        Objects.requireNonNull(passwordEncoder, "Password Encoder Not Found");
     }
 }
