@@ -12,10 +12,9 @@ public class ShopService {
         this.shopRepo = shopRepo;
     }
 
-    public ShopDTO createShop(ShopDTO shop) {
-        if (shop.getName().isEmpty()) {
-            throw new RuntimeException("Must provide a name for the shop");
-        }
+    private void checkInternalComponentsPresence() {
+        Objects.requireNonNull(shopRepo, "Shop Repository Not Found");
+    }
 
         return ShopDTO.convertToDTO(shopRepo.saveAndFlush(new Shop(
                 shop.getName()
