@@ -43,6 +43,6 @@ public class ShopDTO {
     }
 
     public Optional<String> getName() {
-        return Optional.ofNullable(this.name);
+        return Optional.ofNullable(name);
     }
 }
