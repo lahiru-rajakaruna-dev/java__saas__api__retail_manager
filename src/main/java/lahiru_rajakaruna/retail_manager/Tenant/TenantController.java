@@ -100,4 +100,12 @@ public class TenantController {
         return ResponseEntity.ok(tenantService.updateProfile(id, updates));
     }
 
+    @PostMapping
+    public ResponseEntity<TenantDTO> createTenant(
+            @RequestBody TenantDTO tenantData
+                                                 ) {
+        TenantDTO tenant = tenantService.createTenant(tenantData);
+        return ResponseEntity.ok(tenant);
+    }
+
 }
