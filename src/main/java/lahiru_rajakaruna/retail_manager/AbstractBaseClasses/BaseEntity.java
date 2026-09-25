@@ -1,6 +1,9 @@
 package lahiru_rajakaruna.retail_manager.AbstractBaseClasses;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,9 +25,9 @@ public abstract class BaseEntity {
     protected UUID id;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp(source = SourceType.DB)
+    @CreationTimestamp(source = SourceType.VM)
     protected Instant createdAt;
     @Column(name = "updated_at", nullable = false, updatable = true)
-    @UpdateTimestamp(source = SourceType.DB)
+    @UpdateTimestamp(source = SourceType.VM)
     protected Instant updatedAt;
 }
