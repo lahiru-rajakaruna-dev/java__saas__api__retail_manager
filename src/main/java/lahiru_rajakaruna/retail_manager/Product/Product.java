@@ -4,7 +4,6 @@
  */
 package lahiru_rajakaruna.retail_manager.Product;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,8 +29,7 @@ import lombok.Setter;
 public class Product extends BaseEntity {
 
 	@JoinColumn(name = "shop_id", updatable = false, nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY, optional = false,
-		   cascade = CascadeType.DETACH)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private Shop shop;
 
 	@Column(name = "name", nullable = false, updatable = true)
