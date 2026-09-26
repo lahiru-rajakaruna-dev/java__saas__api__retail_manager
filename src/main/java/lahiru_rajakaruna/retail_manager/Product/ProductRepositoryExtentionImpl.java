@@ -40,7 +40,7 @@ public class ProductRepositoryExtentionImpl implements IProductRepositoryExtenti
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> query = cb.createQuery(Product.class);
 		Root<Product> root = query.from(Product.class);
-		Predicate matchesShopId = cb.equal(root.get("shop_id"), shopId);
+		Predicate matchesShopId = cb.equal(root.get("shopId"), shopId);
 		query.select(root).where(matchesShopId);
 
 		return entityManager.createQuery(query).getResultList();
