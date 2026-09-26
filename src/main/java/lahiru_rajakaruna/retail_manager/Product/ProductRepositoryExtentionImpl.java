@@ -13,19 +13,19 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author bl4z3
  */
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Repository
 public class ProductRepositoryExtentionImpl implements IProductRepositoryExtention {
 
 	private final EntityManager entityManager;
 
-	@Autowired
 	public ProductRepositoryExtentionImpl(EntityManager em) {
 		this.entityManager = em;
 	}
