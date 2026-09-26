@@ -1,9 +1,8 @@
 package lahiru_rajakaruna.retail_manager.Shop;
 
-import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/shops")
@@ -44,13 +43,25 @@ public class ShopController {
 		}
 
 		if (shop.getName().isPresent()) {
-			shopService.updateShopName(id, shop.getName().get());
+			return ResponseEntity.ok(shopService.updateShopName(
+				id,
+				shop.getName()
+					.get()));
 		}
 
-		if (shop.isActive()) {
-			return shopService.activateShopById(id);
-		} else {
-			return shopService.deactivateShopById(id);
+		if (shop.getActiveState().isPresent()) {
+			if (Boolean.TRUE.equals(shop.isActive())) {
+				return ResponseEntity.ok(shopService
+					.activateShopById(id));
+			}
+
+			if (Boolean.FALSE.equals(!shop.isActive())) {
+				return ResponseEntity.ok(shopService
+					.deactivateShopById(
+						id));
+			}
 		}
+
+		throw new RuntimeException("Invalid request");
 	}
 }
