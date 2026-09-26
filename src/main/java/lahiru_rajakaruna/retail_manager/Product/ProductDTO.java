@@ -99,6 +99,10 @@ public class ProductDTO {
 	public static ProductDTO convertToDTO(Product entity) {
 		ProductDTO dto = new ProductDTO();
 
+		if (entity.getShop() == null) {
+			throw new NullPointerException("Shop not found");
+		}
+
 		dto.setId(entity.getId());
 		dto.setShopId(
 			entity.getShop().
