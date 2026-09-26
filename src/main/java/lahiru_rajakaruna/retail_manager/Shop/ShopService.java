@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 public class ShopService {
 
 	private final IShopRepository shopRepo;
+	private final ITenantRepository tenantRepo;
 
 	public ShopService(IShopRepository shopRepo,
 			   ITenantRepository tenantRepo) {
 		this.shopRepo = shopRepo;
+		this.tenantRepo = tenantRepo;
 	}
 
 	private void checkInternalComponentsPresence() {
@@ -34,7 +36,10 @@ public class ShopService {
 				"Must provide a name for the shop");
 		}
 
-		Tenant tenant = null;
+		Tenant tenant = tenantRepo.findById(dto.getOwnerId())
+			.orElseThrow(() -> new RuntimeException(
+			"Could not find user with ID: %s".formatted(dto
+				.getOwnerId())));
 
 		Shop shop = ShopDTO.convertToEntity(dto, tenant);
 		Shop savedShop = shopRepo.saveAndFlush(shop);
