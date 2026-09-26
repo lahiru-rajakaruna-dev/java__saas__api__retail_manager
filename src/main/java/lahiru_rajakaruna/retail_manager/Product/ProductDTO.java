@@ -27,7 +27,7 @@ public class ProductDTO {
 	private BigDecimal price;
 	private BigDecimal quantity;
 	private MessurementUnit unit;
-	private boolean isActive = false;
+	private boolean isActive;
 
 	public Optional<UUID> getShopId() {
 		return Optional.ofNullable(shopId);
@@ -49,8 +49,8 @@ public class ProductDTO {
 		return Optional.ofNullable(unit);
 	}
 
-	public boolean isActive() {
-		return isActive;
+	public Optional<Boolean> getActiveState() {
+		return Optional.ofNullable(isActive);
 	}
 
 	public Optional<UUID> getId() {
@@ -88,8 +88,9 @@ public class ProductDTO {
 		if (dto.getUnit().isPresent()) {
 			product.setUnit(dto.getUnit().get());
 		}
-
-		product.setActive(dto.isActive());
+		if (dto.getActiveState().isPresent()) {
+			product.setActive(dto.getActiveState().get());
+		}
 		product.setShop(shop);
 
 		return product;
