@@ -204,7 +204,7 @@ public class TenantService {
         boolean isNameNull = updates.getName().isEmpty();
         boolean isPhoneNull = updates.getPhone().isEmpty();
         boolean isPasswordNull = updates.getPassword().isEmpty();
-        boolean isActiveStateNull = updates.isActive().isEmpty();
+        boolean isActiveStateNull = updates.getActiveState().isEmpty();
         boolean isShopNull = updates.getShopId().isEmpty();
 
         if (isActiveStateNull ||
@@ -240,8 +240,8 @@ public class TenantService {
             tenant.setShop(null);
         }
 
-        if (updates.isActive().isPresent()) {
-            if (updates.isActive().get()) {
+        if (updates.getActiveState().isPresent()) {
+            if (updates.getActiveState().get()) {
                 tenant.setActive(true);
             } else {
                 tenant.setActive(false);

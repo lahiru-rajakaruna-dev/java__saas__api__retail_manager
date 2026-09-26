@@ -98,7 +98,7 @@ public class TenantDTO {
         return Optional.ofNullable(this.password);
     }
 
-    public Optional<Boolean> isActive() {
+    public Optional<Boolean> getActiveState() {
         return Optional.ofNullable(isActive);
     }
 }

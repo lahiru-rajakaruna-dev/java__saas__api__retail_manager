@@ -73,8 +73,8 @@ public class TenantController {
                            .get()
                                                               ));
         }
-        if (updates.isActive().isPresent()) {
-            if (updates.isActive().get()) {
+        if (updates.getActiveState().isPresent()) {
+            if (updates.getActiveState().get()) {
                 return ResponseEntity.ok(
                         tenantService.enableTenantProfileById(id)
                                         );
