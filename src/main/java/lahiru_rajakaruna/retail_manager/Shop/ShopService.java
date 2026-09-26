@@ -1,108 +1,104 @@
 package lahiru_rajakaruna.retail_manager.Shop;
 
-import org.springframework.stereotype.Service;
-
 import java.util.Objects;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
+import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ShopService {
-    private final IShopRepository shopRepo;
 
-    public ShopService(IShopRepository shopRepo) {
-        this.shopRepo = shopRepo;
-    }
+	private final IShopRepository shopRepo;
 
-    private void checkInternalComponentsPresence() {
-        Objects.requireNonNull(shopRepo, "Shop Repository Not Found");
-    }
+	public ShopService(IShopRepository shopRepo,
+			   ITenantRepository tenantRepo) {
+		this.shopRepo = shopRepo;
+	}
 
-    public ShopDTO createShop(ShopDTO dto) {
-        checkInternalComponentsPresence();
+	private void checkInternalComponentsPresence() {
+		Objects.requireNonNull(shopRepo, "Shop Repository Not Found");
+	}
 
-        if (dto.getName().isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Must provide a name for the shop");
-        }
+	private Shop findShopByIdOrThrow(UUID id) {
+		return shopRepo.findById(id).orElseThrow(
+			() -> new RuntimeException(
+				"Could not find shop with ID: %s".formatted(id)));
+	}
 
-        Shop shop = ShopDTO.convertToEntity(dto);
-        Shop savedShop = shopRepo.saveAndFlush(shop);
-        return ShopDTO.convertToDTO(savedShop);
-    }
+	public ShopDTO createShop(ShopDTO dto) {
+		checkInternalComponentsPresence();
 
-    public ShopDTO findById(UUID id) {
-        checkInternalComponentsPresence();
+		if (dto.getName().isEmpty()) {
+			throw new IllegalArgumentException(
+				"Must provide a name for the shop");
+		}
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+		Tenant tenant = null;
 
+		Shop shop = ShopDTO.convertToEntity(dto, tenant);
+		Shop savedShop = shopRepo.saveAndFlush(shop);
+		return ShopDTO.convertToDTO(savedShop);
+	}
 
-        Shop shop = shopRepo.findById(id)
-                            .orElseThrow(() -> new RuntimeException(String.format(
-                                    "Could not find shop with ID: %s",
-                                    id)));
+	public ShopDTO findById(UUID id) {
+		checkInternalComponentsPresence();
 
-        return ShopDTO.convertToDTO(shop);
-    }
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-    public ShopDTO updateShopName(UUID id, String name) {
-        checkInternalComponentsPresence();
+		Shop shop = findShopByIdOrThrow(id);
+		return ShopDTO.convertToDTO(shop);
+	}
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("Name parameter is null");
-        }
+	public ShopDTO updateShopName(UUID id, String name) {
+		checkInternalComponentsPresence();
 
-        Shop shop = shopRepo.findById(id)
-                            .orElseThrow(() -> new RuntimeException(String.format(
-                                    "Could not find shop with ID: %s",
-                                    id)));
-        shop.setName(name);
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
+		if (name == null) {
+			throw new IllegalArgumentException(
+				"Name parameter is null");
+		}
 
-        Shop updatedShop = shopRepo.saveAndFlush(shop);
-        return ShopDTO.convertToDTO(updatedShop);
-    }
+		Shop shop = findShopByIdOrThrow(id);
+		shop.setName(name);
 
-    public ShopDTO activateShopById(UUID id) {
-        checkInternalComponentsPresence();
+		Shop updatedShop = shopRepo.saveAndFlush(shop);
+		return ShopDTO.convertToDTO(updatedShop);
+	}
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+	public ShopDTO activateShopById(UUID id) {
+		checkInternalComponentsPresence();
 
-        Shop shop = shopRepo.findById(id)
-                            .orElseThrow(() -> new RuntimeException(String.format(
-                                    "Could not find shop with ID: %s",
-                                    id
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-                                                                                 )));
+		Shop shop = findShopByIdOrThrow(id);
+		shop.setActive(true);
+		Shop updatedShop = shopRepo.saveAndFlush(shop);
 
-        shop.setActive(true);
-        Shop updatedShop = shopRepo.saveAndFlush(shop);
+		return ShopDTO.convertToDTO(updatedShop);
+	}
 
-        return ShopDTO.convertToDTO(updatedShop);
-    }
+	public ShopDTO deactivateShopById(UUID id) {
+		checkInternalComponentsPresence();
 
-    public ShopDTO deactivateShopById(UUID id) {
-        checkInternalComponentsPresence();
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+		Shop shop = findShopByIdOrThrow(id);
+		shop.setActive(false);
+		Shop updatedShop = shopRepo.saveAndFlush(shop);
 
-        Shop shop = shopRepo.findById(id)
-                            .orElseThrow(() -> new RuntimeException(String.format(
-                                    "Could not find shop with ID: %s",
-                                    id
-
-                                                                                 )));
-
-        shop.setActive(false);
-        Shop updatedShop = shopRepo.saveAndFlush(shop);
-
-        return ShopDTO.convertToDTO(updatedShop);
-    }
+		return ShopDTO.convertToDTO(updatedShop);
+	}
 }
