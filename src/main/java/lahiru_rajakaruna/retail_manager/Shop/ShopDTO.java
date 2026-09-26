@@ -1,9 +1,9 @@
 package lahiru_rajakaruna.retail_manager.Shop;
 
-import lombok.*;
-
 import java.util.Optional;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,38 +11,42 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 public class ShopDTO {
-    private UUID id;
-    private String name;
-    private boolean isActive;
 
-    public static ShopDTO convertToDTO(Shop shop) {
-        ShopDTO dto = new ShopDTO();
+	private UUID id;
+	private UUID ownerId;
+	private String name;
+	private boolean isActive;
 
-        dto.setId(shop.getId());
-        dto.setName(shop.getName());
-        dto.setActive(shop.isActive());
+	public static ShopDTO convertToDTO(Shop shop) {
+		ShopDTO dto = new ShopDTO();
 
-        return dto;
-    }
+		dto.setId(shop.getId());
+		dto.setName(shop.getName());
+		dto.setActive(shop.isActive());
+		dto.setOwnerId(shop.getOwner().getId());
 
-    public static Shop convertToEntity(ShopDTO dto) {
-        Shop shop = new Shop();
+		return dto;
+	}
 
-        if (dto.getId().isPresent()) {
-            shop.setId(dto.getId().get());
-        }
-        if (dto.getName().isPresent()) {
-            shop.setName(dto.getName().get());
-        }
+	public static Shop convertToEntity(ShopDTO dto, Tenant owner) {
+		Shop shop = new Shop();
 
-        return shop;
-    }
+		if (dto.getId().isPresent()) {
+			shop.setId(dto.getId().get());
+		}
+		if (dto.getName().isPresent()) {
+			shop.setName(dto.getName().get());
+		}
+		shop.setOwner(owner);
+		
+		return shop;
+	}
 
-    public Optional<UUID> getId() {
-        return Optional.ofNullable(id);
-    }
+	public Optional<UUID> getId() {
+		return Optional.ofNullable(id);
+	}
 
-    public Optional<String> getName() {
-        return Optional.ofNullable(name);
-    }
+	public Optional<String> getName() {
+		return Optional.ofNullable(name);
+	}
 }
