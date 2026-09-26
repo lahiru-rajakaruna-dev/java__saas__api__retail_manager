@@ -18,6 +18,10 @@ public class ShopDTO {
 	private boolean isActive;
 
 	public static ShopDTO convertToDTO(Shop shop) {
+		if (shop.getOwner() == null) {
+			throw new NullPointerException("Owner not found")
+		}
+
 		ShopDTO dto = new ShopDTO();
 
 		dto.setId(shop.getId());
