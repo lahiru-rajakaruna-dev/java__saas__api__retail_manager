@@ -38,7 +38,7 @@ public class ShopDTO {
 			shop.setName(dto.getName().get());
 		}
 		shop.setOwner(owner);
-		
+
 		return shop;
 	}
 
@@ -48,5 +48,9 @@ public class ShopDTO {
 
 	public Optional<String> getName() {
 		return Optional.ofNullable(name);
+	}
+
+	public Optional<Boolean> getActiveState() {
+		return Optional.ofNullable(isActive);
 	}
 }
