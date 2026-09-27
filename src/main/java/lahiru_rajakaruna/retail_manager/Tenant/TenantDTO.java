@@ -1,104 +1,136 @@
 package lahiru_rajakaruna.retail_manager.Tenant;
 
+import java.util.Optional;
+import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
-import java.util.UUID;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @EqualsAndHashCode
 public class TenantDTO {
-    private UUID id;
-    private String name;
-    private String phone;
-    private String password;
-    private String passwordHash;
-    private boolean isActive;
-    private UUID shopId;
 
-    public static TenantDTO convertToDTO(Tenant tenantEntity) {
-        TenantDTO dto = new TenantDTO();
-        dto.setId(tenantEntity.getId());
+	private UUID id = null;
 
-        if (tenantEntity.getName() != null) {
-            dto.setName(tenantEntity.getName());
-        }
-        if (tenantEntity.getPhone() != null) {
-            dto.setPhone(tenantEntity.getPhone());
-        }
-        if (tenantEntity.getPasswordHash() != null) {
-            dto.setPasswordHash(tenantEntity.getPasswordHash());
-        }
-        if (tenantEntity.getShop() != null) {
-            dto.setShopId(tenantEntity.getShop().getId());
-        }
-        if (tenantEntity.isActive()) {
-            dto.setActive(true);
-        } else {
-            dto.setActive(false);
-        }
-        return dto;
-    }
+	private String name = null;
 
-    public static Tenant convertToEntity(TenantDTO dto,
-                                         PasswordEncoder passwordEncoder) {
-        Tenant tenant = new Tenant();
+	private String phone = null;
 
-        if (dto.getName().isPresent()) {
-            tenant.setName(dto.getName().get());
-        } else {
-            throw new RuntimeException("Cannot Convert: Name not provided");
-        }
+	private String password = null;
 
-        if (dto.getPhone().isPresent()) {
-            tenant.setPhone(dto.getPhone().get());
-        } else {
-            throw new RuntimeException("Cannot Convert: Phone not provided");
-        }
+	private String passwordHash = null;
 
-        if (dto.getPasswordHash().isPresent()) {
-            tenant.setPasswordHash(dto.getPasswordHash().get());
-        } else if (dto.getPassword().isPresent()) {
-            tenant.setPasswordHash(passwordEncoder.encode(dto.getPassword()
-                                                             .get()));
-        } else {
-            throw new RuntimeException("Cannot Convert:  Password not provided");
-        }
+	private EActiveState activeState = null;
 
-        return tenant;
-    }
+	private UUID shopId = null;
 
-    public UUID getId() {
-        return this.id;
-    }
+	public static TenantDTO convertToDTO(Tenant tenantEntity) {
+		TenantDTO dto = new TenantDTO();
+		dto.setId(tenantEntity.getId());
 
-    public Optional<String> getName() {
-        return Optional.ofNullable(this.name);
-    }
+		if (tenantEntity.getName() != null) {
+			dto.setName(tenantEntity.getName());
+		}
+		else {
+			throw new RuntimeException("Cannot Convert: Tenant name is null");
+		}
 
-    public Optional<String> getPhone() {
-        return Optional.ofNullable(this.phone);
-    }
+		if (tenantEntity.getPhone() != null) {
+			dto.setPhone(tenantEntity.getPhone());
+		}
+		else {
+			throw new RuntimeException("Cannot Convert: Tenant phone is null");
+		}
 
-    public Optional<String> getPasswordHash() {
-        return Optional.ofNullable(this.passwordHash);
-    }
+		if (tenantEntity.getPasswordHash() != null) {
+			dto.setPasswordHash(tenantEntity.getPasswordHash());
+		}
+		else {
+			throw new RuntimeException("Cannot Convert: Tenant password hash is null");
+		}
 
-    public Optional<UUID> getShopId() {
-        return Optional.ofNullable(this.shopId);
-    }
+		if (tenantEntity.getShop() != null) {
+			dto.setShopId(tenantEntity.getShop().getId());
+		}
 
-    public Optional<String> getPassword() {
-        return Optional.ofNullable(this.password);
-    }
+		if (tenantEntity.getActiveState() != null) {
+			dto.setActiveState(tenantEntity.getActiveState());
+		}
+		else {
+			throw new RuntimeException("Cannot Convert: Tenant active state is null");
+		}
 
-    public Optional<Boolean> getActiveState() {
-        return Optional.ofNullable(isActive);
-    }
+		return dto;
+	}
+
+	public static Tenant convertToEntity(TenantDTO dto, PasswordEncoder passwordEncoder) {
+		Tenant tenant = new Tenant();
+
+		if (dto.getName().isPresent()) {
+			tenant.setName(dto.getName().get());
+		}
+		else {
+			throw new RuntimeException("Cannot Convert: Name not provided");
+		}
+
+		if (dto.getPhone().isPresent()) {
+			tenant.setPhone(dto.getPhone().get());
+		}
+		else {
+			throw new RuntimeException("Cannot Convert: Phone not provided");
+		}
+
+		if (dto.getPasswordHash().isPresent()) {
+			tenant.setPasswordHash(dto.getPasswordHash().get());
+		}
+		else if (dto.getPassword().isPresent()) {
+			tenant.setPasswordHash(passwordEncoder.encode(dto.getPassword().get()));
+		}
+		else {
+			throw new RuntimeException("Cannot Convert:  Password not provided");
+		}
+
+		if (dto.getActiveState().isPresent()) {
+			tenant.setActiveState(dto.getActiveState().get());
+		}
+		else {
+			throw new RuntimeException("Cannot Convert: Active state not provided");
+		}
+
+		return tenant;
+	}
+
+	public UUID getId() {
+		return this.id;
+	}
+
+	public Optional<String> getName() {
+		return Optional.ofNullable(this.name);
+	}
+
+	public Optional<String> getPhone() {
+		return Optional.ofNullable(this.phone);
+	}
+
+	public Optional<String> getPasswordHash() {
+		return Optional.ofNullable(this.passwordHash);
+	}
+
+	public Optional<UUID> getShopId() {
+		return Optional.ofNullable(this.shopId);
+	}
+
+	public Optional<String> getPassword() {
+		return Optional.ofNullable(this.password);
+	}
+
+	public Optional<EActiveState> getActiveState() {
+		return Optional.ofNullable(activeState);
+	}
+
 }

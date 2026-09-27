@@ -2,6 +2,7 @@ package lahiru_rajakaruna.retail_manager.Tenant;
 
 import jakarta.persistence.*;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,19 +16,21 @@ import lombok.Setter;
 @Entity
 @Table
 public class Tenant extends BaseEntity {
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "shop_id", referencedColumnName = "id")
-    private Shop shop;
 
-    @Column(name = "name", nullable = false, updatable = true)
-    private String name;
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "shop_id", referencedColumnName = "id")
+	private Shop shop;
 
-    @Column(name = "password_hash", nullable = false, updatable = true)
-    private String passwordHash;
+	@Column(name = "name", nullable = false, updatable = true)
+	private String name;
 
-    @Column(name = "phone", nullable = false, updatable = true)
-    private String phone;
+	@Column(name = "password_hash", nullable = false, updatable = true)
+	private String passwordHash;
 
-    @Column(name = "is_active", nullable = false, updatable = true)
-    private boolean isActive;
+	@Column(name = "phone", nullable = false, updatable = true)
+	private String phone;
+
+	@Column(name = "active_state", nullable = false, updatable = true)
+	private EActiveState activeState;
+
 }

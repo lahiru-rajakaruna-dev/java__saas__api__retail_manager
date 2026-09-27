@@ -1,261 +1,239 @@
 package lahiru_rajakaruna.retail_manager.Tenant;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
 @Service
 public class TenantService {
-    private final ITenantRepository tenantRepo;
-    private final IShopRepository shopRepo;
-    private final PasswordEncoder passwordEncoder;
 
-    public TenantService(
-            ITenantRepository tenantRepo,
-            PasswordEncoder passwordEncoder,
-            IShopRepository shopRepo
-                        ) {
-        this.tenantRepo = tenantRepo;
-        this.passwordEncoder = passwordEncoder;
-        this.shopRepo = shopRepo;
-    }
+	private final ITenantRepository tenantRepo;
 
-    public TenantDTO createTenant(TenantDTO tenant) {
-        checkIfInternalComponentsNull();
+	private final IShopRepository shopRepo;
 
-        if (tenant.getName().isEmpty()) {
-            throw new IllegalArgumentException("Name not provided");
-        }
-        if (tenant.getPhone().isEmpty()) {
-            throw new IllegalArgumentException("Phone not provided");
-        }
-        if (tenant.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("Password not provided");
-        }
+	private final PasswordEncoder passwordEncoder;
 
-        return TenantDTO.convertToDTO(
-                this.tenantRepo.save(
-                        TenantDTO.convertToEntity(
-                                tenant, passwordEncoder
-                                                 )
-                                    )
-                                     );
-    }
+	public TenantService(ITenantRepository tenantRepo,
+			     PasswordEncoder passwordEncoder,
+			     IShopRepository shopRepo) {
+		this.tenantRepo = tenantRepo;
+		this.passwordEncoder = passwordEncoder;
+		this.shopRepo = shopRepo;
+	}
 
-    public List<TenantDTO> getAllTenants() {
-        checkIfInternalComponentsNull();
+	public TenantDTO createTenant(TenantDTO tenant) {
+		checkIfInternalComponentsNull();
 
-        return this.tenantRepo.findAll()
-                              .stream()
-                              .map(TenantDTO::convertToDTO)
-                              .toList();
-    }
+		if (tenant.getName().isEmpty()) {
+			throw new IllegalArgumentException("Name not provided");
+		}
+		if (tenant.getPhone().isEmpty()) {
+			throw new IllegalArgumentException("Phone not provided");
+		}
+		if (tenant.getPassword().isEmpty()) {
+			throw new IllegalArgumentException(
+				"Password not provided");
+		}
 
-    public TenantDTO getTenantById(UUID id) throws RuntimeException {
-        checkIfInternalComponentsNull();
+		return TenantDTO.convertToDTO(this.tenantRepo.save(TenantDTO
+			.convertToEntity(tenant, passwordEncoder)));
+	}
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+	public List<TenantDTO> getAllTenants() {
+		checkIfInternalComponentsNull();
 
-        Tenant tenant = this.tenantRepo.findById(id)
-                                       .orElseThrow(() -> new RuntimeException(
-                                               "Tenant not found"));
-        return TenantDTO.convertToDTO(tenant);
-    }
+		return this.tenantRepo.findAll().stream().map(
+			TenantDTO::convertToDTO).toList();
+	}
 
-    public TenantDTO updateNameById(UUID id, String name) {
-        checkIfInternalComponentsNull();
+	public TenantDTO getTenantById(UUID id) throws RuntimeException {
+		checkIfInternalComponentsNull();
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-        if (name == null) {
-            throw new IllegalArgumentException("Name parameter is null");
-        }
+		Tenant tenant = this.tenantRepo.findById(id).orElseThrow(
+			() -> new RuntimeException("Tenant not found"));
+		return TenantDTO.convertToDTO(tenant);
+	}
 
-        Tenant tenant = tenantRepo.findById(id)
-                                  .orElseThrow(() -> new RuntimeException(String.format(
-                                          "Could not find tenant with ID: %s",
-                                          id.toString()
-                                                                                       )));
+	public TenantDTO updateNameById(UUID id, String name) {
+		checkIfInternalComponentsNull();
 
-        tenant.setName(name);
-        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
-    }
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-    public TenantDTO updatePhoneById(UUID id, String phone) {
-        checkIfInternalComponentsNull();
+		if (name == null) {
+			throw new IllegalArgumentException(
+				"Name parameter is null");
+		}
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+		Tenant tenant = tenantRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException(String.format(
+			"Could not find tenant with ID: %s", id.toString())));
 
-        if (phone == null) {
-            throw new IllegalArgumentException("Name parameter is null");
-        }
+		tenant.setName(name);
+		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+	}
 
-        Tenant tenant = tenantRepo.findById(id)
-                                  .orElseThrow(() -> new RuntimeException(String.format(
-                                          "Could not find tenant with ID: %s",
-                                          id.toString()
-                                                                                       )));
+	public TenantDTO updatePhoneById(UUID id, String phone) {
+		checkIfInternalComponentsNull();
 
-        tenant.setPhone(phone);
-        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
-    }
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-    public TenantDTO setShopById(UUID id, UUID shopId) {
-        checkIfInternalComponentsNull();
+		if (phone == null) {
+			throw new IllegalArgumentException(
+				"Name parameter is null");
+		}
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+		Tenant tenant = tenantRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException(String.format(
+			"Could not find tenant with ID: %s", id.toString())));
 
-        if (shopId == null) {
-            throw new IllegalArgumentException("ShopId parameter is null");
-        }
-        Shop shop = shopRepo.findById(id)
-                            .orElseThrow(() -> new RuntimeException(String.format(
-                                    "Could not find shop with ID: %s",
-                                    id.toString()
-                                                                                 )));
+		tenant.setPhone(phone);
+		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+	}
 
-        Tenant tenant = tenantRepo.findById(id)
-                                  .orElseThrow(() -> new RuntimeException(String.format(
-                                          "Could not find tenant with ID: %s",
-                                          id.toString()
-                                                                                       )));
+	public TenantDTO setShopById(UUID id, UUID shopId) {
+		checkIfInternalComponentsNull();
 
-        tenant.setShop(shop);
-        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
-    }
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-    public TenantDTO updatePassword(UUID id, String password) {
-        checkIfInternalComponentsNull();
+		if (shopId == null) {
+			throw new IllegalArgumentException(
+				"ShopId parameter is null");
+		}
+		Shop shop = shopRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException(String.format(
+			"Could not find shop with ID: %s", id.toString())));
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+		Tenant tenant = tenantRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException(String.format(
+			"Could not find tenant with ID: %s", id.toString())));
 
-        if (password == null) {
-            throw new IllegalArgumentException("Password parameter is null");
-        }
+		tenant.setShop(shop);
+		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+	}
 
-        String passwordHash = passwordEncoder.encode(password);
+	public TenantDTO updatePassword(UUID id, String password) {
+		checkIfInternalComponentsNull();
 
-        Tenant tenant = tenantRepo.findById(id)
-                                  .orElseThrow(() -> new RuntimeException(String.format(
-                                          "Could not find tenant with ID: %s",
-                                          id.toString()
-                                                                                       )));
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-        tenant.setPasswordHash(passwordHash);
-        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
-    }
+		if (password == null) {
+			throw new IllegalArgumentException(
+				"Password parameter is null");
+		}
 
-    public TenantDTO disableTenantProfileById(UUID id) {
-        checkIfInternalComponentsNull();
+		String passwordHash = passwordEncoder.encode(password);
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+		Tenant tenant = tenantRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException(String.format(
+			"Could not find tenant with ID: %s", id.toString())));
 
-        Tenant tenant = tenantRepo.findById(id)
-                                  .orElseThrow(() -> new RuntimeException(String.format(
-                                          "Could not find tenant with ID: %s",
-                                          id.toString()
-                                                                                       )));
+		tenant.setPasswordHash(passwordHash);
+		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+	}
 
-        tenant.setActive(false);
-        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
-    }
+	public TenantDTO disableTenantProfileById(UUID id) {
+		checkIfInternalComponentsNull();
 
-    public TenantDTO enableTenantProfileById(UUID id) {
-        checkIfInternalComponentsNull();
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+		Tenant tenant = tenantRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException(String.format(
+			"Could not find tenant with ID: %s", id.toString())));
 
-        Tenant tenant = tenantRepo.findById(id)
-                                  .orElseThrow(() -> new RuntimeException(String.format(
-                                          "Could not find tenant with ID: %s",
-                                          id.toString()
-                                                                                       )));
+		tenant.setActiveState(EActiveState.INACTIVE);
+		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+	}
 
-        tenant.setActive(true);
-        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
-    }
+	public TenantDTO enableTenantProfileById(UUID id) {
+		checkIfInternalComponentsNull();
 
-    public TenantDTO updateProfile(UUID id, TenantDTO updates) {
-        checkIfInternalComponentsNull();
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-        if (id == null) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+		Tenant tenant = tenantRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException(String.format(
+			"Could not find tenant with ID: %s", id.toString())));
 
-        boolean isNameNull = updates.getName().isEmpty();
-        boolean isPhoneNull = updates.getPhone().isEmpty();
-        boolean isPasswordNull = updates.getPassword().isEmpty();
-        boolean isActiveStateNull = updates.getActiveState().isEmpty();
-        boolean isShopNull = updates.getShopId().isEmpty();
+		tenant.setActiveState(EActiveState.ACTIVE);
+		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+	}
 
-        if (isActiveStateNull ||
-            isNameNull ||
-            isPasswordNull ||
-            isPhoneNull ||
-            isShopNull) {
-            throw new IllegalArgumentException("All Fields Must Be Present");
-        }
+	public TenantDTO updateProfile(UUID id, TenantDTO updates) {
+		checkIfInternalComponentsNull();
 
-        Tenant tenant = tenantRepo.findById(id)
-                                  .orElseThrow(() -> new RuntimeException(String.format(
-                                          "Could not find tenant with ID: %s",
-                                          id.toString()
-                                                                                       )));
+		if (id == null) {
+			throw new IllegalArgumentException(
+				"ID parameter is null");
+		}
 
-        tenant.setName(updates.getName().get());
-        tenant.setPhone(updates.getPhone().get());
-        String passwordHash = passwordEncoder.encode(updates.getPassword()
-                                                            .get());
-        tenant.setPasswordHash(passwordHash);
+		boolean isNameNull = updates.getName().isEmpty();
+		boolean isPhoneNull = updates.getPhone().isEmpty();
+		boolean isPasswordNull = updates.getPassword().isEmpty();
+		boolean isActiveStateNull = updates.getActiveState().isEmpty();
+		boolean isShopNull = updates.getShopId().isEmpty();
 
-        if (updates.getShopId().isPresent()) {
-            Shop shop = shopRepo.findById(updates.getShopId().get())
-                                .orElseThrow(() -> new RuntimeException(
-                                        String.format(
-                                                "Could not find the shop with ID: %s",
-                                                id
-                                                     )));
+		if (isActiveStateNull || isNameNull || isPasswordNull || isPhoneNull || isShopNull) {
+			throw new IllegalArgumentException(
+				"All Fields Must Be Present");
+		}
 
-            tenant.setShop(shop);
-        } else {
-            tenant.setShop(null);
-        }
+		Tenant tenant = tenantRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException(String.format(
+			"Could not find tenant with ID: %s", id.toString())));
 
-        if (updates.getActiveState().isPresent()) {
-            if (updates.getActiveState().get()) {
-                tenant.setActive(true);
-            } else {
-                tenant.setActive(false);
-            }
-        } else {
-            throw new IllegalArgumentException("Profile state cannot be null");
-        }
+		if (updates.getShopId().isPresent()) {
+			Shop shop = shopRepo.findById(updates.getShopId().get())
+				.orElseThrow(() -> new RuntimeException(String
+				.format("Could not find the shop with ID: %s",
+					id)));
 
-        return TenantDTO.convertToDTO(tenantRepo.save(tenant));
-    }
+			tenant.setShop(shop);
+		} else {
+			tenant.setShop(null);
+		}
 
-    private void checkIfInternalComponentsNull() {
-        Objects.requireNonNull(tenantRepo, "Tenant Repo Not Found");
-        Objects.requireNonNull(shopRepo, "Shop Repo Not Found");
-        Objects.requireNonNull(passwordEncoder, "Password Encoder Not Found");
-    }
+		tenant.setName(updates.getName().get());
+		tenant.setPhone(updates.getPhone().get());
+		String passwordHash = passwordEncoder.encode(updates
+			.getPassword().get());
+		tenant.setPasswordHash(passwordHash);
+		tenant.setActiveState(updates.getActiveState().get());
+
+		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+	}
+
+	private void checkIfInternalComponentsNull() {
+		Objects.requireNonNull(tenantRepo, "Tenant Repo Not Found");
+		Objects.requireNonNull(shopRepo, "Shop Repo Not Found");
+		Objects.requireNonNull(passwordEncoder,
+				       "Password Encoder Not Found");
+	}
+
 }
