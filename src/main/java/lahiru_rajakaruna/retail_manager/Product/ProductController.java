@@ -31,22 +31,14 @@ public class ProductController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductDTO> getProductDetails(
-		@PathVariable UUID id) throws RuntimeException {
-		if (id == null) {
-			throw new RuntimeException("ID is not provided");
-		}
-
+		@PathVariable UUID id) {
 		ProductDTO product = this.productService.findById(id);
 		return ResponseEntity.ok(product);
 	}
 
 	@GetMapping
 	public ResponseEntity<List<ProductDTO>> getProductsByShop(
-		@RequestParam UUID shopId) throws RuntimeException {
-		if (shopId == null) {
-			throw new RuntimeException("ID is not provided");
-		}
-
+		@RequestParam UUID shopId) {
 		List<ProductDTO> products = this.productService.findByShopId(
 			shopId);
 		return ResponseEntity.ok(products);
@@ -54,19 +46,14 @@ public class ProductController {
 
 	@PostMapping
 	public ResponseEntity<ProductDTO> createProduct(
-		@RequestBody ProductDTO productData) throws RuntimeException {
+		@RequestBody ProductDTO productData) {
 		ProductDTO product = productService.createProduct(productData);
 		return ResponseEntity.ok(product);
 	}
 
 	@PatchMapping("/{id}")
 	public ResponseEntity<ProductDTO> patchProduct(
-		@RequestBody ProductDTO updates, @PathVariable UUID id)
-		throws RuntimeException {
-		if (id == null) {
-			throw new RuntimeException("ID is not provided");
-		}
-
+		@RequestBody ProductDTO updates, @PathVariable UUID id) {
 		if (updates.getName().isPresent()) {
 			productService.updateProductName(id, updates.getName()
 							 .get());
