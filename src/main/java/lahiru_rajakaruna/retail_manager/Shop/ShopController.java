@@ -16,8 +16,8 @@ public class ShopController {
 	}
 
 //	FIXME: ADD PATH VARIABLE INSTEAD OF QUERY PARAMETER
-	@GetMapping()
-	public ResponseEntity<ShopDTO> findShopById(@RequestParam UUID id)
+	@GetMapping("/{id}")
+	public ResponseEntity<ShopDTO> findShopById(@PathVariable UUID id)
 		throws RuntimeException {
 		if (id == null) {
 			throw new RuntimeException("ID not provided");
