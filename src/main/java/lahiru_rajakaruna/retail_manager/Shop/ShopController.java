@@ -15,34 +15,19 @@ public class ShopController {
 		this.shopService = shopService;
 	}
 
-//	FIXME: ADD PATH VARIABLE INSTEAD OF QUERY PARAMETER
 	@GetMapping("/{id}")
-	public ResponseEntity<ShopDTO> findShopById(@PathVariable UUID id)
-		throws RuntimeException {
-		if (id == null) {
-			throw new RuntimeException("ID not provided");
-		}
-
+	public ResponseEntity<ShopDTO> findShopById(@PathVariable UUID id) {
 		return ResponseEntity.ok(shopService.findById(id));
 	}
 
 	@PostMapping()
-	public ResponseEntity<ShopDTO> createShop(@RequestBody ShopDTO shop)
-		throws RuntimeException {
-		if (shop.getName().isEmpty()) {
-			throw new RuntimeException("Must provide a shop name");
-		}
+	public ResponseEntity<ShopDTO> createShop(@RequestBody ShopDTO shop) {
 		return ResponseEntity.ok(shopService.createShop(shop));
 	}
 
 	@PatchMapping()
 	public ResponseEntity<ShopDTO> patchShop(@RequestParam UUID id,
-						 @RequestBody ShopDTO shop)
-		throws RuntimeException {
-		if (id == null) {
-			throw new RuntimeException("ID is not provided");
-		}
-
+						 @RequestBody ShopDTO shop) {
 		if (shop.getName().isPresent()) {
 			shopService.updateShopName(
 				id,
