@@ -35,19 +35,13 @@ public class SaleService {
 	}
 
 	public SaleDTO createSale(SaleDTO dto) {
-
 		if (dto.getShopId().isEmpty()) {
 			throw new IllegalArgumentException(
 				"Must provide a shop for the sale");
 		}
-		if (dto.getTotal().isEmpty()) {
-			throw new IllegalArgumentException(
-				"Must provide a total for the sale");
-		}
-		if (dto.getTotal().get().compareTo(BigDecimal.ZERO) < 0) {
-			throw new IllegalArgumentException(
-				"Sale total cannot be negative");
-		}
+
+		dto.setTotal(BigDecimal.ZERO);
+		dto.setSaleState(ESaleState.OPEN);
 
 		Shop shop = shopRepo.findById(dto.getShopId().get())
 			.orElseThrow(

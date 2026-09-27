@@ -4,7 +4,6 @@
  */
 package lahiru_rajakaruna.retail_manager.Sale;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
@@ -45,8 +44,6 @@ public class SaleController {
 
 	@PostMapping()
 	public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO sale) {
-		sale.setTotal(BigDecimal.ZERO);
-		sale.setSaleState(ESaleState.OPEN);
 		SaleDTO createdSale = saleService.createSale(sale);
 		return ResponseEntity.ok(createdSale);
 	}
