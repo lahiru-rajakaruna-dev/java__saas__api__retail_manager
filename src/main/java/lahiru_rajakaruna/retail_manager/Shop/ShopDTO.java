@@ -12,49 +12,49 @@ import lombok.*;
 @EqualsAndHashCode
 public class ShopDTO {
 
-	private UUID id;
-	private UUID ownerId;
-	private String name;
-	private boolean isActive;
+  private UUID id;
+  private UUID ownerId;
+  private String name;
+  private boolean isActive;
 
-	public static ShopDTO convertToDTO(Shop shop) {
-		if (shop.getOwner() == null) {
-			throw new NullPointerException("Owner not found")
-		}
+  public static ShopDTO convertToDTO(Shop shop) {
+    if (shop.getOwner() == null) {
+      throw new NullPointerException("Owner not found");
+    }
 
-		ShopDTO dto = new ShopDTO();
+    ShopDTO dto = new ShopDTO();
 
-		dto.setId(shop.getId());
-		dto.setName(shop.getName());
-		dto.setActive(shop.isActive());
-		dto.setOwnerId(shop.getOwner().getId());
+    dto.setId(shop.getId());
+    dto.setName(shop.getName());
+    dto.setActive(shop.isActive());
+    dto.setOwnerId(shop.getOwner().getId());
 
-		return dto;
-	}
+    return dto;
+  }
 
-	public static Shop convertToEntity(ShopDTO dto, Tenant owner) {
-		Shop shop = new Shop();
+  public static Shop convertToEntity(ShopDTO dto, Tenant owner) {
+    Shop shop = new Shop();
 
-		if (dto.getId().isPresent()) {
-			shop.setId(dto.getId().get());
-		}
-		if (dto.getName().isPresent()) {
-			shop.setName(dto.getName().get());
-		}
-		shop.setOwner(owner);
+    if (dto.getId().isPresent()) {
+      shop.setId(dto.getId().get());
+    }
+    if (dto.getName().isPresent()) {
+      shop.setName(dto.getName().get());
+    }
+    shop.setOwner(owner);
 
-		return shop;
-	}
+    return shop;
+  }
 
-	public Optional<UUID> getId() {
-		return Optional.ofNullable(id);
-	}
+  public Optional<UUID> getId() {
+    return Optional.ofNullable(id);
+  }
 
-	public Optional<String> getName() {
-		return Optional.ofNullable(name);
-	}
+  public Optional<String> getName() {
+    return Optional.ofNullable(name);
+  }
 
-	public Optional<Boolean> getActiveState() {
-		return Optional.ofNullable(isActive);
-	}
+  public Optional<Boolean> getActiveState() {
+    return Optional.ofNullable(isActive);
+  }
 }
