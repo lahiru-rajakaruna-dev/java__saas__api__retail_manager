@@ -25,12 +25,7 @@ public class TenantController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<TenantDTO> getTenantDetails(
-		@PathVariable UUID id)
-		throws RuntimeException {
-		if (id == null) {
-			throw new RuntimeException("ID is not provided");
-		}
-
+		@PathVariable UUID id) {
 		TenantDTO user = this.tenantService.getTenantById(id);
 		return ResponseEntity.ok(user);
 	}
@@ -39,11 +34,7 @@ public class TenantController {
 	public ResponseEntity<TenantDTO> patchTenant(
 		@RequestBody TenantDTO updates,
 		@PathVariable UUID id
-	)
-		throws RuntimeException {
-		if (id == null) {
-			throw new RuntimeException("ID is not provided");
-		}
+	) {
 
 		if (updates.getName().isPresent()) {
 			tenantService
@@ -99,10 +90,6 @@ public class TenantController {
 		@RequestBody TenantDTO updates,
 		@PathVariable UUID id
 	) {
-		if (id == null) {
-			throw new RuntimeException("ID not provided");
-		}
-
 		return ResponseEntity.ok(tenantService
 			.updateProfile(id, updates));
 	}
