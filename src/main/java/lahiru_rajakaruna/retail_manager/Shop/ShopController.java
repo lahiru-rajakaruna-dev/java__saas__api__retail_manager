@@ -44,24 +44,24 @@ public class ShopController {
 		}
 
 		if (shop.getName().isPresent()) {
-			return ResponseEntity.ok(shopService.updateShopName(
+			shopService.updateShopName(
 				id,
 				shop.getName()
-					.get()));
+					.get());
 		}
 
 		if (shop.getActiveState().isPresent()) {
 			if (shop.getActiveState().get().equals(
 				EActiveState.ACTIVE)) {
-				return ResponseEntity.ok(shopService
-					.activateShopById(id));
+				shopService
+					.activateShopById(id);
 			} else {
-				return ResponseEntity.ok(shopService
+				shopService
 					.deactivateShopById(
-						id));
+						id);
 			}
 		}
 
-		throw new RuntimeException("Invalid request");
+		return ResponseEntity.ok(shopService.findById(id));
 	}
 }
