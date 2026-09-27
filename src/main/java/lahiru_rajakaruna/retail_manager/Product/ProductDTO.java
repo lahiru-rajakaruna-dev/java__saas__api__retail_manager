@@ -7,6 +7,7 @@ package lahiru_rajakaruna.retail_manager.Product;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,7 @@ public class ProductDTO {
 	private BigDecimal price;
 	private BigDecimal quantity;
 	private MessurementUnit unit;
-	private boolean isActive;
+	private EActiveState activeState;
 
 	public Optional<UUID> getShopId() {
 		return Optional.ofNullable(shopId);
@@ -49,8 +50,8 @@ public class ProductDTO {
 		return Optional.ofNullable(unit);
 	}
 
-	public Optional<Boolean> getActiveState() {
-		return Optional.ofNullable(isActive);
+	public Optional<EActiveState> getActiveState() {
+		return Optional.ofNullable(activeState);
 	}
 
 	public Optional<UUID> getId() {
@@ -89,7 +90,7 @@ public class ProductDTO {
 			product.setUnit(dto.getUnit().get());
 		}
 		if (dto.getActiveState().isPresent()) {
-			product.setActive(dto.getActiveState().get());
+			product.setActiveState(dto.getActiveState().get());
 		}
 		product.setShop(shop);
 
@@ -111,7 +112,7 @@ public class ProductDTO {
 		dto.setName(entity.getName());
 		dto.setPrice(entity.getPrice());
 		dto.setQuantity(entity.getQuantity());
-		dto.setActive(entity.isActive());
+		dto.setActiveState(entity.getActiveState());
 
 		return dto;
 	}

@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.math.BigDecimal;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +27,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product extends BaseEntity {
+public class Product
+	extends BaseEntity {
 
 	@JoinColumn(name = "shop_id", updatable = false, nullable = false)
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -45,5 +47,5 @@ public class Product extends BaseEntity {
 	private MessurementUnit unit;
 
 	@Column(name = "is_active", nullable = false, updatable = true)
-	private boolean isActive;
+	private EActiveState activeState;
 }

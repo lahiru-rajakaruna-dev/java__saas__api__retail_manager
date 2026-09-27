@@ -6,6 +6,7 @@ package lahiru_rajakaruna.retail_manager.Product;
 
 import java.util.List;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -72,7 +73,8 @@ public class ProductController {
 							 .get());
 		}
 		if (updates.getActiveState().isPresent()) {
-			if (updates.getActiveState().get()) {
+			if (updates.getActiveState().get()
+				.equals(EActiveState.ACTIVE)) {
 				productService.activateProductById(id);
 			} else {
 				productService.deactivateProductById(id);

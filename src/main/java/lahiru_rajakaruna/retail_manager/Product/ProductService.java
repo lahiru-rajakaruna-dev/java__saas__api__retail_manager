@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import org.springframework.stereotype.Service;
@@ -186,7 +187,7 @@ public class ProductService {
 		}
 
 		Product product = findProductOrThrow(id);
-		product.setActive(true);
+		product.setActiveState(EActiveState.ACTIVE);
 
 		Product updatedProduct = productRepo.saveAndFlush(product);
 		return ProductDTO.convertToDTO(updatedProduct);
@@ -201,7 +202,7 @@ public class ProductService {
 		}
 
 		Product product = findProductOrThrow(id);
-		product.setActive(false);
+		product.setActiveState(EActiveState.INACTIVE);
 
 		Product updatedProduct = productRepo.saveAndFlush(product);
 		return ProductDTO.convertToDTO(updatedProduct);
