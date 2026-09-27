@@ -1,14 +1,10 @@
-// TASK: FIX PATCH ENDPOINTS
 package lahiru_rajakaruna.retail_manager.Tenant;
 
 import java.util.List;
 import java.util.UUID;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-@Slf4j
 
 @RestController
 @RequestMapping("/api/v1/tenants")
@@ -50,36 +46,36 @@ public class TenantController {
 		}
 
 		if (updates.getName().isPresent()) {
-			return ResponseEntity.ok(tenantService
+			tenantService
 				.updateNameById(
 					id,
 					updates.getName()
 						.get()
-				));
+				);
 		}
 		if (updates.getPhone().isPresent()) {
-			return ResponseEntity.ok(tenantService
+			tenantService
 				.updatePhoneById(
 					id,
 					updates.getPhone()
 						.get()
-				));
+				);
 		}
 		if (updates.getPassword().isPresent()) {
-			return ResponseEntity.ok(tenantService
+			tenantService
 				.updatePassword(
 					id,
 					updates.getPassword()
 						.get()
-				));
+				);
 		}
 		if (updates.getShopId().isPresent()) {
-			return ResponseEntity.ok(tenantService
+			tenantService
 				.setShopById(
 					id,
 					updates.getShopId()
 						.get()
-				));
+				);
 		}
 		if (updates.getActiveState().isPresent()) {
 			if (updates.getActiveState().equals(
@@ -95,7 +91,7 @@ public class TenantController {
 			}
 		}
 
-		throw new RuntimeException("Invalid Request");
+		return ResponseEntity.ok(tenantService.getTenantById(id));
 	}
 
 	@PutMapping("/{id}")
