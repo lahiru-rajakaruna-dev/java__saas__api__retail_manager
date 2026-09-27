@@ -35,7 +35,7 @@ public class SaleController {
 		return ResponseEntity.ok(sale);
 	}
 
-	@GetMapping("/by-shop")
+	@GetMapping()
 	public ResponseEntity<List<SaleDTO>> findSalesByShop(
 		@RequestParam UUID shopId) {
 		List<SaleDTO> sales = saleService.findByShopId(shopId);
