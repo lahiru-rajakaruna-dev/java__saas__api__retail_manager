@@ -31,35 +31,20 @@ public class SaleController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<SaleDTO> findSaleById(@RequestParam UUID id)
-		throws RuntimeException {
-		if (id == null) {
-			throw new RuntimeException("ID not provided");
-		}
-
+	public ResponseEntity<SaleDTO> findSaleById(@RequestParam UUID id) {
 		SaleDTO sale = saleService.findById(id);
 		return ResponseEntity.ok(sale);
 	}
 
 	@GetMapping("/by-shop")
 	public ResponseEntity<List<SaleDTO>> findSalesByShop(
-		@RequestParam UUID shopId) throws RuntimeException {
-		if (shopId == null) {
-			throw new RuntimeException("Shop ID not provided");
-		}
-
+		@RequestParam UUID shopId) {
 		List<SaleDTO> sales = saleService.findByShopId(shopId);
 		return ResponseEntity.ok(sales);
 	}
 
 	@PostMapping()
-	public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO sale)
-		throws RuntimeException {
-		if (sale.getShopId() == null) {
-			throw new RuntimeException(
-				"Must provide a shop for the sale");
-		}
-
+	public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO sale) {
 		sale.setTotal(BigDecimal.ZERO);
 		sale.setSaleState(ESaleState.OPEN);
 		SaleDTO createdSale = saleService.createSale(sale);
@@ -68,12 +53,7 @@ public class SaleController {
 
 	@PatchMapping()
 	public ResponseEntity<SaleDTO> patchSale(@RequestParam UUID id,
-						 @RequestBody SaleDTO saleUpdates)
-		throws RuntimeException {
-		if (id == null) {
-			throw new RuntimeException("ID is not provided");
-		}
-
+						 @RequestBody SaleDTO saleUpdates) {
 		if (saleUpdates.getTotal().isPresent()) {
 			saleService.updateSaleTotal(id,
 						    saleUpdates
