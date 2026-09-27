@@ -63,35 +63,43 @@ public class ProductDTO {
 			throw new IllegalArgumentException(
 				"Shop is not provided");
 		}
+		if (dto.getId().
+			isEmpty()) {
+			throw new IllegalArgumentException(
+				"Cannot Convert: Id is not provided");
+		}
+		if (dto.getName().
+			isEmpty()) {
+			throw new IllegalArgumentException(
+				"Cannot Convert: Name is not provided");
+		}
+		if (dto.getPrice().
+			isEmpty()) {
+			throw new IllegalArgumentException("Cannot Convert: Price is not provided");
+		}
+		if (dto.getQuantity().
+			isEmpty()) {
+			throw new IllegalArgumentException("Cannot Convert: quantity not provided");
+		}
+		if (dto.getUnit().isEmpty()) {
+			throw new IllegalArgumentException("Cannot Convert: Unit not provided");
+		}
+		if (dto.getActiveState().isEmpty()) {
+			throw new IllegalArgumentException("Cannot Convert: Active state not provided");
+		}
 
 		Product product = new Product();
 
-		if (dto.getId().
-			isPresent()) {
-			product.setId(dto.getId().
-				get());
-		}
-		if (dto.getName().
-			isPresent()) {
-			product.setName(dto.getName().
-				get());
-		}
-		if (dto.getPrice().
-			isPresent()) {
-			product.setPrice(dto.getPrice().
-				get());
-		}
-		if (dto.getQuantity().
-			isPresent()) {
-			product.setQuantity(dto.getQuantity().
-				get());
-		}
-		if (dto.getUnit().isPresent()) {
-			product.setUnit(dto.getUnit().get());
-		}
-		if (dto.getActiveState().isPresent()) {
-			product.setActiveState(dto.getActiveState().get());
-		}
+		product.setId(dto.getId().
+			get());
+		product.setName(dto.getName().
+			get());
+		product.setPrice(dto.getPrice().
+			get());
+		product.setQuantity(dto.getQuantity().
+			get());
+		product.setUnit(dto.getUnit().get());
+		product.setActiveState(dto.getActiveState().get());
 		product.setShop(shop);
 
 		return product;
