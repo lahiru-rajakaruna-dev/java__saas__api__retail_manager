@@ -25,8 +25,8 @@ public class ShopController {
 		return ResponseEntity.ok(shopService.createShop(shop));
 	}
 
-	@PatchMapping()
-	public ResponseEntity<ShopDTO> patchShop(@RequestParam UUID id,
+	@PatchMapping("/{id}")
+	public ResponseEntity<ShopDTO> patchShop(@PathVariable UUID id,
 						 @RequestBody ShopDTO shop) {
 		if (shop.getName().isPresent()) {
 			shopService.updateShopName(
