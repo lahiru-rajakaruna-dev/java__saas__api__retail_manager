@@ -1,6 +1,7 @@
 package lahiru_rajakaruna.retail_manager.Shop;
 
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ public class ShopController {
 		this.shopService = shopService;
 	}
 
+//	FIXME: ADD PATH VARIABLE INSTEAD OF QUERY PARAMETER
 	@GetMapping()
 	public ResponseEntity<ShopDTO> findShopById(@RequestParam UUID id)
 		throws RuntimeException {
@@ -30,7 +32,6 @@ public class ShopController {
 		if (shop.getName().isEmpty()) {
 			throw new RuntimeException("Must provide a shop name");
 		}
-
 		return ResponseEntity.ok(shopService.createShop(shop));
 	}
 
@@ -50,12 +51,11 @@ public class ShopController {
 		}
 
 		if (shop.getActiveState().isPresent()) {
-			if (Boolean.TRUE.equals(shop.isActive())) {
+			if (shop.getActiveState().get().equals(
+				EActiveState.ACTIVE)) {
 				return ResponseEntity.ok(shopService
 					.activateShopById(id));
-			}
-
-			if (Boolean.FALSE.equals(!shop.isActive())) {
+			} else {
 				return ResponseEntity.ok(shopService
 					.deactivateShopById(
 						id));

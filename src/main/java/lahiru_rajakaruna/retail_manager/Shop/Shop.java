@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +30,6 @@ public class Shop extends BaseEntity {
 	@Column(name = "name", nullable = false, updatable = true)
 	private String name;
 
-	@Column(name = "is_active", nullable = false, updatable = true)
-	private boolean isActive;
+	@Column(name = "active_state", nullable = false, updatable = true)
+	private EActiveState activeState;
 }

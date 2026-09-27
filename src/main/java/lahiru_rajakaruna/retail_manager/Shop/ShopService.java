@@ -2,6 +2,7 @@ package lahiru_rajakaruna.retail_manager.Shop;
 
 import java.util.Objects;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
 import org.springframework.stereotype.Service;
@@ -86,7 +87,7 @@ public class ShopService {
 		}
 
 		Shop shop = findShopByIdOrThrow(id);
-		shop.setActive(true);
+		shop.setActiveState(EActiveState.ACTIVE);
 		Shop updatedShop = shopRepo.saveAndFlush(shop);
 
 		return ShopDTO.convertToDTO(updatedShop);
@@ -101,7 +102,7 @@ public class ShopService {
 		}
 
 		Shop shop = findShopByIdOrThrow(id);
-		shop.setActive(false);
+		shop.setActiveState(EActiveState.INACTIVE);
 		Shop updatedShop = shopRepo.saveAndFlush(shop);
 
 		return ShopDTO.convertToDTO(updatedShop);

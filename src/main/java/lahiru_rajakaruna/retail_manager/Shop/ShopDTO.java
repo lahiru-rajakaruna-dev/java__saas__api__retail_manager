@@ -2,6 +2,7 @@ package lahiru_rajakaruna.retail_manager.Shop;
 
 import java.util.Optional;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
 import lombok.*;
 
@@ -12,49 +13,66 @@ import lombok.*;
 @EqualsAndHashCode
 public class ShopDTO {
 
-  private UUID id;
-  private UUID ownerId;
-  private String name;
-  private boolean isActive;
+	private UUID id;
+	private UUID ownerId;
+	private String name;
+	private EActiveState activeState;
 
-  public static ShopDTO convertToDTO(Shop shop) {
-    if (shop.getOwner() == null) {
-      throw new NullPointerException("Owner not found");
-    }
+	public static ShopDTO convertToDTO(Shop shop) {
+		if (shop.getOwner() == null) {
+			throw new NullPointerException("Owner not found");
+		}
 
-    ShopDTO dto = new ShopDTO();
+		ShopDTO dto = new ShopDTO();
 
-    dto.setId(shop.getId());
-    dto.setName(shop.getName());
-    dto.setActive(shop.isActive());
-    dto.setOwnerId(shop.getOwner().getId());
+		dto.setId(shop.getId());
+		dto.setName(shop.getName());
+		dto.setActiveState(shop.getActiveState());
+		dto.setOwnerId(shop.getOwner().getId());
 
-    return dto;
-  }
+		return dto;
+	}
 
-  public static Shop convertToEntity(ShopDTO dto, Tenant owner) {
-    Shop shop = new Shop();
+	public static Shop convertToEntity(ShopDTO dto, Tenant owner) {
+		if (owner == null) {
+			throw new IllegalArgumentException(
+				"Cannot Convert: Owner not provided");
+		}
+		if (dto.getActiveState().isEmpty()) {
+			throw new IllegalArgumentException(
+				"Cannot Convert: Active state not provided");
+		}
+		if (dto.getId().isEmpty()) {
+			throw new IllegalArgumentException(
+				"Cannot Convert: ID not provided");
+		}
+		if (dto.getName().isPresent()) {
+			throw new IllegalArgumentException(
+				"Cannot Convert: Name not provided");
+		}
+		if (dto.getActiveState().isPresent()) {
+			throw new IllegalArgumentException(
+				"Cannot Convert: Active state not provided");
+		}
 
-    if (dto.getId().isPresent()) {
-      shop.setId(dto.getId().get());
-    }
-    if (dto.getName().isPresent()) {
-      shop.setName(dto.getName().get());
-    }
-    shop.setOwner(owner);
+		Shop shop = new Shop();
+		shop.setId(dto.getId().get());
+		shop.setName(dto.getName().get());
+		shop.setOwner(owner);
+		shop.setActiveState(dto.getActiveState().get());
 
-    return shop;
-  }
+		return shop;
+	}
 
-  public Optional<UUID> getId() {
-    return Optional.ofNullable(id);
-  }
+	public Optional<UUID> getId() {
+		return Optional.ofNullable(id);
+	}
 
-  public Optional<String> getName() {
-    return Optional.ofNullable(name);
-  }
+	public Optional<String> getName() {
+		return Optional.ofNullable(name);
+	}
 
-  public Optional<Boolean> getActiveState() {
-    return Optional.ofNullable(isActive);
-  }
+	public Optional<EActiveState> getActiveState() {
+		return Optional.ofNullable(activeState);
+	}
 }
