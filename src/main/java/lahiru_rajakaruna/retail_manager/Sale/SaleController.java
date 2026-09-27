@@ -68,30 +68,28 @@ public class SaleController {
 
 	@PatchMapping()
 	public ResponseEntity<SaleDTO> patchSale(@RequestParam UUID id,
-						 @RequestBody SaleDTO sale)
+						 @RequestBody SaleDTO saleUpdates)
 		throws RuntimeException {
 		if (id == null) {
 			throw new RuntimeException("ID is not provided");
 		}
 
-		if (sale.getTotal().isPresent()) {
-			SaleDTO updatedSale = saleService.updateSaleTotal(id,
-									  sale
-										  .getTotal()
-										  .get());
-			return ResponseEntity.ok(updatedSale);
+		if (saleUpdates.getTotal().isPresent()) {
+			saleService.updateSaleTotal(id,
+						    saleUpdates
+							    .getTotal()
+							    .get());
 		}
 
-		if (sale.getSaleState().isPresent()) {
-			if (sale.getSaleState().get().equals(ESaleState.OPEN)) {
-				SaleDTO closedSale = saleService.closeSaleById(
+		if (saleUpdates.getSaleState().isPresent()) {
+			if (saleUpdates.getSaleState().get().equals(
+				ESaleState.CLOSED)) {
+				saleService.closeSaleById(
 					id);
-				return ResponseEntity.ok(closedSale);
 			}
 		}
 
-		throw new RuntimeException("Invalid Request");
-
+		return ResponseEntity.ok(saleService.findById(id));
 	}
 
 }
