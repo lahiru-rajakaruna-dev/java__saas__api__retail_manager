@@ -35,23 +35,23 @@ public class ProductService {
 	}
 
 	public ProductDTO createProduct(ProductDTO dto) {
-		if (dto.getName() == null || dto.getName().isEmpty()) {
+		if (dto.getName().isEmpty()) {
 			throw new IllegalArgumentException(
 				"Must provide a name for the product");
 		}
-		if (dto.getShopId() == null) {
+		if (dto.getShopId().isEmpty()) {
 			throw new IllegalArgumentException(
 				"Must provide a shop for the product");
 		}
-		if (dto.getPrice() == null) {
+		if (dto.getPrice().isEmpty()) {
 			throw new IllegalArgumentException(
 				"Must provide a price for the product");
 		}
-		if (dto.getQuantity() == null) {
+		if (dto.getQuantity().isEmpty()) {
 			throw new IllegalArgumentException(
 				"Must provide a quantity for the product");
 		}
-		if (dto.getUnit() == null) {
+		if (dto.getUnit().isEmpty()) {
 			throw new IllegalArgumentException(
 				"Must provide a measurement unit for the product");
 		}
