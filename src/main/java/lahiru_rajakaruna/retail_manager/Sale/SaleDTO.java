@@ -7,6 +7,7 @@ package lahiru_rajakaruna.retail_manager.Sale;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -26,37 +27,52 @@ public class SaleDTO {
 
 	private BigDecimal total;
 
-	private Boolean isClosed;
+	private ESaleState saleState;
 
 	public static Sale convertToEntity(SaleDTO dto, Shop shop) {
 		if (shop == null) {
 			throw new IllegalArgumentException("Shop not provided");
 		}
+		if (dto.getTotal().isEmpty()) {
+			throw new IllegalArgumentException(
+				"Cannot Convert: Total not provided");
+		}
+		if (dto.getSaleState().isEmpty()) {
+			throw new IllegalArgumentException(
+				"Cannot Canvert: Sale state not provided");
+		}
 
 		Sale sale = new Sale();
-
-		if (dto.getTotal().isPresent()) {
-			sale.setTotal(dto.getTotal().get());
-		}
-		if (dto.getIsClosed().isPresent()) {
-			sale.setClosed(Boolean.TRUE.equals(dto.getIsClosed().get()));
-		}
+		sale.setTotal(dto.getTotal().get());
+		sale.setSaleState(dto.getSaleState().get());
 		sale.setShop(shop);
 		return sale;
 	}
 
 	public static SaleDTO convertToDTO(Sale sale) {
 		if (sale.getShop() == null) {
-			throw new NullPointerException("Shop not found");
+			throw new NullPointerException(
+				"Cannot Convert: Shop not found");
 
+		}
+		if (sale.getId() == null) {
+			throw new NullPointerException(
+				"Cannot Convert: ID not found");
+		}
+		if (sale.getTotal() == null) {
+			throw new NullPointerException(
+				"Cannot Convert: Total not found");
+		}
+		if (sale.getSaleState() == null) {
+			throw new NullPointerException(
+				"Cannot Convert: Sale state not found");
 		}
 
 		SaleDTO dto = new SaleDTO();
-
 		dto.setId(sale.getId());
 		dto.setShopId(sale.getShop().getId());
 		dto.setTotal(sale.getTotal());
-		dto.setIsClosed(sale.isClosed());
+		dto.setSaleState(sale.getSaleState());
 		return dto;
 	}
 
@@ -72,8 +88,8 @@ public class SaleDTO {
 		return Optional.ofNullable(total);
 	}
 
-	public Optional<Boolean> getIsClosed() {
-		return Optional.ofNullable(isClosed);
+	public Optional<ESaleState> getSaleState() {
+		return Optional.ofNullable(saleState);
 	}
 
 }

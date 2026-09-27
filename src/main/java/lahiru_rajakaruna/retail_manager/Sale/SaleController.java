@@ -7,6 +7,7 @@ package lahiru_rajakaruna.retail_manager.Sale;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,7 +31,8 @@ public class SaleController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<SaleDTO> findSaleById(@RequestParam UUID id) throws RuntimeException {
+	public ResponseEntity<SaleDTO> findSaleById(@RequestParam UUID id)
+		throws RuntimeException {
 		if (id == null) {
 			throw new RuntimeException("ID not provided");
 		}
@@ -40,7 +42,8 @@ public class SaleController {
 	}
 
 	@GetMapping("/by-shop")
-	public ResponseEntity<List<SaleDTO>> findSalesByShop(@RequestParam UUID shopId) throws RuntimeException {
+	public ResponseEntity<List<SaleDTO>> findSalesByShop(
+		@RequestParam UUID shopId) throws RuntimeException {
 		if (shopId == null) {
 			throw new RuntimeException("Shop ID not provided");
 		}
@@ -50,31 +53,39 @@ public class SaleController {
 	}
 
 	@PostMapping()
-	public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO sale) throws RuntimeException {
+	public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO sale)
+		throws RuntimeException {
 		if (sale.getShopId() == null) {
-			throw new RuntimeException("Must provide a shop for the sale");
+			throw new RuntimeException(
+				"Must provide a shop for the sale");
 		}
 
 		sale.setTotal(BigDecimal.ZERO);
-		sale.setIsClosed(false);
+		sale.setSaleState(ESaleState.OPEN);
 		SaleDTO createdSale = saleService.createSale(sale);
 		return ResponseEntity.ok(createdSale);
 	}
 
 	@PatchMapping()
-	public ResponseEntity<SaleDTO> patchSale(@RequestParam UUID id, @RequestBody SaleDTO sale) throws RuntimeException {
+	public ResponseEntity<SaleDTO> patchSale(@RequestParam UUID id,
+						 @RequestBody SaleDTO sale)
+		throws RuntimeException {
 		if (id == null) {
 			throw new RuntimeException("ID is not provided");
 		}
 
 		if (sale.getTotal().isPresent()) {
-			SaleDTO updatedSale = saleService.updateSaleTotal(id, sale.getTotal().get());
+			SaleDTO updatedSale = saleService.updateSaleTotal(id,
+									  sale
+										  .getTotal()
+										  .get());
 			return ResponseEntity.ok(updatedSale);
 		}
 
-		if (sale.getIsClosed().isPresent()) {
-			if (Boolean.TRUE.equals(sale.getIsClosed().get())) {
-				SaleDTO closedSale = saleService.closeSaleById(id);
+		if (sale.getSaleState().isPresent()) {
+			if (sale.getSaleState().get().equals(ESaleState.OPEN)) {
+				SaleDTO closedSale = saleService.closeSaleById(
+					id);
 				return ResponseEntity.ok(closedSale);
 			}
 		}

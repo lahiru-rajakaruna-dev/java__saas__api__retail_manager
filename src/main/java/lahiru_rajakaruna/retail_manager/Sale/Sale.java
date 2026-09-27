@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.math.BigDecimal;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,14 +28,15 @@ import lombok.Setter;
 @Entity
 public class Sale extends BaseEntity {
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false, targetEntity = Shop.class)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false,
+		   targetEntity = Shop.class)
 	@JoinColumn(name = "shop_id", nullable = false, updatable = false)
 	private Shop shop;
 
 	@Column(name = "total", nullable = false, updatable = true)
 	private BigDecimal total;
 
-	@Column(name = "is_closed", nullable = false, updatable = true)
-	private boolean isClosed = false;
+	@Column(name = "sale_state", nullable = false, updatable = true)
+	private ESaleState saleState;
 
 }

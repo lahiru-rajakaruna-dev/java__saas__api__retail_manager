@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import org.springframework.stereotype.Service;
@@ -36,18 +37,23 @@ public class SaleService {
 	public SaleDTO createSale(SaleDTO dto) {
 
 		if (dto.getShopId().isEmpty()) {
-			throw new IllegalArgumentException("Must provide a shop for the sale");
+			throw new IllegalArgumentException(
+				"Must provide a shop for the sale");
 		}
 		if (dto.getTotal().isEmpty()) {
-			throw new IllegalArgumentException("Must provide a total for the sale");
+			throw new IllegalArgumentException(
+				"Must provide a total for the sale");
 		}
 		if (dto.getTotal().get().compareTo(BigDecimal.ZERO) < 0) {
-			throw new IllegalArgumentException("Sale total cannot be negative");
+			throw new IllegalArgumentException(
+				"Sale total cannot be negative");
 		}
 
 		Shop shop = shopRepo.findById(dto.getShopId().get())
 			.orElseThrow(
-					() -> new RuntimeException("Could not find shop with ID: %s".formatted(dto.getShopId().get())));
+				() -> new RuntimeException(
+					"Could not find shop with ID: %s"
+						.formatted(dto.getShopId().get())));
 
 		Sale sale = SaleDTO.convertToEntity(dto, shop);
 		Sale savedSale = saleRepo.saveAndFlush(sale);
@@ -57,7 +63,8 @@ public class SaleService {
 	public SaleDTO findById(UUID id) {
 
 		if (id == null) {
-			throw new IllegalArgumentException("ID parameter is null");
+			throw new IllegalArgumentException(
+				"ID parameter is null");
 		}
 
 		Sale sale = findSaleOrThrow(id);
@@ -68,28 +75,34 @@ public class SaleService {
 		checkInternalComponentsPresence();
 
 		if (shopId == null) {
-			throw new IllegalArgumentException("Shop ID parameter is null");
+			throw new IllegalArgumentException(
+				"Shop ID parameter is null");
 		}
 
-		return saleRepo.findAllByShopId(shopId).stream().map(SaleDTO::convertToDTO).toList();
+		return saleRepo.findAllByShopId(shopId).stream().map(
+			SaleDTO::convertToDTO).toList();
 	}
 
 	public SaleDTO updateSaleTotal(UUID id, BigDecimal total) {
 
 		if (id == null) {
-			throw new IllegalArgumentException("ID parameter is null");
+			throw new IllegalArgumentException(
+				"ID parameter is null");
 		}
 		if (total == null) {
-			throw new IllegalArgumentException("Total parameter is null");
+			throw new IllegalArgumentException(
+				"Total parameter is null");
 		}
 		if (total.compareTo(BigDecimal.ZERO) < 0) {
-			throw new IllegalArgumentException("Sale total cannot be negative");
+			throw new IllegalArgumentException(
+				"Sale total cannot be negative");
 		}
 
 		Sale sale = findSaleOrThrow(id);
 
-		if (sale.isClosed()) {
-			throw new IllegalStateException("Cannot update total of a closed sale");
+		if (sale.getSaleState().equals(ESaleState.CLOSED)) {
+			throw new IllegalStateException(
+				"Cannot update the total of a closed sale");
 		}
 
 		sale.setTotal(total);
@@ -100,13 +113,14 @@ public class SaleService {
 	public SaleDTO closeSaleById(UUID id) {
 
 		if (id == null) {
-			throw new IllegalArgumentException("ID parameter is null");
+			throw new IllegalArgumentException(
+				"ID parameter is null");
 		}
 
 		Sale sale = findSaleOrThrow(id);
 
-		if (!sale.isClosed()) {
-			sale.setClosed(true);
+		if (sale.getSaleState().equals(ESaleState.OPEN)) {
+			sale.setSaleState(ESaleState.CLOSED);
 		}
 
 		Sale updatedSale = saleRepo.saveAndFlush(sale);
@@ -115,7 +129,8 @@ public class SaleService {
 
 	private Sale findSaleOrThrow(UUID id) {
 		return saleRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException(String.format("Could not find sale with ID: %s", id)));
+			.orElseThrow(() -> new RuntimeException(String.format(
+			"Could not find sale with ID: %s", id)));
 	}
 
 }
