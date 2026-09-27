@@ -17,6 +17,7 @@ public class ShopService {
 			   ITenantRepository tenantRepo) {
 		this.shopRepo = shopRepo;
 		this.tenantRepo = tenantRepo;
+		checkInternalComponentsPresence();
 	}
 
 	private void checkInternalComponentsPresence() {
@@ -30,7 +31,6 @@ public class ShopService {
 	}
 
 	public ShopDTO createShop(ShopDTO dto) {
-		checkInternalComponentsPresence();
 
 		if (dto.getName().isEmpty()) {
 			throw new IllegalArgumentException(
@@ -48,7 +48,6 @@ public class ShopService {
 	}
 
 	public ShopDTO findById(UUID id) {
-		checkInternalComponentsPresence();
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -60,7 +59,6 @@ public class ShopService {
 	}
 
 	public ShopDTO updateShopName(UUID id, String name) {
-		checkInternalComponentsPresence();
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -79,7 +77,6 @@ public class ShopService {
 	}
 
 	public ShopDTO activateShopById(UUID id) {
-		checkInternalComponentsPresence();
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -94,7 +91,6 @@ public class ShopService {
 	}
 
 	public ShopDTO deactivateShopById(UUID id) {
-		checkInternalComponentsPresence();
 
 		if (id == null) {
 			throw new IllegalArgumentException(
