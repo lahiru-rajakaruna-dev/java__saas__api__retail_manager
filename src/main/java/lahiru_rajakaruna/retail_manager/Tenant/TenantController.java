@@ -85,15 +85,6 @@ public class TenantController {
 		return ResponseEntity.ok(tenantService.getTenantById(id));
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<TenantDTO> putTenant(
-		@RequestBody TenantDTO updates,
-		@PathVariable UUID id
-	) {
-		return ResponseEntity.ok(tenantService
-			.updateProfile(id, updates));
-	}
-
 	@PostMapping
 	public ResponseEntity<TenantDTO> createTenant(
 		@RequestBody TenantDTO tenantData
