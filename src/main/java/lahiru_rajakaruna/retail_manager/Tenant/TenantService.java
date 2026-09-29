@@ -1,12 +1,13 @@
 package lahiru_rajakaruna.retail_manager.Tenant;
 
-import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,33 +28,35 @@ public class TenantService {
 		this.shopRepo = shopRepo;
 	}
 
-	public ResponseDTO createTenant(ResponseDTO tenant) {
+	public ResponseDTO createTenant(CreateDTO tenantData) {
 		checkIfInternalComponentsNull();
 
-		if (tenant.getName().isEmpty()) {
+		if (tenantData.getName() == null) {
 			throw new IllegalArgumentException("Name not provided");
 		}
-		if (tenant.getPhone().isEmpty()) {
+		if (tenantData.getPhone() == null) {
 			throw new IllegalArgumentException("Phone not provided");
 		}
-		if (tenant.getPassword().isEmpty()) {
+		if (tenantData.getPassword() == null) {
 			throw new IllegalArgumentException(
 				"Password not provided");
 		}
 
-		return ResponseDTO.convertToDTO(this.tenantRepo.save(ResponseDTO
-			.convertToEntity(tenant, passwordEncoder)));
+		Tenant newTenant = TenantMapper
+			.convertToTenant(tenantData, passwordEncoder);
+
+		Tenant savedTenant = this.tenantRepo.saveAndFlush(newTenant);
+
+		return TenantMapper.convertToResponseDTO(savedTenant);
 	}
 
 	public List<ResponseDTO> getAllTenants() {
 		checkIfInternalComponentsNull();
-
 		return this.tenantRepo.findAll().stream().map(
-			ResponseDTO::convertToDTO).toList();
+			TenantMapper::convertToResponseDTO).toList();
 	}
 
-	public ResponseDTO getTenantById(UUID id)
-		throws RuntimeException {
+	public ResponseDTO getTenantById(UUID id) {
 		checkIfInternalComponentsNull();
 
 		if (id == null) {
@@ -63,7 +66,7 @@ public class TenantService {
 
 		Tenant tenant = this.tenantRepo.findById(id).orElseThrow(
 			() -> new RuntimeException("Tenant not found"));
-		return ResponseDTO.convertToDTO(tenant);
+		return TenantMapper.convertToResponseDTO(tenant);
 	}
 
 	public ResponseDTO updateNameById(UUID id, String name) {
@@ -84,7 +87,8 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setName(name);
-		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
+		return TenantMapper
+			.convertToResponseDTO(tenantRepo.save(tenant));
 	}
 
 	public ResponseDTO updatePhoneById(UUID id, String phone) {
@@ -105,7 +109,8 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setPhone(phone);
-		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
+		return TenantMapper
+			.convertToResponseDTO(tenantRepo.save(tenant));
 	}
 
 	public ResponseDTO setShopById(UUID id, UUID shopId) {
@@ -129,7 +134,8 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setShop(shop);
-		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
+		return TenantMapper
+			.convertToResponseDTO(tenantRepo.save(tenant));
 	}
 
 	public ResponseDTO updatePassword(UUID id, String password) {
@@ -152,7 +158,8 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setPasswordHash(passwordHash);
-		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
+		return TenantMapper
+			.convertToResponseDTO(tenantRepo.save(tenant));
 	}
 
 	public ResponseDTO disableTenantProfileById(UUID id) {
@@ -168,7 +175,8 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setActiveState(EActiveState.INACTIVE);
-		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
+		return TenantMapper
+			.convertToResponseDTO(tenantRepo.save(tenant));
 	}
 
 	public ResponseDTO enableTenantProfileById(UUID id) {
@@ -184,7 +192,8 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setActiveState(EActiveState.ACTIVE);
-		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
+		return TenantMapper
+			.convertToResponseDTO(tenantRepo.save(tenant));
 	}
 
 	public ResponseDTO updateProfile(UUID id, ResponseDTO updates) {
@@ -228,7 +237,8 @@ public class TenantService {
 		tenant.setPasswordHash(passwordHash);
 		tenant.setActiveState(updates.getActiveState().get());
 
-		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
+		return TenantMapper
+			.convertToResponseDTO(tenantRepo.save(tenant));
 	}
 
 	private void checkIfInternalComponentsNull() {
