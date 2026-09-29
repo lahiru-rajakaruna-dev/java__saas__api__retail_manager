@@ -51,7 +51,8 @@ public class TenantService {
 			TenantDTO::convertToDTO).toList();
 	}
 
-	public TenantDTO getTenantById(UUID id) throws RuntimeException {
+	public TenantDTO getTenantById(UUID id)
+		throws RuntimeException {
 		checkIfInternalComponentsNull();
 
 		if (id == null) {
@@ -118,7 +119,7 @@ public class TenantService {
 			throw new IllegalArgumentException(
 				"ShopId parameter is null");
 		}
-		Shop shop = shopRepo.findById(id)
+		Shop shop = shopRepo.findById(shopId)
 			.orElseThrow(() -> new RuntimeException(String.format(
 			"Could not find shop with ID: %s", id.toString())));
 
