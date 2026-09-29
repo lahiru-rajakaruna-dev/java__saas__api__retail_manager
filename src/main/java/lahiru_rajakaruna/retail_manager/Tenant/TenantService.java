@@ -213,7 +213,7 @@ public class TenantService {
 			Shop shop = shopRepo.findById(updates.getShopId().get())
 				.orElseThrow(() -> new RuntimeException(String
 				.format("Could not find the shop with ID: %s",
-					id)));
+					updates.getShopId().get())));
 
 			tenant.setShop(shop);
 		} else {
