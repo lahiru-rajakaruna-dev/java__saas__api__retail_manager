@@ -4,10 +4,13 @@
  */
 package lahiru_rajakaruna.retail_manager.Tenant.DTOs;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 /**
  *
@@ -19,7 +22,11 @@ import lombok.Setter;
 @Setter
 public class CreateDTO {
 
+	@NotNull(message = "Name cannot be null")
+	@NotBlank(message = "Name cannot only consists of whitespace characters")
+	@Length(min = 3, max = 30, message = "Must be 3 to 30 characters in length")
 	private String name;
+
 	private String phone;
 	private String password;
 
