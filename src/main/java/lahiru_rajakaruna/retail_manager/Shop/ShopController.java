@@ -16,18 +16,18 @@ public class ShopController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ShopDTO> findShopById(@PathVariable UUID id) {
+	public ResponseEntity<ShopResponseDTO> findShopById(@PathVariable UUID id) {
 		return ResponseEntity.ok(shopService.findById(id));
 	}
 
 	@PostMapping()
-	public ResponseEntity<ShopDTO> createShop(@RequestBody ShopDTO shop) {
+	public ResponseEntity<ShopResponseDTO> createShop(@RequestBody ShopResponseDTO shop) {
 		return ResponseEntity.ok(shopService.createShop(shop));
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<ShopDTO> patchShop(@PathVariable UUID id,
-						 @RequestBody ShopDTO shop) {
+	public ResponseEntity<ShopResponseDTO> patchShop(@PathVariable UUID id,
+						 @RequestBody ShopResponseDTO shop) {
 		if (shop.getName().isPresent()) {
 			shopService.updateShopName(
 				id,

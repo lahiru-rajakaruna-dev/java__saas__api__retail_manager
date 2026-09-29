@@ -30,7 +30,7 @@ public class ShopService {
 				"Could not find shop with ID: %s".formatted(id)));
 	}
 
-	public ShopDTO createShop(ShopDTO dto) {
+	public ShopResponseDTO createShop(ShopResponseDTO dto) {
 
 		if (dto.getName().isEmpty()) {
 			throw new IllegalArgumentException(
@@ -42,12 +42,12 @@ public class ShopService {
 			"Could not find user with ID: %s".formatted(dto
 				.getOwnerId())));
 
-		Shop shop = ShopDTO.convertToEntity(dto, tenant);
+		Shop shop = ShopResponseDTO.convertToEntity(dto, tenant);
 		Shop savedShop = shopRepo.saveAndFlush(shop);
-		return ShopDTO.convertToDTO(savedShop);
+		return ShopResponseDTO.convertToDTO(savedShop);
 	}
 
-	public ShopDTO findById(UUID id) {
+	public ShopResponseDTO findById(UUID id) {
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -55,10 +55,10 @@ public class ShopService {
 		}
 
 		Shop shop = findShopByIdOrThrow(id);
-		return ShopDTO.convertToDTO(shop);
+		return ShopResponseDTO.convertToDTO(shop);
 	}
 
-	public ShopDTO updateShopName(UUID id, String name) {
+	public ShopResponseDTO updateShopName(UUID id, String name) {
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -73,10 +73,10 @@ public class ShopService {
 		shop.setName(name);
 
 		Shop updatedShop = shopRepo.saveAndFlush(shop);
-		return ShopDTO.convertToDTO(updatedShop);
+		return ShopResponseDTO.convertToDTO(updatedShop);
 	}
 
-	public ShopDTO activateShopById(UUID id) {
+	public ShopResponseDTO activateShopById(UUID id) {
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -87,10 +87,10 @@ public class ShopService {
 		shop.setActiveState(EActiveState.ACTIVE);
 		Shop updatedShop = shopRepo.saveAndFlush(shop);
 
-		return ShopDTO.convertToDTO(updatedShop);
+		return ShopResponseDTO.convertToDTO(updatedShop);
 	}
 
-	public ShopDTO deactivateShopById(UUID id) {
+	public ShopResponseDTO deactivateShopById(UUID id) {
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -101,6 +101,6 @@ public class ShopService {
 		shop.setActiveState(EActiveState.INACTIVE);
 		Shop updatedShop = shopRepo.saveAndFlush(shop);
 
-		return ShopDTO.convertToDTO(updatedShop);
+		return ShopResponseDTO.convertToDTO(updatedShop);
 	}
 }
