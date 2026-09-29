@@ -41,7 +41,7 @@ public class SaleController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<SaleResponseDTO>> findSalesByShopId(@RequestParam UUID shopId) {
+	public ResponseEntity<List<SaleResponseDTO>> getAllSalesOfTheShop(@RequestParam UUID shopId) {
 		List<SaleResponseDTO> sales = saleService.findSalesByShopId(shopId);
 		return ResponseEntity.status(HttpStatus.OK).body(sales);
 	}
