@@ -73,14 +73,17 @@ public class SaleService {
 	}
 
 	public SaleResponseDTO updateSaleTotal(UUID id, BigDecimal total) {
+		boolean isIdNull = id == null;
+		boolean isTotalNull = total == null;
+		boolean isTotalLessThanZero = !isTotalNull && total.compareTo(BigDecimal.ZERO) < 0;
 
-		if (id == null) {
+		if (isIdNull) {
 			throw new IllegalArgumentException("ID parameter is null");
 		}
-		if (total == null) {
+		if (isTotalNull) {
 			throw new IllegalArgumentException("Total parameter is null");
 		}
-		if (total.compareTo(BigDecimal.ZERO) < 0) {
+		if (isTotalLessThanZero) {
 			throw new IllegalArgumentException("Sale total cannot be negative");
 		}
 
@@ -92,7 +95,7 @@ public class SaleService {
 
 		sale.setTotal(total);
 		Sale updatedSale = saleRepo.saveAndFlush(sale);
-		return SaleResponseDTO.convertToDTO(updatedSale);
+		return SaleMapper.convertToDTO(updatedSale);
 	}
 
 	public SaleResponseDTO closeSaleById(UUID id) {
