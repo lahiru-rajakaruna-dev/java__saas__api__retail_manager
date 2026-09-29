@@ -77,9 +77,7 @@ public class TenantService {
 		boolean hasPhoneField = updates.getPhone() != null;
 		boolean hasPasswordField = updates.getPassword() != null;
 
-		Tenant tenant = this.tenantRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException("Could not find tenant with ID: %s"
-			.formatted(id)));
+		Tenant tenant = findTenantByIdOrThrow(id);
 
 		if (hasNameField) {
 			tenant.setName(updates.getName());
@@ -113,9 +111,7 @@ public class TenantService {
 			.orElseThrow(() -> new RuntimeException(String.format(
 			"Could not find shop with ID: %s", id.toString())));
 
-		Tenant tenant = tenantRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException(String.format(
-			"Could not find tenant with ID: %s", id.toString())));
+		Tenant tenant = findTenantByIdOrThrow(id);
 
 		tenant.setShop(shop);
 		return TenantMapper
@@ -130,10 +126,7 @@ public class TenantService {
 				"ID parameter is null");
 		}
 
-		Tenant tenant = tenantRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException(String.format(
-			"Could not find tenant with ID: %s", id.toString())));
-
+		Tenant tenant = findTenantByIdOrThrow(id);
 		tenant.setActiveState(EActiveState.INACTIVE);
 		return TenantMapper
 			.convertToResponseDTO(tenantRepo.save(tenant));
@@ -147,13 +140,16 @@ public class TenantService {
 				"ID parameter is null");
 		}
 
-		Tenant tenant = tenantRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException(String.format(
-			"Could not find tenant with ID: %s", id.toString())));
-
+		Tenant tenant = findTenantByIdOrThrow(id);
 		tenant.setActiveState(EActiveState.ACTIVE);
 		return TenantMapper
 			.convertToResponseDTO(tenantRepo.save(tenant));
+	}
+
+	private Tenant findTenantByIdOrThrow(UUID id) {
+		return tenantRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException("Could not find tenant with ID: %s"
+			.formatted(id)));
 	}
 
 	private void checkIfInternalComponentsNull() {
