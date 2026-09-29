@@ -36,8 +36,8 @@ public class SaleResponseDTO {
 	private ESaleState saleState;
 
 	public void setTotal(BigDecimal total) {
-		boolean isLessThanZero = total.compareTo(BigDecimal.ZERO) < 0;
-		boolean isNull = total != null;
+		boolean isNull = total == null;
+		boolean isLessThanZero = !isNull && total.compareTo(BigDecimal.ZERO) < 0;
 
 		if (isNull || isLessThanZero) {
 			throw new IllegalArgumentException("Invalid total value");
