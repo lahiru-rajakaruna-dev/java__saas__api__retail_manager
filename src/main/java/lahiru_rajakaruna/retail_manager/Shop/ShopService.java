@@ -1,12 +1,15 @@
 package lahiru_rajakaruna.retail_manager.Shop;
 
-import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 import java.util.Objects;
 import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Shop.DTOs.CreateShopDTO;
+import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ShopService {
@@ -14,8 +17,7 @@ public class ShopService {
 	private final IShopRepository shopRepo;
 	private final ITenantRepository tenantRepo;
 
-	public ShopService(IShopRepository shopRepo,
-			   ITenantRepository tenantRepo) {
+	public ShopService(IShopRepository shopRepo, ITenantRepository tenantRepo) {
 		this.shopRepo = shopRepo;
 		this.tenantRepo = tenantRepo;
 		checkInternalComponentsPresence();
@@ -26,48 +28,42 @@ public class ShopService {
 	}
 
 	private Shop findShopByIdOrThrow(UUID id) {
-		return shopRepo.findById(id).orElseThrow(
-			() -> new RuntimeException(
-				"Could not find shop with ID: %s".formatted(id)));
+		return shopRepo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Could not find shop with ID: %s".formatted(id)));
 	}
 
-	public ShopResponseDTO createShop(ShopResponseDTO dto) {
+	public ShopResponseDTO createShop(CreateShopDTO dto) {
+		boolean isNameNullOrBlankOrEmpty = dto.getName() == null || dto.getName().isBlank() || dto.getName().isEmpty();
 
-		if (dto.getName().isEmpty()) {
-			throw new IllegalArgumentException(
-				"Must provide a name for the shop");
+		if (isNameNullOrBlankOrEmpty) {
+			throw new IllegalArgumentException("Shop name cannot be empty or only contain whitespaces");
 		}
 
 		Tenant tenant = tenantRepo.findById(dto.getOwnerId())
-			.orElseThrow(() -> new RuntimeException(
-			"Could not find user with ID: %s".formatted(dto
-				.getOwnerId())));
+				.orElseThrow(() -> new RuntimeException("Could not find user with ID: %s".formatted(dto.getOwnerId())));
 
-		Shop shop = ShopResponseDTO.convertToEntity(dto, tenant);
+		Shop shop = ShopMapper.convertToShop(dto, tenant);
 		Shop savedShop = shopRepo.saveAndFlush(shop);
-		return ShopResponseDTO.convertToDTO(savedShop);
+		return ShopMapper.convertToDTO(savedShop);
 	}
 
 	public ShopResponseDTO findById(UUID id) {
-
-		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
+		boolean isIdNull = id == null;
+		if (isIdNull) {
+			throw new IllegalArgumentException("ID parameter is null");
 		}
 
 		Shop shop = findShopByIdOrThrow(id);
-		return ShopResponseDTO.convertToDTO(shop);
+		return ShopMapper.convertToDTO(shop);
 	}
 
 	public ShopResponseDTO updateShopName(UUID id, String name) {
 
 		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
+			throw new IllegalArgumentException("ID parameter is null");
 		}
 		if (name == null) {
-			throw new IllegalArgumentException(
-				"Name parameter is null");
+			throw new IllegalArgumentException("Name parameter is null");
 		}
 
 		Shop shop = findShopByIdOrThrow(id);
@@ -80,8 +76,7 @@ public class ShopService {
 	public ShopResponseDTO activateShopById(UUID id) {
 
 		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
+			throw new IllegalArgumentException("ID parameter is null");
 		}
 
 		Shop shop = findShopByIdOrThrow(id);
@@ -94,8 +89,7 @@ public class ShopService {
 	public ShopResponseDTO deactivateShopById(UUID id) {
 
 		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
+			throw new IllegalArgumentException("ID parameter is null");
 		}
 
 		Shop shop = findShopByIdOrThrow(id);
