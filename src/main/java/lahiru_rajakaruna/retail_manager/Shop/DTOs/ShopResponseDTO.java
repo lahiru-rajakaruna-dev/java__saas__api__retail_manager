@@ -1,4 +1,4 @@
-package lahiru_rajakaruna.retail_manager.Shop;
+package lahiru_rajakaruna.retail_manager.Shop.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

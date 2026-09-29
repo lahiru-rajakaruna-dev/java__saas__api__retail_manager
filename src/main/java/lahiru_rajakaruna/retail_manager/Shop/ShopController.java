@@ -1,5 +1,6 @@
 package lahiru_rajakaruna.retail_manager.Shop;
 
+import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 import java.util.UUID;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import org.springframework.http.ResponseEntity;
