@@ -35,7 +35,7 @@ public class SaleController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<SaleResponseDTO> findSaleById(@RequestParam UUID id) {
+	public ResponseEntity<SaleResponseDTO> getSale(@RequestParam UUID id) {
 		SaleResponseDTO sale = saleService.findSaleById(id);
 		return ResponseEntity.status(HttpStatus.OK).body(sale);
 	}
