@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.DTOs.CreateShopDTO;
+import lahiru_rajakaruna.retail_manager.Shop.DTOs.PatchShopDTO;
 import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 
 @RestController
@@ -39,19 +39,8 @@ public class ShopController {
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<ShopResponseDTO> patchShop(@PathVariable UUID id, @RequestBody ShopResponseDTO shop) {
-		if (shop.getName().isPresent()) {
-			shopService.updateShopName(id, shop.getName().get());
-		}
-
-		if (shop.getActiveState().isPresent()) {
-			if (shop.getActiveState().get().equals(EActiveState.ACTIVE)) {
-				shopService.activateShopById(id);
-			} else {
-				shopService.deactivateShopById(id);
-			}
-		}
-
-		return ResponseEntity.ok(shopService.findById(id));
+	public ResponseEntity<ShopResponseDTO> patchShop(@PathVariable UUID id, @RequestBody PatchShopDTO patchShopData) {
+		ShopResponseDTO dto = shopService.patchShopById(id, patchShopData);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
 	}
 }
