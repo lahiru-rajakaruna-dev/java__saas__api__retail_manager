@@ -196,51 +196,6 @@ public class TenantService {
 			.convertToResponseDTO(tenantRepo.save(tenant));
 	}
 
-	public ResponseDTO updateProfile(UUID id, ResponseDTO updates) {
-		checkIfInternalComponentsNull();
-
-		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
-		}
-
-		boolean isNameNull = updates.getName().isEmpty();
-		boolean isPhoneNull = updates.getPhone().isEmpty();
-		boolean isPasswordNull = updates.getPassword().isEmpty();
-		boolean isActiveStateNull = updates.getActiveState().isEmpty();
-		boolean isShopNull = updates.getShopId().isEmpty();
-
-		if (isActiveStateNull || isNameNull || isPasswordNull || isPhoneNull || isShopNull) {
-			throw new IllegalArgumentException(
-				"All Fields Must Be Present");
-		}
-
-		Tenant tenant = tenantRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException(String.format(
-			"Could not find tenant with ID: %s", id.toString())));
-
-		if (updates.getShopId().isPresent()) {
-			Shop shop = shopRepo.findById(updates.getShopId().get())
-				.orElseThrow(() -> new RuntimeException(String
-				.format("Could not find the shop with ID: %s",
-					updates.getShopId().get())));
-
-			tenant.setShop(shop);
-		} else {
-			tenant.setShop(null);
-		}
-
-		tenant.setName(updates.getName().get());
-		tenant.setPhone(updates.getPhone().get());
-		String passwordHash = passwordEncoder.encode(updates
-			.getPassword().get());
-		tenant.setPasswordHash(passwordHash);
-		tenant.setActiveState(updates.getActiveState().get());
-
-		return TenantMapper
-			.convertToResponseDTO(tenantRepo.save(tenant));
-	}
-
 	private void checkIfInternalComponentsNull() {
 		Objects.requireNonNull(tenantRepo, "Tenant Repo Not Found");
 		Objects.requireNonNull(shopRepo, "Shop Repo Not Found");
