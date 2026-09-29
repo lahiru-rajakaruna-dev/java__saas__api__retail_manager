@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
+import lahiru_rajakaruna.retail_manager.Sale.DTOs.CreateSaleDTO;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.SaleResponseDTO;
 
 /**
@@ -46,9 +47,9 @@ public class SaleController {
 	}
 
 	@PostMapping()
-	public ResponseEntity<SaleResponseDTO> createSale(@RequestBody SaleResponseDTO sale) {
+	public ResponseEntity<SaleResponseDTO> createSale(@RequestBody CreateSaleDTO sale) {
 		SaleResponseDTO createdSale = saleService.createSale(sale);
-		return ResponseEntity.ok(createdSale);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createdSale);
 	}
 
 	@PatchMapping()
