@@ -17,22 +17,22 @@ public class TenantController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<TenantDTO>> getAllTenants() {
-		List<TenantDTO> users = this.tenantService
+	public ResponseEntity<List<ResponseDTO>> getAllTenants() {
+		List<ResponseDTO> users = this.tenantService
 			.getAllTenants();
 		return ResponseEntity.ok(users);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<TenantDTO> getTenantDetails(
+	public ResponseEntity<ResponseDTO> getTenantDetails(
 		@PathVariable UUID id) {
-		TenantDTO user = this.tenantService.getTenantById(id);
+		ResponseDTO user = this.tenantService.getTenantById(id);
 		return ResponseEntity.ok(user);
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<TenantDTO> patchTenant(
-		@RequestBody TenantDTO updates,
+	public ResponseEntity<ResponseDTO> patchTenant(
+		@RequestBody ResponseDTO updates,
 		@PathVariable UUID id
 	) {
 
@@ -86,10 +86,10 @@ public class TenantController {
 	}
 
 	@PostMapping
-	public ResponseEntity<TenantDTO> createTenant(
-		@RequestBody TenantDTO tenantData
+	public ResponseEntity<ResponseDTO> createTenant(
+		@RequestBody ResponseDTO tenantData
 	) {
-		TenantDTO tenant = tenantService.createTenant(tenantData);
+		ResponseDTO tenant = tenantService.createTenant(tenantData);
 		return ResponseEntity.ok(tenant);
 	}
 

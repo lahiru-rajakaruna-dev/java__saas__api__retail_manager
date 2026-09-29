@@ -26,7 +26,7 @@ public class TenantService {
 		this.shopRepo = shopRepo;
 	}
 
-	public TenantDTO createTenant(TenantDTO tenant) {
+	public ResponseDTO createTenant(ResponseDTO tenant) {
 		checkIfInternalComponentsNull();
 
 		if (tenant.getName().isEmpty()) {
@@ -40,18 +40,18 @@ public class TenantService {
 				"Password not provided");
 		}
 
-		return TenantDTO.convertToDTO(this.tenantRepo.save(TenantDTO
+		return ResponseDTO.convertToDTO(this.tenantRepo.save(ResponseDTO
 			.convertToEntity(tenant, passwordEncoder)));
 	}
 
-	public List<TenantDTO> getAllTenants() {
+	public List<ResponseDTO> getAllTenants() {
 		checkIfInternalComponentsNull();
 
 		return this.tenantRepo.findAll().stream().map(
-			TenantDTO::convertToDTO).toList();
+			ResponseDTO::convertToDTO).toList();
 	}
 
-	public TenantDTO getTenantById(UUID id)
+	public ResponseDTO getTenantById(UUID id)
 		throws RuntimeException {
 		checkIfInternalComponentsNull();
 
@@ -62,10 +62,10 @@ public class TenantService {
 
 		Tenant tenant = this.tenantRepo.findById(id).orElseThrow(
 			() -> new RuntimeException("Tenant not found"));
-		return TenantDTO.convertToDTO(tenant);
+		return ResponseDTO.convertToDTO(tenant);
 	}
 
-	public TenantDTO updateNameById(UUID id, String name) {
+	public ResponseDTO updateNameById(UUID id, String name) {
 		checkIfInternalComponentsNull();
 
 		if (id == null) {
@@ -83,10 +83,10 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setName(name);
-		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
 	}
 
-	public TenantDTO updatePhoneById(UUID id, String phone) {
+	public ResponseDTO updatePhoneById(UUID id, String phone) {
 		checkIfInternalComponentsNull();
 
 		if (id == null) {
@@ -104,10 +104,10 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setPhone(phone);
-		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
 	}
 
-	public TenantDTO setShopById(UUID id, UUID shopId) {
+	public ResponseDTO setShopById(UUID id, UUID shopId) {
 		checkIfInternalComponentsNull();
 
 		if (id == null) {
@@ -128,10 +128,10 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setShop(shop);
-		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
 	}
 
-	public TenantDTO updatePassword(UUID id, String password) {
+	public ResponseDTO updatePassword(UUID id, String password) {
 		checkIfInternalComponentsNull();
 
 		if (id == null) {
@@ -151,10 +151,10 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setPasswordHash(passwordHash);
-		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
 	}
 
-	public TenantDTO disableTenantProfileById(UUID id) {
+	public ResponseDTO disableTenantProfileById(UUID id) {
 		checkIfInternalComponentsNull();
 
 		if (id == null) {
@@ -167,10 +167,10 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setActiveState(EActiveState.INACTIVE);
-		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
 	}
 
-	public TenantDTO enableTenantProfileById(UUID id) {
+	public ResponseDTO enableTenantProfileById(UUID id) {
 		checkIfInternalComponentsNull();
 
 		if (id == null) {
@@ -183,10 +183,10 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setActiveState(EActiveState.ACTIVE);
-		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
 	}
 
-	public TenantDTO updateProfile(UUID id, TenantDTO updates) {
+	public ResponseDTO updateProfile(UUID id, ResponseDTO updates) {
 		checkIfInternalComponentsNull();
 
 		if (id == null) {
@@ -227,7 +227,7 @@ public class TenantService {
 		tenant.setPasswordHash(passwordHash);
 		tenant.setActiveState(updates.getActiveState().get());
 
-		return TenantDTO.convertToDTO(tenantRepo.save(tenant));
+		return ResponseDTO.convertToDTO(tenantRepo.save(tenant));
 	}
 
 	private void checkIfInternalComponentsNull() {

@@ -3,7 +3,7 @@ package lahiru_rajakaruna.retail_manager.TenantTests;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
-import lahiru_rajakaruna.retail_manager.Tenant.TenantDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.ResponseDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.TenantService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 public class TenantServiceTests {
 
-    private TenantDTO sampleTenantDTO;
+    private ResponseDTO sampleTenantDTO;
     private Tenant sampleTenant;
     private UUID generatedID;
 
@@ -59,7 +59,7 @@ public class TenantServiceTests {
     }
 
     public void createSampleDTO() {
-        sampleTenantDTO = new TenantDTO();
+        sampleTenantDTO = new ResponseDTO();
         sampleTenantDTO.setName("TesterDTO");
         sampleTenantDTO.setPhone("222-2222-222");
         sampleTenantDTO.setPassword("raw-password");
@@ -72,7 +72,7 @@ public class TenantServiceTests {
         Mockito.when(tenantRepo.findById(ArgumentMatchers.any(UUID.class)))
                .thenReturn(Optional.of(sampleTenant));
 
-        TenantDTO tenant = tenantService.getTenantById(generatedID);
+        ResponseDTO tenant = tenantService.getTenantById(generatedID);
         Assertions.assertThat(tenant).isNotNull();
         Assertions.assertThat(tenant.getId()).isNotNull();
         Assertions.assertThat(tenant.getId()).isEqualByComparingTo(generatedID);
@@ -94,7 +94,7 @@ public class TenantServiceTests {
                .when(tenantRepo.save(ArgumentMatchers.any(Tenant.class)))
                .thenReturn(sampleTenant);
 
-        TenantDTO tenant = tenantService.createTenant(sampleTenantDTO);
+        ResponseDTO tenant = tenantService.createTenant(sampleTenantDTO);
 
         Assertions.assertThat(tenant).isNotNull();
         Assertions.assertThat(tenant.getId()).isEqualByComparingTo(generatedID);
@@ -131,7 +131,7 @@ public class TenantServiceTests {
                .thenReturn(sampleTenant);
 
         String updatedName = "Test User";
-        TenantDTO dto = tenantService.updateNameById(generatedID, updatedName);
+        ResponseDTO dto = tenantService.updateNameById(generatedID, updatedName);
         Assertions.assertThat(dto.getName().isPresent()).isEqualTo(true);
         Assertions.assertThat(dto.getName().get()).isEqualTo(updatedName);
     }
@@ -161,7 +161,7 @@ public class TenantServiceTests {
                .thenReturn(sampleTenant);
 
         String updatedPhone = "111-1111-111-11";
-        TenantDTO dto = tenantService.updatePhoneById(generatedID,
+        ResponseDTO dto = tenantService.updatePhoneById(generatedID,
                 updatedPhone);
         Assertions.assertThat(dto.getPhone().isPresent()).isEqualTo(true);
         Assertions.assertThat(dto.getPhone().get()).isEqualTo(updatedPhone);

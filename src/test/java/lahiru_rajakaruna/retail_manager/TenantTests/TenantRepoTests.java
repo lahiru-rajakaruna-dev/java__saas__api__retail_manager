@@ -6,7 +6,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
-import lahiru_rajakaruna.retail_manager.Tenant.TenantDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.ResponseDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +38,7 @@ public class TenantRepoTests {
         CriteriaQuery<Tenant> query = cb.createQuery(Tenant.class);
         Root<Tenant> user_ = query.from(Tenant.class);
         em.createQuery(query).getResultList().forEach((Tenant u) -> {
-            System.out.println(TenantDTO.convertToDTO(u).toString());
+            System.out.println(ResponseDTO.convertToDTO(u).toString());
         });
     }
 
