@@ -2,8 +2,9 @@ package lahiru_rajakaruna.retail_manager.Tenant;
 
 import java.util.List;
 import java.util.UUID;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.PatchDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,58 +34,13 @@ public class TenantController {
 
 	@PatchMapping("/{id}")
 	public ResponseEntity<ResponseDTO> patchTenant(
-		@RequestBody ResponseDTO updates,
+		@RequestBody PatchDTO updates,
 		@PathVariable UUID id
 	) {
-
-		if (updates.getName().isPresent()) {
-			tenantService
-				.updateNameById(
-					id,
-					updates.getName()
-						.get()
-				);
-		}
-		if (updates.getPhone().isPresent()) {
-			tenantService
-				.updatePhoneById(
-					id,
-					updates.getPhone()
-						.get()
-				);
-		}
-		if (updates.getPassword().isPresent()) {
-			tenantService
-				.updatePassword(
-					id,
-					updates.getPassword()
-						.get()
-				);
-		}
-		if (updates.getShopId().isPresent()) {
-			tenantService
-				.setShopById(
-					id,
-					updates.getShopId()
-						.get()
-				);
-		}
-		if (updates.getActiveState().isPresent()) {
-			if (updates.getActiveState().equals(
-				EActiveState.ACTIVE)) {
-
-				tenantService
-					.enableTenantProfileById(id);
-
-			} else {
-
-				tenantService.disableTenantProfileById(
-					id);
-			}
-		}
-
-		return ResponseEntity.status(HttpStaus.OK).body(tenantService
-			.getTenantById(id));
+		Tenant updatedTenant = tenantService
+			.patchProfileById(id, updates);
+		return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+			.body(updatedTenant);
 	}
 
 	@PostMapping
