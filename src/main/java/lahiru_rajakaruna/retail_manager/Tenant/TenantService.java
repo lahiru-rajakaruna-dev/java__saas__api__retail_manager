@@ -28,6 +28,7 @@ public class TenantService {
 		this.tenantRepo = tenantRepo;
 		this.passwordEncoder = passwordEncoder;
 		this.shopRepo = shopRepo;
+		checkIfInternalComponentsNull();
 	}
 
 	public ResponseDTO createTenant(CreateDTO tenantData) {
@@ -53,13 +54,11 @@ public class TenantService {
 	}
 
 	public List<ResponseDTO> getAllTenants() {
-		checkIfInternalComponentsNull();
 		return this.tenantRepo.findAll().stream().map(
 			TenantMapper::convertToResponseDTO).toList();
 	}
 
 	public ResponseDTO getTenantById(UUID id) {
-		checkIfInternalComponentsNull();
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -96,7 +95,6 @@ public class TenantService {
 	}
 
 	public ResponseDTO setShopById(UUID id, UUID shopId) {
-		checkIfInternalComponentsNull();
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -119,7 +117,6 @@ public class TenantService {
 	}
 
 	public ResponseDTO disableTenantProfileById(UUID id) {
-		checkIfInternalComponentsNull();
 
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -133,7 +130,6 @@ public class TenantService {
 	}
 
 	public ResponseDTO enableTenantProfileById(UUID id) {
-		checkIfInternalComponentsNull();
 
 		if (id == null) {
 			throw new IllegalArgumentException(
