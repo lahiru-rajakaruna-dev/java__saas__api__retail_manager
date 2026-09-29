@@ -5,8 +5,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import jakarta.transaction.Transactional;
 import lahiru_rajakaruna.retail_manager.Shop.DTOs.CreateShopDTO;
+import lahiru_rajakaruna.retail_manager.Shop.DTOs.PatchShopDTO;
 import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
@@ -57,45 +58,23 @@ public class ShopService {
 		return ShopMapper.convertToDTO(shop);
 	}
 
-	public ShopResponseDTO updateShopName(UUID id, String name) {
-
-		if (id == null) {
-			throw new IllegalArgumentException("ID parameter is null");
-		}
-		if (name == null) {
-			throw new IllegalArgumentException("Name parameter is null");
-		}
-
-		Shop shop = findShopByIdOrThrow(id);
-		shop.setName(name);
-
-		Shop updatedShop = shopRepo.saveAndFlush(shop);
-		return ShopResponseDTO.convertToDTO(updatedShop);
-	}
-
-	public ShopResponseDTO activateShopById(UUID id) {
-
-		if (id == null) {
+	@Transactional
+	public ShopResponseDTO patchShopById(UUID id, PatchShopDTO updates) {
+		boolean isIdNull = id == null;
+		if (isIdNull) {
 			throw new IllegalArgumentException("ID parameter is null");
 		}
 
 		Shop shop = findShopByIdOrThrow(id);
-		shop.setActiveState(EActiveState.ACTIVE);
-		Shop updatedShop = shopRepo.saveAndFlush(shop);
 
-		return ShopResponseDTO.convertToDTO(updatedShop);
-	}
-
-	public ShopResponseDTO deactivateShopById(UUID id) {
-
-		if (id == null) {
-			throw new IllegalArgumentException("ID parameter is null");
+		if (updates.getName() != null) {
+			shop.setName(updates.getName());
+		}
+		if (updates.getActiveState() != null) {
+			shop.setActiveState(updates.getActiveState());
 		}
 
-		Shop shop = findShopByIdOrThrow(id);
-		shop.setActiveState(EActiveState.INACTIVE);
-		Shop updatedShop = shopRepo.saveAndFlush(shop);
-
-		return ShopResponseDTO.convertToDTO(updatedShop);
+		Shop savedShop = shopRepo.saveAndFlush(shop);
+		return ShopMapper.convertToDTO(savedShop);
 	}
 }
