@@ -21,8 +21,6 @@ public class ResponseDTO {
 
 	private String phone = null;
 
-	private String password = null;
-
 	private EActiveState activeState = null;
 
 	private UUID shopId = null;
