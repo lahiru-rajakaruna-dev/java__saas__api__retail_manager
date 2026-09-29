@@ -1,9 +1,9 @@
 package lahiru_rajakaruna.retail_manager.Tenant;
 
-import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import java.util.List;
 import java.util.UUID;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,14 +21,14 @@ public class TenantController {
 	public ResponseEntity<List<ResponseDTO>> getAllTenants() {
 		List<ResponseDTO> users = this.tenantService
 			.getAllTenants();
-		return ResponseEntity.ok(users);
+		return ResponseEntity.status(HttpStatus.OK).body(users);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ResponseDTO> getTenantDetails(
 		@PathVariable UUID id) {
 		ResponseDTO user = this.tenantService.getTenantById(id);
-		return ResponseEntity.ok(user);
+		return ResponseEntity.status(HttpStatus.OK).body(user);
 	}
 
 	@PatchMapping("/{id}")
@@ -83,7 +83,8 @@ public class TenantController {
 			}
 		}
 
-		return ResponseEntity.ok(tenantService.getTenantById(id));
+		return ResponseEntity.status(HttpStaus.OK).body(tenantService
+			.getTenantById(id));
 	}
 
 	@PostMapping
@@ -91,7 +92,7 @@ public class TenantController {
 		@RequestBody ResponseDTO tenantData
 	) {
 		ResponseDTO tenant = tenantService.createTenant(tenantData);
-		return ResponseEntity.ok(tenant);
+		return ResponseEntity.status(HttpStatus.OK).body(tenant);
 	}
 
 }
