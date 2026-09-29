@@ -1,4 +1,4 @@
-package lahiru_rajakaruna.retail_manager.Tenant;
+package lahiru_rajakaruna.retail_manager.Tenant.DTOs;
 
 import java.util.UUID;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;

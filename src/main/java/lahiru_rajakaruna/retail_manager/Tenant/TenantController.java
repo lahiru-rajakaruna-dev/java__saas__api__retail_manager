@@ -1,5 +1,6 @@
 package lahiru_rajakaruna.retail_manager.Tenant;
 
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import java.util.List;
 import java.util.UUID;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;

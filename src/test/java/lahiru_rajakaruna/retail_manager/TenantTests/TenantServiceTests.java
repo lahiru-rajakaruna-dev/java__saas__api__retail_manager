@@ -3,7 +3,7 @@ package lahiru_rajakaruna.retail_manager.TenantTests;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
-import lahiru_rajakaruna.retail_manager.Tenant.ResponseDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.TenantService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
