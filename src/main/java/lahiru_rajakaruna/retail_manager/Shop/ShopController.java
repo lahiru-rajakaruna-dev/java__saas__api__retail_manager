@@ -1,10 +1,19 @@
 package lahiru_rajakaruna.retail_manager.Shop;
 
-import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 import java.util.UUID;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 
 @RestController
 @RequestMapping("/api/v1/shops")
@@ -18,7 +27,8 @@ public class ShopController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ShopResponseDTO> findShopById(@PathVariable UUID id) {
-		return ResponseEntity.ok(shopService.findById(id));
+		ShopResponseDTO shop = shopService.findById(id);
+		return ResponseEntity.status(HttpStatus.OK).body(shop);
 	}
 
 	@PostMapping()
@@ -27,24 +37,16 @@ public class ShopController {
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<ShopResponseDTO> patchShop(@PathVariable UUID id,
-						 @RequestBody ShopResponseDTO shop) {
+	public ResponseEntity<ShopResponseDTO> patchShop(@PathVariable UUID id, @RequestBody ShopResponseDTO shop) {
 		if (shop.getName().isPresent()) {
-			shopService.updateShopName(
-				id,
-				shop.getName()
-					.get());
+			shopService.updateShopName(id, shop.getName().get());
 		}
 
 		if (shop.getActiveState().isPresent()) {
-			if (shop.getActiveState().get().equals(
-				EActiveState.ACTIVE)) {
-				shopService
-					.activateShopById(id);
+			if (shop.getActiveState().get().equals(EActiveState.ACTIVE)) {
+				shopService.activateShopById(id);
 			} else {
-				shopService
-					.deactivateShopById(
-						id);
+				shopService.deactivateShopById(id);
 			}
 		}
 
