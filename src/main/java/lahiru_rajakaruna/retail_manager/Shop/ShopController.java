@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Shop.DTOs.CreateShopDTO;
 import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 
 @RestController
@@ -32,8 +33,9 @@ public class ShopController {
 	}
 
 	@PostMapping()
-	public ResponseEntity<ShopResponseDTO> createShop(@RequestBody ShopResponseDTO shop) {
-		return ResponseEntity.ok(shopService.createShop(shop));
+	public ResponseEntity<ShopResponseDTO> createShop(@RequestBody CreateShopDTO shopCreateData) {
+		ShopResponseDTO dto = shopService.createShop(shopCreateData);
+		return ResponseEntity.status(HttpStatus.CREATED).body(dto);
 	}
 
 	@PatchMapping("/{id}")
