@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.CreateSaleDTO;
+import lahiru_rajakaruna.retail_manager.Sale.DTOs.PatchSaleDTO;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.SaleResponseDTO;
 
 /**
@@ -53,18 +53,9 @@ public class SaleController {
 	}
 
 	@PatchMapping()
-	public ResponseEntity<SaleResponseDTO> patchSale(@RequestParam UUID id, @RequestBody SaleResponseDTO saleUpdates) {
-		if (saleUpdates.getTotal().isPresent()) {
-			saleService.updateSaleTotal(id, saleUpdates.getTotal().get());
-		}
-
-		if (saleUpdates.getSaleState().isPresent()) {
-			if (saleUpdates.getSaleState().get().equals(ESaleState.CLOSED)) {
-				saleService.closeSaleById(id);
-			}
-		}
-
-		return ResponseEntity.ok(saleService.findById(id));
+	public ResponseEntity<SaleResponseDTO> patchSale(@RequestParam UUID id, @RequestBody PatchSaleDTO saleUpdates) {
+		SaleResponseDTO dto = saleService.patchSaleById(id, saleUpdates);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
 	}
 
 }
