@@ -62,14 +62,14 @@ public class SaleService {
 		return SaleMapper.convertToDTO(sale);
 	}
 
-	public List<SaleResponseDTO> findByShopId(UUID shopId) {
-		checkInternalComponentsPresence();
-
-		if (shopId == null) {
+	public List<SaleResponseDTO> findSalesByShopId(UUID shopId) {
+		boolean isShopIdNull = shopId == null;
+		if (isShopIdNull) {
 			throw new IllegalArgumentException("Shop ID parameter is null");
 		}
 
-		return saleRepo.findAllByShopId(shopId).stream().map(SaleResponseDTO::convertToDTO).toList();
+		List<SaleResponseDTO> sales = saleRepo.findAllByShopId(shopId).stream().map(SaleMapper::convertToDTO).toList();
+		return sales;
 	}
 
 	public SaleResponseDTO updateSaleTotal(UUID id, BigDecimal total) {
