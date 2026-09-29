@@ -99,8 +99,8 @@ public class SaleService {
 	}
 
 	public SaleResponseDTO closeSaleById(UUID id) {
-
-		if (id == null) {
+		boolean isIdNull = id == null;
+		if (isIdNull) {
 			throw new IllegalArgumentException("ID parameter is null");
 		}
 
@@ -111,7 +111,7 @@ public class SaleService {
 		}
 
 		Sale updatedSale = saleRepo.saveAndFlush(sale);
-		return SaleResponseDTO.convertToDTO(updatedSale);
+		return SaleMapper.convertToDTO(updatedSale);
 	}
 
 	private Sale findSaleOrThrow(UUID id) {
