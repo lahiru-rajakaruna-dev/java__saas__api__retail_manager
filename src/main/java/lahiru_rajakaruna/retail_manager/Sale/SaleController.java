@@ -6,7 +6,8 @@ package lahiru_rajakaruna.retail_manager.Sale;
 
 import java.util.List;
 import java.util.UUID;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
+import lahiru_rajakaruna.retail_manager.Sale.DTOs.SaleResponseDTO;
 
 /**
  * @author bl4z3
@@ -30,39 +34,32 @@ public class SaleController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<SaleDTO> findSaleById(@RequestParam UUID id) {
-		SaleDTO sale = saleService.findById(id);
-		return ResponseEntity.ok(sale);
+	public ResponseEntity<SaleResponseDTO> findSaleById(@RequestParam UUID id) {
+		SaleResponseDTO sale = saleService.findSaleById(id);
+		return ResponseEntity.status(HttpStatus.OK).body(sale);
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<SaleDTO>> findSalesByShop(
-		@RequestParam UUID shopId) {
-		List<SaleDTO> sales = saleService.findByShopId(shopId);
+	public ResponseEntity<List<SaleResponseDTO>> findSalesByShop(@RequestParam UUID shopId) {
+		List<SaleResponseDTO> sales = saleService.findByShopId(shopId);
 		return ResponseEntity.ok(sales);
 	}
 
 	@PostMapping()
-	public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO sale) {
-		SaleDTO createdSale = saleService.createSale(sale);
+	public ResponseEntity<SaleResponseDTO> createSale(@RequestBody SaleResponseDTO sale) {
+		SaleResponseDTO createdSale = saleService.createSale(sale);
 		return ResponseEntity.ok(createdSale);
 	}
 
 	@PatchMapping()
-	public ResponseEntity<SaleDTO> patchSale(@RequestParam UUID id,
-						 @RequestBody SaleDTO saleUpdates) {
+	public ResponseEntity<SaleResponseDTO> patchSale(@RequestParam UUID id, @RequestBody SaleResponseDTO saleUpdates) {
 		if (saleUpdates.getTotal().isPresent()) {
-			saleService.updateSaleTotal(id,
-						    saleUpdates
-							    .getTotal()
-							    .get());
+			saleService.updateSaleTotal(id, saleUpdates.getTotal().get());
 		}
 
 		if (saleUpdates.getSaleState().isPresent()) {
-			if (saleUpdates.getSaleState().get().equals(
-				ESaleState.CLOSED)) {
-				saleService.closeSaleById(
-					id);
+			if (saleUpdates.getSaleState().get().equals(ESaleState.CLOSED)) {
+				saleService.closeSaleById(id);
 			}
 		}
 
