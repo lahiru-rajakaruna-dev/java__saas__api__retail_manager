@@ -21,6 +21,27 @@ public class CreateDTO {
 
 	private String name;
 	private String phone;
+	private String password;
+
+	public void setPassword(String password) {
+		boolean lengthGreaterThan8 = password.length() > 8;
+		boolean hasNumbers = password.matches("\\d");
+		boolean hasSpecialCharacters = password
+			.matches("[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]");
+
+		if (!lengthGreaterThan8) {
+			throw new IllegalArgumentException("Password must be at least 8 characters long");
+		}
+		if (!hasNumbers) {
+			throw new IllegalArgumentException("Password must contain numbers");
+		}
+		if (!hasSpecialCharacters) {
+			throw new IllegalArgumentException("Password must contain special characters");
+		}
+
+		this.password = password;
+
+	}
 
 	public void setPhone(String phone) {
 		boolean isAPhoneNumber = phone
