@@ -8,10 +8,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
+import lahiru_rajakaruna.retail_manager.Sale.DTOs.CreateSaleDTO;
+import lahiru_rajakaruna.retail_manager.Sale.DTOs.SaleResponseDTO;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
-import org.springframework.stereotype.Service;
 
 /**
  * @author bl4z3
@@ -34,81 +38,67 @@ public class SaleService {
 		Objects.requireNonNull(shopRepo, "Shop Repository Not Found");
 	}
 
-	public SaleDTO createSale(SaleDTO dto) {
-		if (dto.getShopId().isEmpty()) {
-			throw new IllegalArgumentException(
-				"Must provide a shop for the sale");
+	public SaleResponseDTO createSale(CreateSaleDTO dto) {
+		boolean isShopIdNull = dto.getShopId() == null;
+		if (isShopIdNull) {
+			throw new IllegalArgumentException("Must provide a shop for the sale");
 		}
 
-		dto.setTotal(BigDecimal.ZERO);
-		dto.setSaleState(ESaleState.OPEN);
+		Shop shop = shopRepo.findById(dto.getShopId())
+				.orElseThrow(() -> new RuntimeException("Could not find shop with ID: %s".formatted(dto.getShopId())));
 
-		Shop shop = shopRepo.findById(dto.getShopId().get())
-			.orElseThrow(
-				() -> new RuntimeException(
-					"Could not find shop with ID: %s"
-						.formatted(dto.getShopId().get())));
-
-		Sale sale = SaleDTO.convertToEntity(dto, shop);
-		Sale savedSale = saleRepo.saveAndFlush(sale);
-		return SaleDTO.convertToDTO(savedSale);
+		Sale newSale = SaleMapper.getNewSale(shop);
+		Sale savedSale = saleRepo.saveAndFlush(newSale);
+		return SaleMapper.convertToDTO(savedSale);
 	}
 
-	public SaleDTO findById(UUID id) {
+	public SaleResponseDTO findById(UUID id) {
 
 		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
+			throw new IllegalArgumentException("ID parameter is null");
 		}
 
 		Sale sale = findSaleOrThrow(id);
-		return SaleDTO.convertToDTO(sale);
+		return SaleResponseDTO.convertToDTO(sale);
 	}
 
-	public List<SaleDTO> findByShopId(UUID shopId) {
+	public List<SaleResponseDTO> findByShopId(UUID shopId) {
 		checkInternalComponentsPresence();
 
 		if (shopId == null) {
-			throw new IllegalArgumentException(
-				"Shop ID parameter is null");
+			throw new IllegalArgumentException("Shop ID parameter is null");
 		}
 
-		return saleRepo.findAllByShopId(shopId).stream().map(
-			SaleDTO::convertToDTO).toList();
+		return saleRepo.findAllByShopId(shopId).stream().map(SaleResponseDTO::convertToDTO).toList();
 	}
 
-	public SaleDTO updateSaleTotal(UUID id, BigDecimal total) {
+	public SaleResponseDTO updateSaleTotal(UUID id, BigDecimal total) {
 
 		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
+			throw new IllegalArgumentException("ID parameter is null");
 		}
 		if (total == null) {
-			throw new IllegalArgumentException(
-				"Total parameter is null");
+			throw new IllegalArgumentException("Total parameter is null");
 		}
 		if (total.compareTo(BigDecimal.ZERO) < 0) {
-			throw new IllegalArgumentException(
-				"Sale total cannot be negative");
+			throw new IllegalArgumentException("Sale total cannot be negative");
 		}
 
 		Sale sale = findSaleOrThrow(id);
 
 		if (sale.getSaleState().equals(ESaleState.CLOSED)) {
-			throw new IllegalStateException(
-				"Cannot update the total of a closed sale");
+			throw new IllegalStateException("Cannot update the total of a closed sale");
 		}
 
 		sale.setTotal(total);
 		Sale updatedSale = saleRepo.saveAndFlush(sale);
-		return SaleDTO.convertToDTO(updatedSale);
+		return SaleResponseDTO.convertToDTO(updatedSale);
 	}
 
-	public SaleDTO closeSaleById(UUID id) {
+	public SaleResponseDTO closeSaleById(UUID id) {
 
 		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
+			throw new IllegalArgumentException("ID parameter is null");
 		}
 
 		Sale sale = findSaleOrThrow(id);
@@ -118,13 +108,12 @@ public class SaleService {
 		}
 
 		Sale updatedSale = saleRepo.saveAndFlush(sale);
-		return SaleDTO.convertToDTO(updatedSale);
+		return SaleResponseDTO.convertToDTO(updatedSale);
 	}
 
 	private Sale findSaleOrThrow(UUID id) {
 		return saleRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException(String.format(
-			"Could not find sale with ID: %s", id)));
+				.orElseThrow(() -> new RuntimeException(String.format("Could not find sale with ID: %s", id)));
 	}
 
 }
