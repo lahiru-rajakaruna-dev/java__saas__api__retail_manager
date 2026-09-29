@@ -11,8 +11,10 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.CreateSaleDTO;
+import lahiru_rajakaruna.retail_manager.Sale.DTOs.PatchSaleDTO;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.SaleResponseDTO;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
@@ -70,6 +72,18 @@ public class SaleService {
 
 		List<SaleResponseDTO> sales = saleRepo.findAllByShopId(shopId).stream().map(SaleMapper::convertToDTO).toList();
 		return sales;
+	}
+
+	@Transactional
+	public SaleResponseDTO patchSaleById(UUID id, PatchSaleDTO updates) {
+		if (updates.getTotal() != null) {
+			updateSaleTotal(id, updates.getTotal());
+		}
+		if (updates.getState() != null) {
+			closeSaleById(id);
+		}
+
+		return findSaleById(id);
 	}
 
 	public SaleResponseDTO updateSaleTotal(UUID id, BigDecimal total) {
