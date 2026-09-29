@@ -7,9 +7,11 @@ import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.PatchDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TenantService {
@@ -69,48 +71,30 @@ public class TenantService {
 		return TenantMapper.convertToResponseDTO(tenant);
 	}
 
-	public ResponseDTO updateNameById(UUID id, String name) {
-		checkIfInternalComponentsNull();
+	@Transactional()
+	public ResponseDTO patchProfileById(UUID id, PatchDTO updates) {
+		boolean hasNameField = updates.getName() != null;
+		boolean hasPhoneField = updates.getPhone() != null;
+		boolean hasPasswordField = updates.getPassword() != null;
 
-		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
+		Tenant tenant = this.tenantRepo.findById(id)
+			.orElseThrow(() -> new RuntimeException("Could not find tenant with ID: %s"
+			.formatted(id)));
+
+		if (hasNameField) {
+			tenant.setName(updates.getName());
+		}
+		if (hasPhoneField) {
+			tenant.setPhone(updates.getPhone());
+		}
+		if (hasPasswordField) {
+			String passwordHash = passwordEncoder.encode(updates
+				.getPassword());
+			tenant.setPasswordHash(passwordHash);
 		}
 
-		if (name == null) {
-			throw new IllegalArgumentException(
-				"Name parameter is null");
-		}
-
-		Tenant tenant = tenantRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException(String.format(
-			"Could not find tenant with ID: %s", id.toString())));
-
-		tenant.setName(name);
-		return TenantMapper
-			.convertToResponseDTO(tenantRepo.save(tenant));
-	}
-
-	public ResponseDTO updatePhoneById(UUID id, String phone) {
-		checkIfInternalComponentsNull();
-
-		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
-		}
-
-		if (phone == null) {
-			throw new IllegalArgumentException(
-				"Name parameter is null");
-		}
-
-		Tenant tenant = tenantRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException(String.format(
-			"Could not find tenant with ID: %s", id.toString())));
-
-		tenant.setPhone(phone);
-		return TenantMapper
-			.convertToResponseDTO(tenantRepo.save(tenant));
+		Tenant savedTenant = this.tenantRepo.saveAndFlush(tenant);
+		return TenantMapper.convertToResponseDTO(savedTenant);
 	}
 
 	public ResponseDTO setShopById(UUID id, UUID shopId) {
@@ -134,30 +118,6 @@ public class TenantService {
 			"Could not find tenant with ID: %s", id.toString())));
 
 		tenant.setShop(shop);
-		return TenantMapper
-			.convertToResponseDTO(tenantRepo.save(tenant));
-	}
-
-	public ResponseDTO updatePassword(UUID id, String password) {
-		checkIfInternalComponentsNull();
-
-		if (id == null) {
-			throw new IllegalArgumentException(
-				"ID parameter is null");
-		}
-
-		if (password == null) {
-			throw new IllegalArgumentException(
-				"Password parameter is null");
-		}
-
-		String passwordHash = passwordEncoder.encode(password);
-
-		Tenant tenant = tenantRepo.findById(id)
-			.orElseThrow(() -> new RuntimeException(String.format(
-			"Could not find tenant with ID: %s", id.toString())));
-
-		tenant.setPasswordHash(passwordHash);
 		return TenantMapper
 			.convertToResponseDTO(tenantRepo.save(tenant));
 	}
