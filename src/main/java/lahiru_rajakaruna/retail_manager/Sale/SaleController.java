@@ -40,9 +40,9 @@ public class SaleController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<SaleResponseDTO>> findSalesByShop(@RequestParam UUID shopId) {
-		List<SaleResponseDTO> sales = saleService.findByShopId(shopId);
-		return ResponseEntity.ok(sales);
+	public ResponseEntity<List<SaleResponseDTO>> findSalesByShopId(@RequestParam UUID shopId) {
+		List<SaleResponseDTO> sales = saleService.findSalesByShopId(shopId);
+		return ResponseEntity.status(HttpStatus.OK).body(sales);
 	}
 
 	@PostMapping()
