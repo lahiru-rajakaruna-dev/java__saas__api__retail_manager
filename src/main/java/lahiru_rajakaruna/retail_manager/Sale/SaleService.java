@@ -52,14 +52,14 @@ public class SaleService {
 		return SaleMapper.convertToDTO(savedSale);
 	}
 
-	public SaleResponseDTO findById(UUID id) {
-
-		if (id == null) {
+	public SaleResponseDTO findSaleById(UUID id) {
+		boolean isIdNull = id == null;
+		if (isIdNull) {
 			throw new IllegalArgumentException("ID parameter is null");
 		}
 
 		Sale sale = findSaleOrThrow(id);
-		return SaleResponseDTO.convertToDTO(sale);
+		return SaleMapper.convertToDTO(sale);
 	}
 
 	public List<SaleResponseDTO> findByShopId(UUID shopId) {
