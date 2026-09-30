@@ -7,6 +7,7 @@ package lahiru_rajakaruna.retail_manager.Product;
 import jakarta.transaction.Transactional;
 import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lahiru_rajakaruna.retail_manager.Product.DTOs.CreateProductDTO;
+import lahiru_rajakaruna.retail_manager.Product.DTOs.PatchProductDTO;
 import lahiru_rajakaruna.retail_manager.Product.DTOs.ResponseProductDTO;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
@@ -81,6 +82,36 @@ public class ProductService {
                           .stream()
                           .map(ProductMapper::convertToDTO)
                           .toList();
+    }
+
+    @Transactional
+    public ResponseProductDTO patchById(UUID id, PatchProductDTO updates) {
+        requireNonNull(id, "ID parameter is null");
+
+        if (updates.getName() != null) {
+            updateProductName(id, updates.getName());
+        }
+        if (updates.getPrice() != null) {
+            updateProductPrice(id, updates.getPrice());
+        }
+        if (updates.getQuantity() != null) {
+            updateProductQuantity(id, updates.getQuantity());
+        }
+        if (updates.getUnit() != null) {
+            updateProductUnit(id, updates.getUnit());
+        }
+
+        if (updates.getState() != null) {
+            if (EActiveState.ACTIVE.equals(updates.getState())) {
+                activateProductById(id);
+            } else if (EActiveState.INACTIVE.equals(updates.getState())) {
+                deactivateProductById(id);
+            } else {
+                throw new IllegalArgumentException("Illegal product state");
+            }
+        }
+
+        return findById(id);
     }
 
     @Transactional
