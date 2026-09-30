@@ -8,14 +8,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class PatchProductDTO {
-    private UUID id;
     private String name;
     private BigDecimal price;
     private BigDecimal quantity;
