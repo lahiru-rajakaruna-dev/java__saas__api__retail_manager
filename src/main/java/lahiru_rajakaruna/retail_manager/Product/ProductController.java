@@ -4,8 +4,10 @@
  */
 package lahiru_rajakaruna.retail_manager.Product;
 
-import lahiru_rajakaruna.retail_manager.Common.EActiveState;
-import lahiru_rajakaruna.retail_manager.Product.DTOs.ProductDTO;
+import lahiru_rajakaruna.retail_manager.Product.DTOs.CreateProductDTO;
+import lahiru_rajakaruna.retail_manager.Product.DTOs.PatchProductDTO;
+import lahiru_rajakaruna.retail_manager.Product.DTOs.ResponseProductDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import java.util.UUID;
 /**
  * @author bl4z3
  */
+
 @RestController
 @RequestMapping("/api/v1/products")
 public class ProductController {
@@ -26,64 +29,31 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductDetails(
-            @PathVariable UUID id) {
-        ProductDTO product = this.productService.findById(id);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<ResponseProductDTO> getProductDetails(@PathVariable UUID id) {
+        ResponseProductDTO product = productService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(product);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getProductsByShop(
-            @RequestParam UUID shopId) {
-        List<ProductDTO> products = this.productService.findByShopId(
-                shopId);
-        return ResponseEntity.ok(products);
+    public ResponseEntity<List<ResponseProductDTO>> getProductsByShop(@RequestParam UUID shopId) {
+        List<ResponseProductDTO> products = productService.findByShopId(shopId);
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(products);
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(
-            @RequestBody ProductDTO productData) {
-        ProductDTO product = productService.createProduct(productData);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<ResponseProductDTO> createProduct(@RequestBody CreateProductDTO productData) {
+        ResponseProductDTO product = productService.createProduct(productData);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(product);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductDTO> patchProduct(
-            @RequestBody ProductDTO updates, @PathVariable UUID id) {
-        if (updates.getName()
-                   .isPresent()) {
-            productService.updateProductName(id, updates.getName()
-                                                        .get());
-        }
-        if (updates.getPrice()
-                   .isPresent()) {
-            productService.updateProductPrice(id, updates.getPrice()
-                                                         .get());
-        }
-        if (updates.getQuantity()
-                   .isPresent()) {
-            productService.updateProductQuantity(id, updates
-                    .getQuantity()
-                    .get());
-        }
-        if (updates.getUnit()
-                   .isPresent()) {
-            productService.updateProductUnit(id, updates.getUnit()
-                                                        .get());
-        }
-        if (updates.getActiveState()
-                   .isPresent()) {
-            if (updates.getActiveState()
-                       .get()
-                       .equals(EActiveState.ACTIVE)) {
-                productService.activateProductById(id);
-            } else {
-                productService.deactivateProductById(id);
-            }
-        }
-
-        return ResponseEntity.ok(productService.findById(id));
-
+    public ResponseEntity<ResponseProductDTO> patchProduct(@PathVariable UUID id,
+                                                           @RequestBody PatchProductDTO updates) {
+        ResponseProductDTO product = productService.patchById(id, updates);
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(product);
     }
-
 }
