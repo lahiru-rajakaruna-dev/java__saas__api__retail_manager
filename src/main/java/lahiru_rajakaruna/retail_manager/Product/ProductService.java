@@ -67,12 +67,14 @@ public class ProductService {
         return ProductMapper.convertToDTO(savedProduct);
     }
 
+    @Transactional
     public ResponseProductDTO findById(UUID id) {
         requireNonNull(id, "ID parameter is null");
         Product product = findProductOrThrow(id);
         return ProductMapper.convertToDTO(product);
     }
 
+    @Transactional
     public List<ResponseProductDTO> findByShopId(UUID shopId) {
         requireNonNull(shopId, "Shop ID parameter is null");
         return productRepo.findAllByShopId(shopId)
