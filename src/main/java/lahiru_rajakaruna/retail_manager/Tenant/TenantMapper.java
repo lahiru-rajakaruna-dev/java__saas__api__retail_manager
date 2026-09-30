@@ -15,60 +15,62 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 public class TenantMapper {
 
-	private TenantMapper() {
-	}
+    private TenantMapper() {
+    }
 
-	public static Tenant convertToTenant(CreateDTO dto, PasswordEncoder passwordEncoder) {
-		if (dto.getName() == null || dto.getName().isBlank() || dto
-			.getName().isEmpty()) {
-			throw new IllegalArgumentException("Cannot Convert: Must provided a valid name");
-		}
-		if (dto.getPhone() == null || dto.getPhone().isBlank() || dto
-			.getPhone().isEmpty()) {
-			throw new IllegalArgumentException("Cannot Convert: Must provided a valid phone number");
-		}
-		if (dto.getPassword() == null || dto.getPassword().isBlank() || dto
-			.getPassword().isEmpty()) {
-			throw new IllegalArgumentException("Cannot Convert: Must provided a valid password");
-		}
+    public static Tenant convertToTenant(CreateDTO dto, PasswordEncoder passwordEncoder) {
+        if (dto.getName() == null || dto.getName().isBlank() || dto
+                .getName().isEmpty()) {
+            throw new IllegalArgumentException("Cannot Convert: Must provided a valid name");
+        }
+        if (dto.getPhone() == null || dto.getPhone().isBlank() || dto
+                .getPhone().isEmpty()) {
+            throw new IllegalArgumentException("Cannot Convert: Must provided a valid phone number");
+        }
+        if (dto.getPassword() == null || dto.getPassword().isBlank() || dto
+                .getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Cannot Convert: Must provided a valid password");
+        }
 
-		Tenant t = new Tenant();
+        Tenant t = new Tenant();
 
-		t.setName(dto.getName());
-		t.setPhone(dto.getPhone());
-		t.setActiveState(EActiveState.INACTIVE);
+        t.setName(dto.getName());
+        t.setPhone(dto.getPhone());
+        t.setActiveState(EActiveState.INACTIVE);
 
-		String encodedPassword = passwordEncoder.encode(dto
-			.getPassword());
+        String encodedPassword = passwordEncoder.encode(dto
+                .getPassword());
 
-		t.setPasswordHash(encodedPassword);
+        t.setPasswordHash(encodedPassword);
 
-		return t;
-	}
+        return t;
+    }
 
-	public static ResponseDTO convertToResponseDTO(Tenant entity) {
-		if (entity.getName() == null || entity.getName().isBlank() || entity
-			.getName().isEmpty()) {
-			throw new IllegalArgumentException("Cannot Convert: Must provided a valid name");
-		}
-		if (entity.getPhone() == null || entity.getPhone().isBlank() || entity
-			.getPhone().isEmpty()) {
-			throw new IllegalArgumentException("Cannot Convert: Must provided a valid phone number");
-		}
-		if (entity.getPasswordHash() == null || entity.getPasswordHash()
-			.isBlank() || entity
-				.getPasswordHash().isEmpty()) {
-			throw new IllegalArgumentException("Cannot Convert: Must provided a valid password hash");
-		}
+    public static ResponseDTO convertToResponseDTO(Tenant entity) {
+        if (entity.getName() == null || entity.getName().isBlank() || entity
+                .getName().isEmpty()) {
+            throw new IllegalArgumentException("Cannot Convert: Must provided a valid name");
+        }
+        if (entity.getPhone() == null || entity.getPhone().isBlank() || entity
+                .getPhone().isEmpty()) {
+            throw new IllegalArgumentException("Cannot Convert: Must provided a valid phone number");
+        }
+        if (entity.getPasswordHash() == null || entity.getPasswordHash()
+                .isBlank() || entity
+                .getPasswordHash().isEmpty()) {
+            throw new IllegalArgumentException("Cannot Convert: Must provided a valid password hash");
+        }
 
-		ResponseDTO dto = new ResponseDTO();
-		dto.setName(entity.getName());
-		dto.setPhone(entity.getPhone());
-		dto.setActiveState(entity.getActiveState());
-		dto.setShopId(entity.getShop().getId());
-		dto.setId(entity.getId());
+        ResponseDTO dto = new ResponseDTO();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setPhone(entity.getPhone());
+        dto.setActiveState(entity.getActiveState());
 
-		return dto;
+        if (entity.getShop() != null && entity.getShop().getId() != null) {
+            dto.setShopId(entity.getShop().getId());
+        }
 
-	}
+        return dto;
+    }
 }
