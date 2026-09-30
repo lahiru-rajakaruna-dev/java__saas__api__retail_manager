@@ -1,8 +1,6 @@
 package lahiru_rajakaruna.retail_manager.Shop;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lombok.AllArgsConstructor;
@@ -20,6 +18,7 @@ public class Shop extends BaseEntity {
     @Column(name = "name", nullable = false, updatable = true)
     private String name;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "active_state", nullable = false, updatable = true)
     private EActiveState activeState;
 }

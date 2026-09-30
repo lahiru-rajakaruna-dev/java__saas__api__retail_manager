@@ -4,12 +4,7 @@
  */
 package lahiru_rajakaruna.retail_manager.Sale;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import java.math.BigDecimal;
+import jakarta.persistence.*;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
 import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
@@ -17,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 /**
  * @author bl4z3
@@ -28,15 +25,16 @@ import lombok.Setter;
 @Entity
 public class Sale extends BaseEntity {
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false,
-		   targetEntity = Shop.class)
-	@JoinColumn(name = "shop_id", nullable = false, updatable = false)
-	private Shop shop;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false,
+            targetEntity = Shop.class)
+    @JoinColumn(name = "shop_id", nullable = false, updatable = false)
+    private Shop shop;
 
-	@Column(name = "total", nullable = false, updatable = true)
-	private BigDecimal total;
+    @Column(name = "total", nullable = false, updatable = true)
+    private BigDecimal total;
 
-	@Column(name = "sale_state", nullable = false, updatable = true)
-	private ESaleState saleState;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "sale_state", nullable = false, updatable = true)
+    private ESaleState saleState;
 
 }

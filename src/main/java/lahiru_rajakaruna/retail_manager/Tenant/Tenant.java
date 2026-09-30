@@ -17,20 +17,21 @@ import lombok.Setter;
 @Table
 public class Tenant extends BaseEntity {
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "shop_id", referencedColumnName = "id")
-	private Shop shop;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "shop_id", referencedColumnName = "id")
+    private Shop shop;
 
-	@Column(name = "name", nullable = false, updatable = true)
-	private String name;
+    @Column(name = "name", nullable = false, updatable = true)
+    private String name;
 
-	@Column(name = "password_hash", nullable = false, updatable = true)
-	private String passwordHash;
+    @Column(name = "password_hash", nullable = false, updatable = true)
+    private String passwordHash;
 
-	@Column(name = "phone", nullable = false, updatable = true)
-	private String phone;
+    @Column(name = "phone", nullable = false, updatable = true)
+    private String phone;
 
-	@Column(name = "active_state", nullable = false, updatable = true)
-	private EActiveState activeState;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "active_state", nullable = false, updatable = true)
+    private EActiveState activeState;
 
 }
