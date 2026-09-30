@@ -40,8 +40,9 @@ public class Product
     @Column(name = "quantity", nullable = false, updatable = true)
     private BigDecimal quantity;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "unit", nullable = false, updatable = true)
-    private MessurementUnit unit;
+    private EMessurmentUnit unit;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "is_active", nullable = false, updatable = true)
