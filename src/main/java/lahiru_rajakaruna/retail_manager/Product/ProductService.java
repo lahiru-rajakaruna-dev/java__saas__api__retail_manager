@@ -81,21 +81,17 @@ public class ProductService {
                           .toList();
     }
 
-    public CreateProductDTO updateProductName(UUID id, String name) {
-        if (id == null) {
-            throw new IllegalArgumentException(
-                    "ID parameter is null");
-        }
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Name parameter is null or empty");
-        }
+    @Transactional
+    public ResponseProductDTO updateProductName(UUID id, String name) {
+        requireNonNull(id, "ID parameter is null");
+        requireNonNull(name, "Name parameter is null");
+        requireNonEmptyAndNonBlank(name, "Invalid name");
 
         Product product = findProductOrThrow(id);
         product.setName(name);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return CreateProductDTO.convertToDTO(updatedProduct);
+        return ProductMapper.convertToDTO(updatedProduct);
     }
 
     public CreateProductDTO updateProductPrice(UUID id, BigDecimal price) {
@@ -190,6 +186,12 @@ public class ProductService {
 
     private void requireNonNull(Object o, String message) {
         if (o == null) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    private void requireNonEmptyAndNonBlank(String value, String message) {
+        if (value.isBlank()) {
             throw new IllegalArgumentException(message);
         }
     }
