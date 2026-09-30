@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UpdateProductDTO {
+public class PatchProductDTO {
     private UUID id;
     private String name;
     private BigDecimal price;
