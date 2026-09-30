@@ -23,7 +23,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
-public class ProductDTO {
+public class CreateProductDTO {
 
     private UUID id;
     private UUID shopId;
@@ -61,7 +61,7 @@ public class ProductDTO {
         return Optional.ofNullable(id);
     }
 
-    public static Product convertToEntity(ProductDTO dto, Shop shop) {
+    public static Product convertToEntity(CreateProductDTO dto, Shop shop) {
         if (shop == null) {
             throw new IllegalArgumentException(
                     "Shop is not provided");
@@ -112,8 +112,8 @@ public class ProductDTO {
         return product;
     }
 
-    public static ProductDTO convertToDTO(Product entity) {
-        ProductDTO dto = new ProductDTO();
+    public static CreateProductDTO convertToDTO(Product entity) {
+        CreateProductDTO dto = new CreateProductDTO();
 
         if (entity.getShop() == null) {
             throw new NullPointerException("Shop not found");
