@@ -1,15 +1,25 @@
 package lahiru_rajakaruna.retail_manager.SaleItem;
 
+import lahiru_rajakaruna.retail_manager.Product.Product;
 import lahiru_rajakaruna.retail_manager.Sale.Sale;
 import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.CreateSaleItemDTO;
 import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.SaleItemResponseDTO;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 
 import java.math.BigDecimal;
+import java.util.function.Function;
 
 public class SaleItemMapper {
 
     private SaleItemMapper() {
+    }
+
+    private static <T> boolean isPropertyOrValueNull(T parent, Function<T, ?> property) {
+        return parent == null || property.apply(parent) == null;
+    }
+
+    private static boolean isValueNullOrNegative(BigDecimal value) {
+        return value == null || value.compareTo(BigDecimal.ZERO) < 0;
     }
 
     public static SaleItemResponseDTO convertToDTO(SaleItem saleItem) {
@@ -20,57 +30,49 @@ public class SaleItemMapper {
 
         boolean isIdNull = saleItem.getId() == null;
 
-        boolean isShopNull = saleItem.getShop() == null;
-        boolean isShopIdNull = !isShopNull && saleItem.getShop().getId() == null;
 
-        boolean isSaleNull = saleItem.getSale() == null;
-        boolean isSaleIdNull = !isSaleNull && saleItem.getSale().getId() == null;
+        boolean isShopInvalid = isPropertyOrValueNull(saleItem.getShop(), Shop::getId);
+        boolean isSaleInvalid = isPropertyOrValueNull(saleItem.getSale(), Sale::getId);
+        boolean isProductInvalid = isPropertyOrValueNull(saleItem.getProduct(), Product::getId);
 
-        boolean isProductNull = saleItem.getProduct() == null;
-        boolean isProductIdNull = !isProductNull && saleItem.getProduct().getId() == null;
-
-        boolean isPriceNull = saleItem.getPrice() == null;
-        boolean isPriceLessThanZero = !isPriceNull && saleItem.getPrice().compareTo(BigDecimal.ZERO) < 0;
-
-        boolean isQuantityNull = saleItem.getQuantity() == null;
-        boolean isQuantityLessThanZero = !isQuantityNull && saleItem.getQuantity().compareTo(BigDecimal.ZERO) < 0;
-
-        boolean isDiscountNull = saleItem.getDiscount() == null;
-        boolean isDiscountLessThanZero = !isDiscountNull && saleItem.getDiscount().compareTo(BigDecimal.ZERO) < 0;
-
-        boolean isTotalNull = saleItem.getTotal() == null;
-        boolean isTotalLessThanZero = !isTotalNull && saleItem.getTotal().compareTo(BigDecimal.ZERO) < 0;
+        boolean isPriceInvalid = isValueNullOrNegative(saleItem.getPrice());
+        boolean isQuantityInvalid = isValueNullOrNegative(saleItem.getQuantity());
+        boolean isDiscountInvalid = isValueNullOrNegative(saleItem.getDiscount());
+        boolean isTotalInvalid = isValueNullOrNegative(saleItem.getTotal());
 
         if (isIdNull) {
             throw new IllegalArgumentException("Cannot Convert: Id cannot be null");
         }
-        if (isShopNull || isShopIdNull) {
+        if (isShopInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Shop or ShopId cannot be null");
         }
-        if (isSaleNull || isSaleIdNull) {
+        if (isSaleInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Sale or SaleId cannot be null");
         }
-        if (isProductNull || isProductIdNull) {
+        if (isProductInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Product or ProductId cannot be null");
         }
-        if (isPriceNull || isPriceLessThanZero) {
+        if (isPriceInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Invalid price");
         }
-        if (isQuantityNull || isQuantityLessThanZero) {
+        if (isQuantityInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Invalid quantity");
         }
-        if (isDiscountNull || isDiscountLessThanZero) {
+        if (isDiscountInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Invalid discount");
         }
-        if (isTotalNull || isTotalLessThanZero) {
+        if (isTotalInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Invalid total");
         }
 
         SaleItemResponseDTO dto = new SaleItemResponseDTO();
         dto.setId(saleItem.getId());
-        dto.setShopId(saleItem.getShop().getId());
-        dto.setSaleId(saleItem.getSale().getId());
-        dto.setProductId(saleItem.getProduct().getId());
+        dto.setShopId(saleItem.getShop()
+                              .getId());
+        dto.setSaleId(saleItem.getSale()
+                              .getId());
+        dto.setProductId(saleItem.getProduct()
+                                 .getId());
         dto.setPrice(saleItem.getPrice());
         dto.setQuantity(saleItem.getQuantity());
         dto.setDiscount(saleItem.getDiscount());
@@ -85,16 +87,21 @@ public class SaleItemMapper {
             throw new IllegalArgumentException("Cannot Convert: DTO cannot be null");
         }
 
-        if (dto.getPrice() == null || dto.getPrice().compareTo(BigDecimal.ZERO) < 0) {
+        boolean isPriceInvalid = isValueNullOrNegative(dto.getPrice());
+        boolean isQuantityInvalid = isValueNullOrNegative(dto.getQuantity());
+        boolean isDiscountInvalid = isValueNullOrNegative(dto.getDiscount());
+        boolean isTotalInvalid = isValueNullOrNegative(dto.getTotal());
+
+        if (isPriceInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Must provide a valid price");
         }
-        if (dto.getQuantity() == null || dto.getQuantity().compareTo(BigDecimal.ZERO) < 0) {
+        if (isQuantityInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Must provide a valid quantity");
         }
-        if (dto.getDiscount() == null || dto.getDiscount().compareTo(BigDecimal.ZERO) < 0) {
+        if (isDiscountInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Must provide a valid discount");
         }
-        if (dto.getTotal() == null || dto.getTotal().compareTo(BigDecimal.ZERO) < 0) {
+        if (isTotalInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Must provide a valid total");
         }
 
