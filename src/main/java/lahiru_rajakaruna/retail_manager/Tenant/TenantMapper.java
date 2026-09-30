@@ -4,6 +4,7 @@
  */
 package lahiru_rajakaruna.retail_manager.Tenant;
 
+import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +36,7 @@ public class TenantMapper {
 
 		t.setName(dto.getName());
 		t.setPhone(dto.getPhone());
+		t.setActiveState(EActiveState.INACTIVE);
 
 		String encodedPassword = passwordEncoder.encode(dto
 			.getPassword());
