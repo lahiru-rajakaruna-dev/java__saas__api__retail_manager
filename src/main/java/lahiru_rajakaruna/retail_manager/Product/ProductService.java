@@ -122,22 +122,17 @@ public class ProductService {
         return ProductMapper.convertToDTO(updatedProduct);
     }
 
-    public CreateProductDTO updateProductUnit(UUID id, EMessurmentUnit unit) {
+    @Transactional
+    public ResponseProductDTO updateProductUnit(UUID id, EMessurmentUnit unit) {
 
-        if (id == null) {
-            throw new IllegalArgumentException(
-                    "ID parameter is null");
-        }
-        if (unit == null) {
-            throw new IllegalArgumentException(
-                    "Unit parameter is null");
-        }
+        requireNonNull(id, "ID parameter is null");
+        requireNonNull(unit, "Unit parameter is null");
 
         Product product = findProductOrThrow(id);
         product.setUnit(unit);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return CreateProductDTO.convertToDTO(updatedProduct);
+        return ProductMapper.convertToDTO(updatedProduct);
     }
 
     public CreateProductDTO activateProductById(UUID id) {
