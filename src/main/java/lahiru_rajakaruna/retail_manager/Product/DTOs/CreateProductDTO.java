@@ -4,7 +4,7 @@
  */
 package lahiru_rajakaruna.retail_manager.Product.DTOs;
 
-import lahiru_rajakaruna.retail_manager.Product.MessurementUnit;
+import lahiru_rajakaruna.retail_manager.Product.EMessurmentUnit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class CreateProductDTO {
     private String name;
     private BigDecimal price;
     private BigDecimal quantity;
-    private MessurementUnit unit;
+    private EMessurmentUnit unit;
 
     private void requireNonNull(Object o, String message) {
         if (o == null) {
