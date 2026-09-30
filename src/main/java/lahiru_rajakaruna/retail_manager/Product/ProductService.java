@@ -73,16 +73,11 @@ public class ProductService {
         return ProductMapper.convertToDTO(product);
     }
 
-    public List<CreateProductDTO> findByShopId(UUID shopId) {
-
-        if (shopId == null) {
-            throw new IllegalArgumentException(
-                    "Shop ID parameter is null");
-        }
-
+    public List<ResponseProductDTO> findByShopId(UUID shopId) {
+        requireNonNull(shopId, "Shop ID parameter is null");
         return productRepo.findAllByShopId(shopId)
                           .stream()
-                          .map(CreateProductDTO::convertToDTO)
+                          .map(ProductMapper::convertToDTO)
                           .toList();
     }
 
