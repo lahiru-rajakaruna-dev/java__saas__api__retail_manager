@@ -94,26 +94,18 @@ public class ProductService {
         return ProductMapper.convertToDTO(updatedProduct);
     }
 
-    public CreateProductDTO updateProductPrice(UUID id, BigDecimal price) {
+    @Transactional
+    public ResponseProductDTO updateProductPrice(UUID id, BigDecimal price) {
 
-        if (id == null) {
-            throw new IllegalArgumentException(
-                    "ID parameter is null");
-        }
-        if (price == null) {
-            throw new IllegalArgumentException(
-                    "Price parameter is null");
-        }
-        if (price.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException(
-                    "Price cannot be negative");
-        }
+        requireNonNull(id, "ID parameter is null");
+        requireNonNull(price, "Price parameter is null");
+        requireNonNegative(price, "Price cannot be negative");
 
         Product product = findProductOrThrow(id);
         product.setPrice(price);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return CreateProductDTO.convertToDTO(updatedProduct);
+        return ProductMapper.convertToDTO(updatedProduct);
     }
 
     public CreateProductDTO updateProductQuantity(UUID id, BigDecimal quantity) {
@@ -182,6 +174,12 @@ public class ProductService {
 
         Product updatedProduct = productRepo.saveAndFlush(product);
         return CreateProductDTO.convertToDTO(updatedProduct);
+    }
+
+    private void requireNonNegative(BigDecimal value, String message) {
+        if (value.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException(message);
+        }
     }
 
     private void requireNonNull(Object o, String message) {
