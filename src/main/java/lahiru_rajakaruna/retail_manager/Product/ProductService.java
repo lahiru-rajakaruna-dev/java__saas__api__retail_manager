@@ -108,26 +108,18 @@ public class ProductService {
         return ProductMapper.convertToDTO(updatedProduct);
     }
 
-    public CreateProductDTO updateProductQuantity(UUID id, BigDecimal quantity) {
+    @Transactional
+    public ResponseProductDTO updateProductQuantity(UUID id, BigDecimal quantity) {
 
-        if (id == null) {
-            throw new IllegalArgumentException(
-                    "ID parameter is null");
-        }
-        if (quantity == null) {
-            throw new IllegalArgumentException(
-                    "Quantity parameter is null");
-        }
-        if (quantity.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException(
-                    "Quantity cannot be negative");
-        }
+        requireNonNull(id, "ID parameter is null");
+        requireNonNull(quantity, "Quantity parameter is null");
+        requireNonNegative(quantity, "Quantity cannot be negative");
 
         Product product = findProductOrThrow(id);
         product.setQuantity(quantity);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return CreateProductDTO.convertToDTO(updatedProduct);
+        return ProductMapper.convertToDTO(updatedProduct);
     }
 
     public CreateProductDTO updateProductUnit(UUID id, EMessurmentUnit unit) {
