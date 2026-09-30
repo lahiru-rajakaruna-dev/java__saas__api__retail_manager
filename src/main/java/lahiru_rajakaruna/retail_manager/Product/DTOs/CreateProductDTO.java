@@ -4,16 +4,13 @@
  */
 package lahiru_rajakaruna.retail_manager.Product.DTOs;
 
-import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lahiru_rajakaruna.retail_manager.Product.MessurementUnit;
-import lahiru_rajakaruna.retail_manager.Product.Product;
-import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -23,112 +20,35 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
+@Getter
 public class CreateProductDTO {
-
-    private UUID id;
     private UUID shopId;
     private String name;
     private BigDecimal price;
     private BigDecimal quantity;
     private MessurementUnit unit;
-    private EActiveState activeState;
 
-    public Optional<UUID> getShopId() {
-        return Optional.ofNullable(shopId);
+    private void requireNonNull(Object o, String message) {
+        if (o == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 
-    public Optional<String> getName() {
-        return Optional.ofNullable(name);
+    private void requireZeroOrPositive(BigDecimal value, String message) {
+        if (value.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException(message);
+        }
     }
 
-    public Optional<BigDecimal> getPrice() {
-        return Optional.ofNullable(price);
+    public void setPrice(BigDecimal value) {
+        requireNonNull(value, "Price cannot be null");
+        requireZeroOrPositive(value, "Price cannot be negative");
+        this.price = value;
     }
 
-    public Optional<BigDecimal> getQuantity() {
-        return Optional.ofNullable(quantity);
-    }
-
-    public Optional<MessurementUnit> getUnit() {
-        return Optional.ofNullable(unit);
-    }
-
-    public Optional<EActiveState> getActiveState() {
-        return Optional.ofNullable(activeState);
-    }
-
-    public Optional<UUID> getId() {
-        return Optional.ofNullable(id);
-    }
-
-    public static Product convertToEntity(CreateProductDTO dto, Shop shop) {
-        if (shop == null) {
-            throw new IllegalArgumentException(
-                    "Shop is not provided");
-        }
-        if (dto.getId().
-               isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Cannot Convert: Id is not provided");
-        }
-        if (dto.getName().
-               isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Cannot Convert: Name is not provided");
-        }
-        if (dto.getPrice().
-               isEmpty()) {
-            throw new IllegalArgumentException("Cannot Convert: Price is not provided");
-        }
-        if (dto.getQuantity().
-               isEmpty()) {
-            throw new IllegalArgumentException("Cannot Convert: quantity not provided");
-        }
-        if (dto.getUnit()
-               .isEmpty()) {
-            throw new IllegalArgumentException("Cannot Convert: Unit not provided");
-        }
-        if (dto.getActiveState()
-               .isEmpty()) {
-            throw new IllegalArgumentException("Cannot Convert: Active state not provided");
-        }
-
-        Product product = new Product();
-
-        product.setId(dto.getId().
-                         get());
-        product.setName(dto.getName().
-                           get());
-        product.setPrice(dto.getPrice().
-                            get());
-        product.setQuantity(dto.getQuantity().
-                               get());
-        product.setUnit(dto.getUnit()
-                           .get());
-        product.setActiveState(dto.getActiveState()
-                                  .get());
-        product.setShop(shop);
-
-        return product;
-    }
-
-    public static CreateProductDTO convertToDTO(Product entity) {
-        CreateProductDTO dto = new CreateProductDTO();
-
-        if (entity.getShop() == null) {
-            throw new NullPointerException("Shop not found");
-        }
-
-        dto.setId(entity.getId());
-        dto.setShopId(
-                entity.getShop().
-                      getId()
-        );
-        dto.setName(entity.getName());
-        dto.setPrice(entity.getPrice());
-        dto.setQuantity(entity.getQuantity());
-        dto.setActiveState(entity.getActiveState());
-
-        return dto;
+    public void setQuantity(BigDecimal value) {
+        requireNonNull(value, "Quantity cannot be null");
+        requireZeroOrPositive(value, "Quantity cannot be negative");
+        this.quantity = value;
     }
 }
