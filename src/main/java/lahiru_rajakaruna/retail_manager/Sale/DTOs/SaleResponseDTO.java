@@ -4,15 +4,15 @@
  */
 package lahiru_rajakaruna.retail_manager.Sale.DTOs;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
 import jakarta.validation.constraints.NotNull;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
+import lahiru_rajakaruna.retail_manager.Common.ESaleState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  * @author bl4z3
@@ -23,27 +23,27 @@ import lombok.Setter;
 @Setter
 public class SaleResponseDTO {
 
-	@NotNull(message = "ID cannot be null")
-	private UUID id;
+    @NotNull(message = "ID cannot be null")
+    private UUID id;
 
-	@NotNull(message = "ShopId cannot be null")
-	private UUID shopId;
+    @NotNull(message = "ShopId cannot be null")
+    private UUID shopId;
 
-	@NotNull(message = "Total cannot be null")
-	private BigDecimal total;
+    @NotNull(message = "Total cannot be null")
+    private BigDecimal total;
 
-	@NotNull(message = "State cannot be null")
-	private ESaleState saleState;
+    @NotNull(message = "State cannot be null")
+    private ESaleState saleState;
 
-	public void setTotal(BigDecimal total) {
-		boolean isNull = total == null;
-		boolean isLessThanZero = !isNull && total.compareTo(BigDecimal.ZERO) < 0;
+    public void setTotal(BigDecimal total) {
+        boolean isNull = total == null;
+        boolean isLessThanZero = !isNull && total.compareTo(BigDecimal.ZERO) < 0;
 
-		if (isNull || isLessThanZero) {
-			throw new IllegalArgumentException("Invalid total value");
-		}
+        if (isNull || isLessThanZero) {
+            throw new IllegalArgumentException("Invalid total value");
+        }
 
-		this.total = total;
-	}
+        this.total = total;
+    }
 
 }

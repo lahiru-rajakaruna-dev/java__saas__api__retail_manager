@@ -1,6 +1,6 @@
 package lahiru_rajakaruna.retail_manager.Shop;
 
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.DTOs.CreateShopDTO;
 import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 
@@ -11,8 +11,10 @@ public class ShopMapper {
 
     public static ShopResponseDTO convertToDTO(Shop entity) {
         boolean isIdNull = entity.getId() == null;
-        boolean isShopNameNullOrBlankOrEmpty = entity.getName() == null || entity.getName().isBlank()
-                || entity.getName().isEmpty();
+        boolean isShopNameNullOrBlankOrEmpty = entity.getName() == null || entity.getName()
+                                                                                 .isBlank()
+                || entity.getName()
+                         .isEmpty();
         boolean isShopStateNull = entity.getActiveState() == null;
 
         if (isIdNull) {
@@ -33,7 +35,9 @@ public class ShopMapper {
     }
 
     public static Shop convertToShop(CreateShopDTO dto) {
-        boolean isNameNull = dto.getName() == null || dto.getName().isBlank() || dto.getName().isEmpty();
+        boolean isNameNull = dto.getName() == null || dto.getName()
+                                                         .isBlank() || dto.getName()
+                                                                          .isEmpty();
 
         if (isNameNull) {
             throw new RuntimeException("Cannot Convert: Invalid shop name(null, empty or blank).");

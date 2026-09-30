@@ -1,7 +1,7 @@
 package lahiru_rajakaruna.retail_manager.SaleItem;
 
 import jakarta.transaction.Transactional;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
+import lahiru_rajakaruna.retail_manager.Common.ESaleState;
 import lahiru_rajakaruna.retail_manager.Product.IProductRepository;
 import lahiru_rajakaruna.retail_manager.Product.Product;
 import lahiru_rajakaruna.retail_manager.Sale.ISaleRepository;

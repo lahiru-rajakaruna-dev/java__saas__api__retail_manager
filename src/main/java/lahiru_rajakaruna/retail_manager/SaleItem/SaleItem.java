@@ -1,7 +1,7 @@
 package lahiru_rajakaruna.retail_manager.SaleItem;
 
 import jakarta.persistence.*;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
+import lahiru_rajakaruna.retail_manager.Common.BaseEntity;
 import lahiru_rajakaruna.retail_manager.Product.Product;
 import lahiru_rajakaruna.retail_manager.Sale.Sale;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;

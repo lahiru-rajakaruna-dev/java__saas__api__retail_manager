@@ -1,7 +1,7 @@
 package lahiru_rajakaruna.retail_manager.Shop.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

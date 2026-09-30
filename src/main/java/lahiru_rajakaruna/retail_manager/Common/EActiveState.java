@@ -3,13 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Enum.java to edit this template
  */
 
-package lahiru_rajakaruna.retail_manager.AbstractBaseClasses;
+package lahiru_rajakaruna.retail_manager.Common;
 
 /**
  * @author bl4z3
  */
 public enum EActiveState {
 
-	ACTIVE, INACTIVE
+    ACTIVE, INACTIVE
 
 }

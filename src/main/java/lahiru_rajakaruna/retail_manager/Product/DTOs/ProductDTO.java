@@ -4,7 +4,7 @@
  */
 package lahiru_rajakaruna.retail_manager.Product.DTOs;
 
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lahiru_rajakaruna.retail_manager.Product.MessurementUnit;
 import lahiru_rajakaruna.retail_manager.Product.Product;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;

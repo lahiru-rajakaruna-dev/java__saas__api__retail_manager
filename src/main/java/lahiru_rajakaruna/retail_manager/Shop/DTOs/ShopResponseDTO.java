@@ -2,7 +2,7 @@ package lahiru_rajakaruna.retail_manager.Shop.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lombok.*;
 
 import java.util.UUID;

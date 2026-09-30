@@ -1,4 +1,4 @@
-package lahiru_rajakaruna.retail_manager.AbstractBaseClasses;
+package lahiru_rajakaruna.retail_manager.Common;
 
 import java.util.List;
 

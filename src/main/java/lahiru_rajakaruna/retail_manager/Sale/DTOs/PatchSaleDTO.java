@@ -1,6 +1,6 @@
 package lahiru_rajakaruna.retail_manager.Sale.DTOs;
 
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
+import lahiru_rajakaruna.retail_manager.Common.ESaleState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

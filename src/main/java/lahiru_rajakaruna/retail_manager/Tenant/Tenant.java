@@ -1,8 +1,8 @@
 package lahiru_rajakaruna.retail_manager.Tenant;
 
 import jakarta.persistence.*;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.BaseEntity;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
+import lahiru_rajakaruna.retail_manager.Common.BaseEntity;
+import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

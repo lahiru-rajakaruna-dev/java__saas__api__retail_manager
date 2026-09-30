@@ -5,7 +5,7 @@
 package lahiru_rajakaruna.retail_manager.Sale;
 
 import jakarta.transaction.Transactional;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.ESaleState;
+import lahiru_rajakaruna.retail_manager.Common.ESaleState;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.CreateSaleDTO;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.PatchSaleDTO;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.SaleResponseDTO;
@@ -46,7 +46,7 @@ public class SaleService {
         }
 
         Shop shop = shopRepo.findById(dto.getShopId())
-                .orElseThrow(() -> new RuntimeException("Could not find shop with ID: %s".formatted(dto.getShopId())));
+                            .orElseThrow(() -> new RuntimeException("Could not find shop with ID: %s".formatted(dto.getShopId())));
 
         Sale newSale = SaleMapper.getNewSale(shop);
         Sale savedSale = saleRepo.saveAndFlush(newSale);
@@ -69,7 +69,10 @@ public class SaleService {
             throw new IllegalArgumentException("Shop ID parameter is null");
         }
 
-        List<SaleResponseDTO> sales = saleRepo.findAllByShopId(shopId).stream().map(SaleMapper::convertToDTO).toList();
+        List<SaleResponseDTO> sales = saleRepo.findAllByShopId(shopId)
+                                              .stream()
+                                              .map(SaleMapper::convertToDTO)
+                                              .toList();
         return sales;
     }
 
@@ -79,7 +82,8 @@ public class SaleService {
             updateSaleTotal(id, updates.getTotal());
         }
         if (updates.getState() != null) {
-            if (!updates.getState().equals(ESaleState.CLOSED)) {
+            if (!updates.getState()
+                        .equals(ESaleState.CLOSED)) {
                 throw new IllegalArgumentException("Sale only can be closed");
             }
             closeSaleById(id);
@@ -105,7 +109,8 @@ public class SaleService {
 
         Sale sale = findSaleOrThrow(id);
 
-        if (sale.getSaleState().equals(ESaleState.CLOSED)) {
+        if (sale.getSaleState()
+                .equals(ESaleState.CLOSED)) {
             throw new IllegalStateException("Cannot update the total of a closed sale");
         }
 
@@ -122,7 +127,8 @@ public class SaleService {
 
         Sale sale = findSaleOrThrow(id);
 
-        if (sale.getSaleState().equals(ESaleState.OPEN)) {
+        if (sale.getSaleState()
+                .equals(ESaleState.OPEN)) {
             sale.setSaleState(ESaleState.CLOSED);
         }
 
@@ -134,7 +140,7 @@ public class SaleService {
 
     private Sale findSaleOrThrow(UUID id) {
         return saleRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException(String.format("Could not find sale with ID: %s", id)));
+                       .orElseThrow(() -> new RuntimeException(String.format("Could not find sale with ID: %s", id)));
     }
 
 }

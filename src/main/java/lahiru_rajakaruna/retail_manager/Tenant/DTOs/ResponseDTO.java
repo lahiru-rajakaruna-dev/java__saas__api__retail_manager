@@ -1,12 +1,9 @@
 package lahiru_rajakaruna.retail_manager.Tenant.DTOs;
 
+import lahiru_rajakaruna.retail_manager.Common.EActiveState;
+import lombok.*;
+
 import java.util.UUID;
-import lahiru_rajakaruna.retail_manager.AbstractBaseClasses.EActiveState;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,13 +12,13 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class ResponseDTO {
 
-	private UUID id = null;
+    private UUID id = null;
 
-	private String name = null;
+    private String name = null;
 
-	private String phone = null;
+    private String phone = null;
 
-	private EActiveState activeState = null;
+    private EActiveState activeState = null;
 
-	private UUID shopId = null;
+    private UUID shopId = null;
 }
