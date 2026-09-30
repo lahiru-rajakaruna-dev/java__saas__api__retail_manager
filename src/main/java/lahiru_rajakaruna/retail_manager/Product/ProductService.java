@@ -147,18 +147,16 @@ public class ProductService {
         return ProductMapper.convertToDTO(updatedProduct);
     }
 
-    public CreateProductDTO deactivateProductById(UUID id) {
+    @Transactional
+    public ResponseProductDTO deactivateProductById(UUID id) {
 
-        if (id == null) {
-            throw new IllegalArgumentException(
-                    "ID parameter is null");
-        }
+        requireNonNull(id, "ID parameter is null");
 
         Product product = findProductOrThrow(id);
         product.setActiveState(EActiveState.INACTIVE);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return CreateProductDTO.convertToDTO(updatedProduct);
+        return ProductMapper.convertToDTO(updatedProduct);
     }
 
     private void requireNonNegative(BigDecimal value, String message) {
