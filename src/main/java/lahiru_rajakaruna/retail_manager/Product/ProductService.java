@@ -4,8 +4,10 @@
  */
 package lahiru_rajakaruna.retail_manager.Product;
 
+import jakarta.transaction.Transactional;
 import lahiru_rajakaruna.retail_manager.Common.EActiveState;
-import lahiru_rajakaruna.retail_manager.Product.DTOs.ProductDTO;
+import lahiru_rajakaruna.retail_manager.Product.DTOs.CreateProductDTO;
+import lahiru_rajakaruna.retail_manager.Product.DTOs.ResponseProductDTO;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import org.springframework.stereotype.Service;
@@ -37,48 +39,35 @@ public class ProductService {
                 "Product Repository Not Found");
     }
 
-    public ProductDTO createProduct(ProductDTO dto) {
-        if (dto.getName()
-               .isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Must provide a name for the product");
-        }
-        if (dto.getShopId()
-               .isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Must provide a shop for the product");
-        }
-        if (dto.getPrice()
-               .isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Must provide a price for the product");
-        }
-        if (dto.getQuantity()
-               .isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Must provide a quantity for the product");
-        }
-        if (dto.getUnit()
-               .isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Must provide a measurement unit for the product");
-        }
 
-        Shop shop = shopRepo.findById(dto.getShopId()
-                                         .get())
+    @Transactional
+    public ResponseProductDTO createProduct(CreateProductDTO dto) {
+        requireNonNull(dto.getName(), "Must provide a name for the product");
+        requireNonNull(dto.getShopId(),
+                "Must provide a shop for the product");
+        requireNonNull(dto.getPrice(),
+                "Must provide a price for the product");
+        requireNonNull(dto.getQuantity(),
+                "Must provide a quantity for the product");
+        requireNonNull(dto.getUnit(),
+                "Must provide a measurement unit for the product");
+
+        Shop shop = shopRepo.findById(dto.getShopId())
                             .orElseThrow(
                                     () -> new RuntimeException(
                                             String.format(
                                                     "Could not find shop with ID: %s",
                                                     dto.getShopId()
-                                                       .get())));
+                                            )
+                                    )
+                            );
 
-        Product product = ProductDTO.convertToEntity(dto, shop);
+        Product product = ProductMapper.convertToProduct(dto, shop);
         Product savedProduct = productRepo.saveAndFlush(product);
-        return ProductDTO.convertToDTO(savedProduct);
+        return ProductMapper.convertToDTO(savedProduct);
     }
 
-    public ProductDTO findById(UUID id) {
+    public CreateProductDTO findById(UUID id) {
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -86,10 +75,10 @@ public class ProductService {
         }
 
         Product product = findProductOrThrow(id);
-        return ProductDTO.convertToDTO(product);
+        return CreateProductDTO.convertToDTO(product);
     }
 
-    public List<ProductDTO> findByShopId(UUID shopId) {
+    public List<CreateProductDTO> findByShopId(UUID shopId) {
 
         if (shopId == null) {
             throw new IllegalArgumentException(
@@ -98,11 +87,11 @@ public class ProductService {
 
         return productRepo.findAllByShopId(shopId)
                           .stream()
-                          .map(ProductDTO::convertToDTO)
+                          .map(CreateProductDTO::convertToDTO)
                           .toList();
     }
 
-    public ProductDTO updateProductName(UUID id, String name) {
+    public CreateProductDTO updateProductName(UUID id, String name) {
         if (id == null) {
             throw new IllegalArgumentException(
                     "ID parameter is null");
@@ -116,10 +105,10 @@ public class ProductService {
         product.setName(name);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductDTO.convertToDTO(updatedProduct);
+        return CreateProductDTO.convertToDTO(updatedProduct);
     }
 
-    public ProductDTO updateProductPrice(UUID id, BigDecimal price) {
+    public CreateProductDTO updateProductPrice(UUID id, BigDecimal price) {
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -138,10 +127,10 @@ public class ProductService {
         product.setPrice(price);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductDTO.convertToDTO(updatedProduct);
+        return CreateProductDTO.convertToDTO(updatedProduct);
     }
 
-    public ProductDTO updateProductQuantity(UUID id, BigDecimal quantity) {
+    public CreateProductDTO updateProductQuantity(UUID id, BigDecimal quantity) {
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -160,10 +149,10 @@ public class ProductService {
         product.setQuantity(quantity);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductDTO.convertToDTO(updatedProduct);
+        return CreateProductDTO.convertToDTO(updatedProduct);
     }
 
-    public ProductDTO updateProductUnit(UUID id, MessurementUnit unit) {
+    public CreateProductDTO updateProductUnit(UUID id, EMessurmentUnit unit) {
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -178,10 +167,10 @@ public class ProductService {
         product.setUnit(unit);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductDTO.convertToDTO(updatedProduct);
+        return CreateProductDTO.convertToDTO(updatedProduct);
     }
 
-    public ProductDTO activateProductById(UUID id) {
+    public CreateProductDTO activateProductById(UUID id) {
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -192,10 +181,10 @@ public class ProductService {
         product.setActiveState(EActiveState.ACTIVE);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductDTO.convertToDTO(updatedProduct);
+        return CreateProductDTO.convertToDTO(updatedProduct);
     }
 
-    public ProductDTO deactivateProductById(UUID id) {
+    public CreateProductDTO deactivateProductById(UUID id) {
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -206,7 +195,7 @@ public class ProductService {
         product.setActiveState(EActiveState.INACTIVE);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductDTO.convertToDTO(updatedProduct);
+        return CreateProductDTO.convertToDTO(updatedProduct);
     }
 
     private void requireNonNull(Object o, String message) {
