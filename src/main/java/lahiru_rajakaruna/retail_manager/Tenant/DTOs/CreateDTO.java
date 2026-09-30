@@ -31,10 +31,10 @@ public class CreateDTO {
 	private String password;
 
 	public void setPassword(String password) {
-		boolean lengthGreaterThan8 = password.length() > 8;
-		boolean hasNumbers = password.matches("\\d");
+		boolean lengthGreaterThan8 = password.length() >= 8;
+		boolean hasNumbers = password.matches(".*\\d.*");
 		boolean hasSpecialCharacters = password
-			.matches("[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]");
+			.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*");
 
 		if (!lengthGreaterThan8) {
 			throw new IllegalArgumentException("Password must be at least 8 characters long");
