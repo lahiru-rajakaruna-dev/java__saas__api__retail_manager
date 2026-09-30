@@ -10,10 +10,14 @@ public class ShopMapper {
     }
 
     public static ShopResponseDTO convertToDTO(Shop entity) {
+        boolean isIdNull = entity.getId() == null;
         boolean isShopNameNullOrBlankOrEmpty = entity.getName() == null || entity.getName().isBlank()
                 || entity.getName().isEmpty();
         boolean isShopStateNull = entity.getActiveState() == null;
 
+        if (isIdNull) {
+            throw new RuntimeException("Cannot Convert: ID is null");
+        }
         if (isShopNameNullOrBlankOrEmpty) {
             throw new RuntimeException("Cannot Convert: Invalid Shop Name");
         }
@@ -22,6 +26,7 @@ public class ShopMapper {
         }
 
         ShopResponseDTO dto = new ShopResponseDTO();
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setActiveState(entity.getActiveState());
         return dto;
