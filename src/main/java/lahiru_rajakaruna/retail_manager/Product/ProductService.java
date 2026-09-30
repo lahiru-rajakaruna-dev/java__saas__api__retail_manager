@@ -217,6 +217,12 @@ public class ProductService {
         return ProductDTO.convertToDTO(updatedProduct);
     }
 
+    private void requireNonNull(Object o, String message) {
+        if (o == null) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
     private Product findProductOrThrow(UUID id) {
         return productRepo.findById(id)
                           .orElseThrow(() -> new RuntimeException(String.format(
