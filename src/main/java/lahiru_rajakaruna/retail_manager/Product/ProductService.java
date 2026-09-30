@@ -135,18 +135,16 @@ public class ProductService {
         return ProductMapper.convertToDTO(updatedProduct);
     }
 
-    public CreateProductDTO activateProductById(UUID id) {
+    @Transactional
+    public ResponseProductDTO activateProductById(UUID id) {
 
-        if (id == null) {
-            throw new IllegalArgumentException(
-                    "ID parameter is null");
-        }
+        requireNonNull(id, "ID parameter is null");
 
         Product product = findProductOrThrow(id);
         product.setActiveState(EActiveState.ACTIVE);
 
         Product updatedProduct = productRepo.saveAndFlush(product);
-        return CreateProductDTO.convertToDTO(updatedProduct);
+        return ProductMapper.convertToDTO(updatedProduct);
     }
 
     public CreateProductDTO deactivateProductById(UUID id) {
