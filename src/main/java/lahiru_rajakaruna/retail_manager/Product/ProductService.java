@@ -90,7 +90,6 @@ public class ProductService {
     }
 
     public List<ProductDTO> findByShopId(UUID shopId) {
-        checkInternalComponentsPresence();
 
         if (shopId == null) {
             throw new IllegalArgumentException(
@@ -104,8 +103,6 @@ public class ProductService {
     }
 
     public ProductDTO updateProductName(UUID id, String name) {
-        checkInternalComponentsPresence();
-
         if (id == null) {
             throw new IllegalArgumentException(
                     "ID parameter is null");
@@ -123,7 +120,6 @@ public class ProductService {
     }
 
     public ProductDTO updateProductPrice(UUID id, BigDecimal price) {
-        checkInternalComponentsPresence();
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -146,7 +142,6 @@ public class ProductService {
     }
 
     public ProductDTO updateProductQuantity(UUID id, BigDecimal quantity) {
-        checkInternalComponentsPresence();
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -169,7 +164,6 @@ public class ProductService {
     }
 
     public ProductDTO updateProductUnit(UUID id, MessurementUnit unit) {
-        checkInternalComponentsPresence();
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -188,7 +182,6 @@ public class ProductService {
     }
 
     public ProductDTO activateProductById(UUID id) {
-        checkInternalComponentsPresence();
 
         if (id == null) {
             throw new IllegalArgumentException(
@@ -203,7 +196,6 @@ public class ProductService {
     }
 
     public ProductDTO deactivateProductById(UUID id) {
-        checkInternalComponentsPresence();
 
         if (id == null) {
             throw new IllegalArgumentException(
