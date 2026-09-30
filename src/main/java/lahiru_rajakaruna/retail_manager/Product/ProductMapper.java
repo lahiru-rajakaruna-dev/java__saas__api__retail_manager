@@ -31,10 +31,11 @@ public class ProductMapper {
     }
 
     public static Product convertToProduct(CreateProductDTO dto, Shop shop) {
+        objectAndPropertyMustBeNonNull(shop, Shop::getId, "Shop cannot be null");
+
         requireNonNull(dto.getName(), "Product name cannot be null");
         requireNonNull(dto.getPrice(), "Product price cannot be null");
         requireNonNull(dto.getQuantity(), "Product quantity cannot be null");
-        requireNonNull(dto.getShopId(), "Product shop id cannot be null");
         requireNonNull(dto.getUnit(), "Product measurement unit cannot be null");
 
         mustBeNonNegative(dto.getPrice(), "Product price must be non negative");
@@ -59,8 +60,8 @@ public class ProductMapper {
         requireNonNull(entity.getUnit(), "Product measurement unit cannot be null");
         requireNonNull(entity.getActiveState(), "Product state cannot be null");
 
-        mustBeNonNegative(entity.getPrice(), "Product price cannot be null");
-        mustBeNonNegative(entity.getQuantity(), "Product quantity cannot be null");
+        mustBeNonNegative(entity.getPrice(), "Product price cannot be negative");
+        mustBeNonNegative(entity.getQuantity(), "Product quantity cannot be negative");
 
         ResponseProductDTO dto = new ResponseProductDTO();
         dto.setId(entity.getId());
