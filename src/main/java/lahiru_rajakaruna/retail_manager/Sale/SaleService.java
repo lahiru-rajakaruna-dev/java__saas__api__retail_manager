@@ -25,7 +25,6 @@ import java.util.UUID;
 public class SaleService {
 
     private final ISaleRepository saleRepo;
-
     private final IShopRepository shopRepo;
 
     public SaleService(ISaleRepository saleRepo, IShopRepository shopRepo) {
@@ -125,10 +124,7 @@ public class SaleService {
 
     @Transactional
     public SaleResponseDTO closeSaleById(UUID id) {
-        boolean isIdNull = id == null;
-        if (isIdNull) {
-            throw new IllegalArgumentException("ID parameter is null");
-        }
+        requireNonNull(id, "ID parameter is null");
 
         Sale sale = findSaleOrThrow(id);
 
@@ -144,6 +140,12 @@ public class SaleService {
     private Sale findSaleOrThrow(UUID id) {
         return saleRepo.findById(id)
                        .orElseThrow(() -> new RuntimeException(String.format("Could not find sale with ID: %s", id)));
+    }
+
+    private void requireNonNull(Object o, String message) {
+        if (o == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 
 }
