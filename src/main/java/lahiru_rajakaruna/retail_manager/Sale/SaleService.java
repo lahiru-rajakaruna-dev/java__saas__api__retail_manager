@@ -39,6 +39,7 @@ public class SaleService {
         Objects.requireNonNull(shopRepo, "Shop Repository Not Found");
     }
 
+    @Transactional
     public SaleResponseDTO createSale(CreateSaleDTO dto) {
         boolean isShopIdNull = dto.getShopId() == null;
         if (isShopIdNull) {
@@ -53,6 +54,7 @@ public class SaleService {
         return SaleMapper.convertToDTO(savedSale);
     }
 
+    @Transactional
     public SaleResponseDTO findSaleById(UUID id) {
         boolean isIdNull = id == null;
         if (isIdNull) {
@@ -63,6 +65,7 @@ public class SaleService {
         return SaleMapper.convertToDTO(sale);
     }
 
+    @Transactional
     public List<SaleResponseDTO> findSalesByShopId(UUID shopId) {
         boolean isShopIdNull = shopId == null;
         if (isShopIdNull) {
@@ -92,6 +95,7 @@ public class SaleService {
         return findSaleById(id);
     }
 
+    @Transactional
     public SaleResponseDTO updateSaleTotal(UUID id, BigDecimal total) {
         boolean isIdNull = id == null;
         boolean isTotalNull = total == null;
@@ -119,6 +123,7 @@ public class SaleService {
         return SaleMapper.convertToDTO(updatedSale);
     }
 
+    @Transactional
     public SaleResponseDTO closeSaleById(UUID id) {
         boolean isIdNull = id == null;
         if (isIdNull) {
