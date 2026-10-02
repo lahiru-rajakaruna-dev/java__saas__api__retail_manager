@@ -136,8 +136,6 @@ public class SaleService {
         return SaleMapper.convertToDTO(updatedSale);
     }
 
-//	TODO: ADD METHODS: ADD ITEM, REMOVE ITEM, UPDATE ITEM METHODS
-
     private Sale findSaleOrThrow(UUID id) {
         return saleRepo.findById(id)
                        .orElseThrow(() -> new RuntimeException(String.format("Could not find sale with ID: %s", id)));
