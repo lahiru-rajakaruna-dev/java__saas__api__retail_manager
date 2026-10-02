@@ -56,13 +56,13 @@ public class SalePaymentService {
         return SalePaymentMapper.convertToDTO(saved);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ResponseSalePaymentDTO findById(UUID id) {
         requireNonNull(id, "ID parameter is null");
         return SalePaymentMapper.convertToDTO(findPaymentOrThrow(id));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ResponseSalePaymentDTO findBySaleId(UUID saleId) {
         requireNonNull(saleId, "Sale ID parameter is null");
         SalePayment payment = salePaymentRepo.findBySaleId(saleId)
