@@ -6,9 +6,15 @@ package lahiru_rajakaruna.retail_manager.Sale;
 
 import jakarta.transaction.Transactional;
 import lahiru_rajakaruna.retail_manager.Common.ESaleState;
+import lahiru_rajakaruna.retail_manager.CreditAccount.CreditAccountService;
+import lahiru_rajakaruna.retail_manager.CreditAccount.DTOs.ResponseCreditAccountDTO;
+import lahiru_rajakaruna.retail_manager.CreditEntry.CreditEntryService;
+import lahiru_rajakaruna.retail_manager.CreditEntry.DTOs.CreateCreditEntryDTO;
+import lahiru_rajakaruna.retail_manager.Sale.DTOs.CloseSaleDTO;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.CreateSaleDTO;
-import lahiru_rajakaruna.retail_manager.Sale.DTOs.PatchSaleDTO;
 import lahiru_rajakaruna.retail_manager.Sale.DTOs.SaleResponseDTO;
+import lahiru_rajakaruna.retail_manager.SalePayment.ISalePaymentRepository;
+import lahiru_rajakaruna.retail_manager.SalePayment.SalePayment;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import org.springframework.stereotype.Service;
@@ -26,10 +32,17 @@ public class SaleService {
 
     private final ISaleRepository saleRepo;
     private final IShopRepository shopRepo;
+    private final ISalePaymentRepository salePaymentRepo;
+    private final CreditAccountService creditAccountService;
+    private final CreditEntryService creditEntryService;
 
-    public SaleService(ISaleRepository saleRepo, IShopRepository shopRepo) {
+    public SaleService(ISaleRepository saleRepo, IShopRepository shopRepo, ISalePaymentRepository salePaymentRepo,
+            CreditAccountService creditAccountService, CreditEntryService creditEntryService) {
         this.saleRepo = saleRepo;
         this.shopRepo = shopRepo;
+        this.salePaymentRepo = salePaymentRepo;
+        this.creditAccountService = creditAccountService;
+        this.creditEntryService = creditEntryService;
         checkInternalComponentsPresence();
     }
 
