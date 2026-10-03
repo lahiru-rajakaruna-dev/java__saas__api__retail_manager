@@ -46,7 +46,8 @@ public class SaleService {
         }
 
         Shop shop = shopRepo.findById(dto.getShopId())
-                            .orElseThrow(() -> new RuntimeException("Could not find shop with ID: %s".formatted(dto.getShopId())));
+                            .orElseThrow(() -> new RuntimeException(
+                                    "Could not find shop with ID: %s".formatted(dto.getShopId())));
 
         Sale newSale = SaleMapper.getNewSale(shop);
         Sale savedSale = saleRepo.saveAndFlush(newSale);
