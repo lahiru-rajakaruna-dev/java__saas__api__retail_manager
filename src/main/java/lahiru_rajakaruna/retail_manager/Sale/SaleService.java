@@ -108,18 +108,50 @@ public class SaleService {
     }
 
     @Transactional
-    public SaleResponseDTO closeSaleById(UUID id) {
+    public SaleResponseDTO closeSaleById(UUID id, CloseSaleDTO closeData) {
         requireNonNull(id, "ID parameter is null");
+        requireNonNull(closeData.getPayment(), "Payment data not provided");
 
         Sale sale = findSaleOrThrow(id);
 
         if (sale.getSaleState()
-                .equals(ESaleState.OPEN)) {
-            sale.setSaleState(ESaleState.CLOSED);
+                .equals(ESaleState.CLOSED)) {
+            throw new RuntimeException("Sale %s is closed".formatted(id));
         }
 
+        SalePayment payment = salePaymentRepo.findBySaleId(sale.getId())
+                                             .orElse(null);
+
+        BigDecimal outstandingBalance = calculateOutstandingBalance(sale, payment);
+
+        if (outstandingBalance.compareTo(BigDecimal.ZERO) > 0) {
+            requireNonNull(closeData.getCustomerDetails(), "Customer details are not provided");
+            ResponseCreditAccountDTO account = creditAccountService.findByPhoneOrCreate(sale.getShop()
+                                                                                            .getId(),
+                                                                                        closeData.getCustomerDetails()
+                                                                                                 .getPhone(),
+                                                                                        closeData.getCustomerDetails()
+                                                                                                 .getName());
+            CreateCreditEntryDTO creditEntryData = new CreateCreditEntryDTO(id, account.getId(), outstandingBalance);
+            creditEntryService.createCreditEntryForSale(creditEntryData);
+        }
+
+        sale.setSaleState(ESaleState.CLOSED);
         Sale updatedSale = saleRepo.saveAndFlush(sale);
         return SaleMapper.convertToDTO(updatedSale);
+    }
+
+    private BigDecimal calculateOutstandingBalance(Sale sale, SalePayment payment) {
+        if (payment == null) {
+            return sale.getTotal();
+        } else if (payment.getAmount()
+                          .compareTo(sale.getTotal()) < 0) {
+            return sale.getTotal()
+                       .subtract(payment.getAmount());
+        } else {
+            return BigDecimal.ZERO;
+        }
+
     }
 
     private Sale findSaleOrThrow(UUID id) {
