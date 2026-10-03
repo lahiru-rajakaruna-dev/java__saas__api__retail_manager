@@ -80,22 +80,6 @@ public class SaleService {
     }
 
     @Transactional
-    public SaleResponseDTO patchSaleById(UUID id, PatchSaleDTO updates) {
-        if (updates.getTotal() != null) {
-            updateSaleTotal(id, updates.getTotal());
-        }
-        if (updates.getState() != null) {
-            if (!updates.getState()
-                        .equals(ESaleState.CLOSED)) {
-                throw new IllegalArgumentException("Sale only can be closed");
-            }
-            closeSaleById(id);
-        }
-
-        return findSaleById(id);
-    }
-
-    @Transactional
     public SaleResponseDTO updateSaleTotal(UUID id, BigDecimal total) {
         boolean isIdNull = id == null;
         boolean isTotalNull = total == null;
