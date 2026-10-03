@@ -52,10 +52,12 @@ public class SaleController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdSale);
 	}
 
-	@PatchMapping()
-	public ResponseEntity<SaleResponseDTO> patchSale(@RequestParam UUID id, @RequestBody PatchSaleDTO saleUpdates) {
-		SaleResponseDTO dto = saleService.patchSaleById(id, saleUpdates);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
-	}
+    @PatchMapping("/{saleId}/close")
+    public ResponseEntity<SaleResponseDTO> closeSale(@PathVariable UUID saleId,
+            @RequestBody(required = false) CloseSaleDTO closeData) {
+        SaleResponseDTO dto = saleService.closeSaleById(saleId, closeData);
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(dto);
+    }
 
 }
