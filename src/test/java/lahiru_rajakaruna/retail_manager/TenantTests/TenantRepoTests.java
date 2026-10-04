@@ -6,7 +6,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
-import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.TenantMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,9 +37,12 @@ public class TenantRepoTests {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Tenant> query = cb.createQuery(Tenant.class);
         Root<Tenant> user_ = query.from(Tenant.class);
-        em.createQuery(query).getResultList().forEach((Tenant u) -> {
-            System.out.println(ResponseDTO.convertToDTO(u).toString());
-        });
+        em.createQuery(query)
+          .getResultList()
+          .forEach((Tenant u) -> {
+              System.out.println(TenantMapper.convertToResponseDTO(u)
+                                             .toString());
+          });
     }
 
     @BeforeEach
@@ -66,7 +69,8 @@ public class TenantRepoTests {
     @Test
     public void shouldFetchTheUserById() {
         Tenant savedTenant = entityManager.persistAndFlush(sampleTenant);
-        boolean isUserFoundOnTheDB = userRepo.findById(savedTenant.getId()).isPresent();
+        boolean isUserFoundOnTheDB = userRepo.findById(savedTenant.getId())
+                                             .isPresent();
         Assertions.assertTrue(isUserFoundOnTheDB, "Repo Did Not Fetch The User From DB");
     }
 
@@ -94,7 +98,8 @@ public class TenantRepoTests {
 
         Tenant tenant = entityManager.find(Tenant.class, savedTenant.getId());
 
-        if (tenant == null || tenant.getName().isEmpty()) {
+        if (tenant == null || tenant.getName()
+                                    .isEmpty()) {
             throw new Error("Repo Failed To Save The User Entity Correctly");
         }
 
