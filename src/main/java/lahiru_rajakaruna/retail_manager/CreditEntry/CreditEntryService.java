@@ -23,8 +23,8 @@ public class CreditEntryService {
     private final ISaleRepository saleRepo;
 
     public CreditEntryService(ICreditEntryRepository creditEntryRepo,
-                              ICreditAccountRepository creditAccountRepo,
-                              ISaleRepository saleRepo) {
+            ICreditAccountRepository creditAccountRepo,
+            ISaleRepository saleRepo) {
         this.creditEntryRepo = creditEntryRepo;
         this.creditAccountRepo = creditAccountRepo;
         this.saleRepo = saleRepo;
@@ -49,10 +49,13 @@ public class CreditEntryService {
         requireNonNull(dto.getAmount(), "Must provide an amount for the credit entry");
 
         Sale sale = saleRepo.findById(dto.getSaleId())
-                            .orElseThrow(() -> new RuntimeException("Could not find sale with ID: %s".formatted(dto.getSaleId())));
+                            .orElseThrow(() -> new RuntimeException(
+                                    "Could not find sale with ID: %s".formatted(dto.getSaleId())));
 
         CreditAccount account = creditAccountRepo.findById(dto.getCreditAccountId())
-                                                 .orElseThrow(() -> new RuntimeException("Could not find credit account with ID: %s".formatted(dto.getCreditAccountId())));
+                                                 .orElseThrow(() -> new RuntimeException(
+                                                         "Could not find credit account with ID: %s".formatted(
+                                                                 dto.getCreditAccountId())));
 
         if (!sale.getShop()
                  .getId()
@@ -85,7 +88,9 @@ public class CreditEntryService {
     public ResponseCreditEntryDTO findBySaleId(UUID creditAccountId, UUID saleId) {
         requireNonNull(saleId, "Sale ID parameter is null");
         CreditEntry entry = creditEntryRepo.findBySale_Id(saleId)
-                                           .orElseThrow(() -> new RuntimeException("Could not find credit entry for sale with ID: %s".formatted(saleId)));
+                                           .orElseThrow(() -> new RuntimeException(
+                                                   "Could not find credit entry for sale with ID: %s".formatted(
+                                                           saleId)));
         assertThatCreditEntryBelongToCreditAccount(creditAccountId, entry);
         return CreditEntryMapper.convertToDTO(entry);
     }
@@ -106,11 +111,6 @@ public class CreditEntryService {
                       .toList();
     }
 
-    // ---- Used by the CreditPayment flow (same transaction) ----
-
-    /**
-     * Locks and returns the account's outstanding entries, oldest first.
-     */
     @Transactional
     public List<CreditEntry> lockOutstandingEntries(UUID creditAccountId) {
         requireNonNull(creditAccountId, "Credit account ID parameter is null");
@@ -134,19 +134,27 @@ public class CreditEntryService {
 
         entry.setTotalReceivedAmount(entry.getTotalReceivedAmount()
                                           .add(allocation));
+
+        if (entry.getOriginalAmount()
+                 .compareTo(entry.getTotalReceivedAmount()) == 0) {
+            entry.setState(ECreditEntryState.CLEARED);
+        }
+        
         return creditEntryRepo.saveAndFlush(entry);
     }
 
     private CreditEntry findCreditEntryOrThrow(UUID id) {
         return creditEntryRepo.findById(id)
-                              .orElseThrow(() -> new RuntimeException("Could not find credit entry with ID: %s".formatted(id)));
+                              .orElseThrow(() -> new RuntimeException(
+                                      "Could not find credit entry with ID: %s".formatted(id)));
     }
 
     private void assertThatCreditEntryBelongToCreditAccount(UUID creditAccountId, CreditEntry entry) {
         if (!entry.getCreditAccount()
                   .getId()
                   .equals(creditAccountId)) {
-            throw new RuntimeException("Credit entry: %s does not belong to credit account: %s".formatted(entry.getId(), creditAccountId));
+            throw new RuntimeException(
+                    "Credit entry: %s does not belong to credit account: %s".formatted(entry.getId(), creditAccountId));
         }
     }
 
