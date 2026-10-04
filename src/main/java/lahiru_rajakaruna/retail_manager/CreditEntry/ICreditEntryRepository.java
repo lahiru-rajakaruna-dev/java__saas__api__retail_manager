@@ -30,10 +30,6 @@ public interface ICreditEntryRepository extends JpaRepository<CreditEntry, UUID>
             """)
     List<CreditEntry> findOutstandingEntriesByCreditAccountId(@Param("creditAccountId") UUID creditAccountId);
 
-    /**
-     * Oldest outstanding entries first, with a row lock so that concurrent payments
-     * cannot over-allocate the same entry. Must be called inside a transaction.
-     */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
             select e from CreditEntry e
@@ -42,5 +38,6 @@ public interface ICreditEntryRepository extends JpaRepository<CreditEntry, UUID>
               and e.state = ECreditEntryState.PENDING
             order by e.createdAt asc, e.id asc
             """)
-    List<CreditEntry> findOutstandingEntriesByCreditAccountIdOrderedByCreatedAt(@Param("creditAccountId") UUID creditAccountId);
+    List<CreditEntry> findOutstandingEntriesByCreditAccountIdOrderedByCreatedAt(
+            @Param("creditAccountId") UUID creditAccountId);
 }
