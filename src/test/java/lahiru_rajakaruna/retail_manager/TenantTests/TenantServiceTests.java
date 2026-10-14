@@ -2,7 +2,7 @@ package lahiru_rajakaruna.retail_manager.TenantTests;
 
 import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
-import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateTenantDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
@@ -26,7 +26,7 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 public class TenantServiceTests {
 
-    private CreateDTO sampleTenantDTO;
+    private CreateTenantDTO sampleTenantDTO;
     private Tenant sampleTenant;
     private UUID generatedID;
 
@@ -51,7 +51,7 @@ public class TenantServiceTests {
 
     public void createSampleEntity() {
         sampleTenant = new Tenant();
-        sampleTenant.setActiveState(EActiveState.INACTIVE);
+        sampleTenant.setState(EActiveState.INACTIVE);
         sampleTenant.setName("Tester");
         sampleTenant.setPhone("000-0000-000");
         sampleTenant.setPasswordHash("hashed-password");
@@ -61,11 +61,10 @@ public class TenantServiceTests {
     }
 
     public void createSampleDTO() {
-        sampleTenantDTO = new CreateDTO();
-        sampleTenantDTO.setName("TesterDTO");
+        sampleTenantDTO = new CreateTenantDTO();
         sampleTenantDTO.setPhone("222-2222-222");
 
-        sampleTenant.setActiveState(EActiveState.INACTIVE);
+        sampleTenant.setState(EActiveState.INACTIVE);
     }
 
 
@@ -105,20 +104,10 @@ public class TenantServiceTests {
                   .isNotNull();
         Assertions.assertThat(tenant.getId())
                   .isEqualByComparingTo(generatedID);
-        Assertions.assertThat(tenant.getName())
-                  .isEqualTo(sampleTenant.getName());
         Assertions.assertThat(tenant.getPhone())
                   .isEqualTo(sampleTenant.getPhone());
     }
 
-    @Test
-    public void shouldThrowWhenCreatingWithoutName() {
-        sampleTenantDTO.setName(null);
-        Assertions.assertThatThrownBy(() -> tenantService.createTenant(
-                          sampleTenantDTO))
-                  .isInstanceOf(RuntimeException.class);
-
-    }
 
     @Test
     public void shouldThrowWhenCreatingWithoutPhone() {
@@ -128,47 +117,6 @@ public class TenantServiceTests {
                   .isInstanceOf(RuntimeException.class);
     }
 
-    @Test
-    public void shouldUpdateName() {
-/*
-        Mockito.when(tenantRepo.findById(ArgumentMatchers.any(UUID.class)))
-               .thenReturn(Optional.of(sampleTenant));
-
-        Mockito.lenient()
-               .when(tenantRepo.save(ArgumentMatchers.any(Tenant.class)))
-               .thenReturn(sampleTenant);
-
-        String updatedName = "Test User";
-        ResponseDTO dto = tenantService.patchProfileById(generatedID, updatedName);
-        Assertions.assertThat(dto.getName()
-                                 .isPresent())
-                  .isEqualTo(true);
-        Assertions.assertThat(dto.getName()
-                                 .get())
-                  .isEqualTo(updatedName);
-*/
-    }
-
-    @Test
-    public void shouldThrowWhenUpdatingNameWithoutId() {
-        String updatedName = "Test User";
-/*
-        Assertions.assertThatThrownBy(() -> tenantService.updateNameById(null,
-                                                                         updatedName))
-                  .isInstanceOf(RuntimeException.class);
-*/
-    }
-
-    @Test
-    public void shouldThrowWhenUpdatingNameWithNullName() {
-        String updatedName = null;
-/*
-        Assertions.assertThatThrownBy(() -> tenantService.updateNameById(
-                          generatedID,
-                          updatedName))
-                  .isInstanceOf(RuntimeException.class);
-*/
-    }
 
     @Test
     public void shouldUpdatePhone() {

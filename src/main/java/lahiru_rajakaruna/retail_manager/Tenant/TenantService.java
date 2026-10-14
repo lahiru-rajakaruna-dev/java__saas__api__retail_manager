@@ -3,7 +3,7 @@ package lahiru_rajakaruna.retail_manager.Tenant;
 import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
-import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateTenantDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.PatchDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,20 +24,17 @@ public class TenantService {
     private final PasswordEncoder passwordEncoder;
 
     public TenantService(ITenantRepository tenantRepo,
-                         PasswordEncoder passwordEncoder,
-                         IShopRepository shopRepo) {
+            PasswordEncoder passwordEncoder,
+            IShopRepository shopRepo) {
         this.tenantRepo = tenantRepo;
         this.passwordEncoder = passwordEncoder;
         this.shopRepo = shopRepo;
         checkIfInternalComponentsNull();
     }
 
-    public ResponseDTO createTenant(CreateDTO tenantData) {
+    public ResponseDTO createTenant(CreateTenantDTO tenantData) {
         checkIfInternalComponentsNull();
 
-        if (tenantData.getName() == null) {
-            throw new IllegalArgumentException("Name not provided");
-        }
         if (tenantData.getPhone() == null) {
             throw new IllegalArgumentException("Phone not provided");
         }
@@ -75,25 +72,38 @@ public class TenantService {
         return TenantMapper.convertToResponseDTO(tenant);
     }
 
+    public ResponseDTO getTenantByPhone(String phone) {
+        if (phone == null) {
+            throw new IllegalArgumentException("Phone parameter is null");
+        }
+
+        Tenant tenant = tenantRepo.findByPhone(phone)
+                                  .orElseThrow(() -> new RuntimeException("Could not find tenant with phone: %s".formatted(phone)));
+        return TenantMapper.convertToResponseDTO(tenant);
+    }
+
     @Transactional()
     public ResponseDTO patchProfileById(UUID id, PatchDTO updates) {
-        boolean hasNameField = updates.getName() != null;
         boolean hasPhoneField = updates.getPhone() != null;
         boolean hasPasswordField = updates.getPassword() != null;
+        boolean hasShopId = updates.getShopId() != null;
 
         Tenant tenant = findTenantByIdOrThrow(id);
 
-        if (hasNameField) {
-            tenant.setName(updates.getName());
-        }
         if (hasPhoneField) {
             tenant.setPhone(updates.getPhone());
         }
         if (hasPasswordField) {
             String passwordHash = passwordEncoder.encode(updates
-                    .getPassword());
+                                                                 .getPassword());
             tenant.setPasswordHash(passwordHash);
         }
+        if (hasShopId) {
+            Shop shop = shopRepo.findById(updates.getShopId())
+                                .orElseThrow(() -> new RuntimeException("Could not find shop with id: %s".formatted(updates.getShopId())));
+            tenant.setShop(shop);
+        }
+
 
         Tenant savedTenant = this.tenantRepo.saveAndFlush(tenant);
         return TenantMapper.convertToResponseDTO(savedTenant);
@@ -129,7 +139,7 @@ public class TenantService {
         }
 
         Tenant tenant = findTenantByIdOrThrow(id);
-        tenant.setActiveState(EActiveState.INACTIVE);
+        tenant.setState(EActiveState.INACTIVE);
         return TenantMapper
                 .convertToResponseDTO(tenantRepo.save(tenant));
     }
@@ -142,7 +152,7 @@ public class TenantService {
         }
 
         Tenant tenant = findTenantByIdOrThrow(id);
-        tenant.setActiveState(EActiveState.ACTIVE);
+        tenant.setState(EActiveState.ACTIVE);
         return TenantMapper
                 .convertToResponseDTO(tenantRepo.save(tenant));
     }
@@ -150,14 +160,14 @@ public class TenantService {
     private Tenant findTenantByIdOrThrow(UUID id) {
         return tenantRepo.findById(id)
                          .orElseThrow(() -> new RuntimeException("Could not find tenant with ID: %s"
-                                 .formatted(id)));
+                                                                         .formatted(id)));
     }
 
     private void checkIfInternalComponentsNull() {
         Objects.requireNonNull(tenantRepo, "Tenant Repo Not Found");
         Objects.requireNonNull(shopRepo, "Shop Repo Not Found");
         Objects.requireNonNull(passwordEncoder,
-                "Password Encoder Not Found");
+                               "Password Encoder Not Found");
     }
 
 }

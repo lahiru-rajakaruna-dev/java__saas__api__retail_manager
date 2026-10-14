@@ -11,14 +11,8 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 public class ResponseDTO {
-
     private UUID id = null;
-
-    private String name = null;
-
     private String phone = null;
-
     private EActiveState activeState = null;
-
     private UUID shopId = null;
 }

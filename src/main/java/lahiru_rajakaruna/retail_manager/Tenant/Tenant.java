@@ -31,7 +31,7 @@ public class Tenant extends BaseEntity {
     private String phone;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "active_state", nullable = false, updatable = true)
-    private EActiveState activeState;
+    @Column(name = "state", nullable = false, updatable = true)
+    private EActiveState state;
 
 }

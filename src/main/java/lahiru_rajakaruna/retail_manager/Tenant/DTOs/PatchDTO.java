@@ -4,10 +4,13 @@
  */
 package lahiru_rajakaruna.retail_manager.Tenant.DTOs;
 
+import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.UUID;
 
 /**
  *
@@ -19,38 +22,56 @@ import lombok.Setter;
 @Setter
 public class PatchDTO {
 
-	private String name;
-	private String phone;
-	private String password;
+    private String phone;
+    private String password;
+    private UUID shopId;
+    private EActiveState state;
 
-	public void setPassword(String password) {
-		boolean lengthGreaterThan8 = password.length() > 8;
-		boolean hasNumbers = password.matches("\\d");
-		boolean hasSpecialCharacters = password
-			.matches("[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]");
+    public void setShopId(UUID shopId) {
+        if (shopId == null) {
+            return;
+        }
 
-		if (!lengthGreaterThan8) {
-			throw new IllegalArgumentException("Password must be at least 8 characters long");
-		}
-		if (!hasNumbers) {
-			throw new IllegalArgumentException("Password must contain numbers");
-		}
-		if (!hasSpecialCharacters) {
-			throw new IllegalArgumentException("Password must contain special characters");
-		}
+        this.shopId = shopId;
+    }
 
-		this.password = password;
+    public void setPassword(String password) {
+        if (password == null) {
+            return;
+        }
 
-	}
+        boolean lengthGreaterThan8 = password.length() > 8;
+        boolean hasNumbers = password.matches(".*\\d.*");
+        boolean hasSpecialCharacters = password
+                .matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*");
 
-	public void setPhone(String phone) {
-		boolean isAPhoneNumber = phone
-			.matches("\\+94(7[0-9])\\s(\\d{3})\\s(\\d{4})");
-		if (!isAPhoneNumber) {
-			throw new IllegalArgumentException("Phone number does not match the enfoced pattern: +947[0-9] XXX XXXX");
-		}
+        if (!lengthGreaterThan8) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long");
+        }
+        if (!hasNumbers) {
+            throw new IllegalArgumentException("Password must contain numbers");
+        }
+        if (!hasSpecialCharacters) {
+            throw new IllegalArgumentException("Password must contain special characters");
+        }
 
-		this.phone = phone;
-	}
+        this.password = password;
+
+    }
+
+    public void setPhone(String phone) {
+        if (phone == null) {
+            return;
+        }
+
+        boolean isAPhoneNumber = phone
+                .matches("\\+94(7[0-9])\\s(\\d{3})\\s(\\d{4})");
+
+        if (!isAPhoneNumber) {
+            throw new IllegalArgumentException("Phone number does not match the enforced pattern: +947[0-9] XXX XXXX");
+        }
+
+        this.phone = phone;
+    }
 
 }

@@ -5,7 +5,7 @@
 package lahiru_rajakaruna.retail_manager.Tenant;
 
 import lahiru_rajakaruna.retail_manager.Common.EActiveState;
-import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateTenantDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -18,34 +18,23 @@ public class TenantMapper {
     private TenantMapper() {
     }
 
-    public static Tenant convertToTenant(CreateDTO dto, PasswordEncoder passwordEncoder) {
-        if (dto.getName() == null || dto.getName()
-                                        .isBlank() || dto
-                .getName()
-                .isEmpty()) {
-            throw new IllegalArgumentException("Cannot Convert: Must provided a valid name");
-        }
+    public static Tenant convertToTenant(CreateTenantDTO dto, PasswordEncoder passwordEncoder) {
         if (dto.getPhone() == null || dto.getPhone()
-                                         .isBlank() || dto
-                .getPhone()
-                .isEmpty()) {
+                                         .isBlank()) {
             throw new IllegalArgumentException("Cannot Convert: Must provided a valid phone number");
         }
         if (dto.getPassword() == null || dto.getPassword()
-                                            .isBlank() || dto
-                .getPassword()
-                .isEmpty()) {
+                                            .isBlank()) {
             throw new IllegalArgumentException("Cannot Convert: Must provided a valid password");
         }
 
         Tenant t = new Tenant();
 
-        t.setName(dto.getName());
         t.setPhone(dto.getPhone());
-        t.setActiveState(EActiveState.INACTIVE);
+        t.setState(EActiveState.INACTIVE);
 
         String encodedPassword = passwordEncoder.encode(dto
-                .getPassword());
+                                                                .getPassword());
 
         t.setPasswordHash(encodedPassword);
 
@@ -54,29 +43,22 @@ public class TenantMapper {
 
     public static ResponseDTO convertToResponseDTO(Tenant entity) {
         if (entity.getName() == null || entity.getName()
-                                              .isBlank() || entity
-                .getName()
-                .isEmpty()) {
+                                              .isBlank()) {
             throw new IllegalArgumentException("Cannot Convert: Must provided a valid name");
         }
         if (entity.getPhone() == null || entity.getPhone()
-                                               .isBlank() || entity
-                .getPhone()
-                .isEmpty()) {
+                                               .isBlank()) {
             throw new IllegalArgumentException("Cannot Convert: Must provided a valid phone number");
         }
         if (entity.getPasswordHash() == null || entity.getPasswordHash()
-                                                      .isBlank() || entity
-                .getPasswordHash()
-                .isEmpty()) {
+                                                      .isBlank()) {
             throw new IllegalArgumentException("Cannot Convert: Must provided a valid password hash");
         }
 
         ResponseDTO dto = new ResponseDTO();
         dto.setId(entity.getId());
-        dto.setName(entity.getName());
         dto.setPhone(entity.getPhone());
-        dto.setActiveState(entity.getActiveState());
+        dto.setActiveState(entity.getState());
 
         if (entity.getShop() != null && entity.getShop()
                                               .getId() != null) {
