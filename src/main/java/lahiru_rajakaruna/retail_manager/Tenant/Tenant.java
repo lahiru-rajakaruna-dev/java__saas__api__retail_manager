@@ -24,8 +24,8 @@ public class Tenant extends BaseEntity {
     @Column(name = "password_hash", nullable = false, updatable = true)
     private String passwordHash;
 
-    @Column(name = "phone", nullable = false, updatable = true)
-    private String phone;
+    @Column(name = "phone_number", nullable = false, updatable = true)
+    private String phoneNumber;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "state", nullable = false, updatable = true)
