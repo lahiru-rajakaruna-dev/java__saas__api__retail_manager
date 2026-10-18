@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://postgres:5432/retail_manager_main"
+    username: "${DB_USERNAME:retail_manager}"
+    password: "${DB_PASSWORD:retail_manager}"
+    connection-fetch: eager
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
