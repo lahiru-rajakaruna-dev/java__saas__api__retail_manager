@@ -12,8 +12,8 @@ import java.util.UUID;
 public interface ITenantRepository extends JpaRepository<Tenant, UUID> {
 
     @Query("""
-                select tenant from Tenant tenant  where
-                tenant.phone like concat('%', :phone, '%')
+                select t from Tenant t  where
+                t.phoneNumber=:phone
             """)
     public Optional<Tenant> findByPhone(@Param("phone") String phone);
 }
