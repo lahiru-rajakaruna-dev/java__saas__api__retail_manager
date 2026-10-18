@@ -52,8 +52,7 @@ public class TenantServiceTests {
     public void createSampleEntity() {
         sampleTenant = new Tenant();
         sampleTenant.setState(EActiveState.INACTIVE);
-        sampleTenant.setName("Tester");
-        sampleTenant.setPhone("000-0000-000");
+        sampleTenant.setPhoneNumber("000-0000-000");
         sampleTenant.setPasswordHash("hashed-password");
 
         generatedID = new UUID(9, 1);
@@ -62,7 +61,7 @@ public class TenantServiceTests {
 
     public void createSampleDTO() {
         sampleTenantDTO = new CreateTenantDTO();
-        sampleTenantDTO.setPhone("222-2222-222");
+        sampleTenantDTO.setPhoneNumber("222-2222-222");
 
         sampleTenant.setState(EActiveState.INACTIVE);
     }
@@ -105,13 +104,13 @@ public class TenantServiceTests {
         Assertions.assertThat(tenant.getId())
                   .isEqualByComparingTo(generatedID);
         Assertions.assertThat(tenant.getPhone())
-                  .isEqualTo(sampleTenant.getPhone());
+                  .isEqualTo(sampleTenant.getPhoneNumber());
     }
 
 
     @Test
     public void shouldThrowWhenCreatingWithoutPhone() {
-        sampleTenantDTO.setPhone(null);
+        sampleTenantDTO.setPhoneNumber(null);
         Assertions.assertThatThrownBy(() -> tenantService.createTenant(
                           sampleTenantDTO))
                   .isInstanceOf(RuntimeException.class);

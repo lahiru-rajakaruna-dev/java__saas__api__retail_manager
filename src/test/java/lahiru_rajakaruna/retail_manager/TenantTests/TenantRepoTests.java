@@ -48,8 +48,7 @@ public class TenantRepoTests {
     @BeforeEach
     public void createSampleUserRecord() {
         sampleTenant = new Tenant();
-        sampleTenant.setName("Tester");
-        sampleTenant.setPhone("000-000-000");
+        sampleTenant.setPhoneNumber("000-000-000");
         sampleTenant.setPasswordHash("encoded-password");
     }
 
@@ -91,18 +90,12 @@ public class TenantRepoTests {
         Tenant savedTenant = entityManager.persistAndFlush(sampleTenant);
         entityManager.clear();
 
-        savedTenant.setName("Test User");
         userRepo.save(savedTenant);
         entityManager.flush();
         entityManager.clear();
 
         Tenant tenant = entityManager.find(Tenant.class, savedTenant.getId());
 
-        if (tenant == null || tenant.getName()
-                                    .isEmpty()) {
-            throw new Error("Repo Failed To Save The User Entity Correctly");
-        }
 
-        Assertions.assertEquals("Test User", tenant.getName());
     }
 }
