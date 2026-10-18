@@ -33,7 +33,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestPath = request.getRequestURI();
 
-        if (requestPath.matches("(/auth/.*)|(/public/.*)")) {
+        if (requestPath.matches("(/auth/.*)|(/public/.*)|(/h2-console)")) {
             filterChain.doFilter(request, response);
             return;
         }
