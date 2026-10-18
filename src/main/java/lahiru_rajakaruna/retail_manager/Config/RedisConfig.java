@@ -15,12 +15,11 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, AuthSession> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, AuthSession> template = new RedisTemplate<>();
-
         template.setKeySerializer(RedisSerializer.string());
         template.setHashKeySerializer(RedisSerializer.string());
         template.setValueSerializer(new GenericJacksonJsonRedisSerializer(new ObjectMapper()));
         template.setHashValueSerializer(new GenericJacksonJsonRedisSerializer(new ObjectMapper()));
-
+        template.setConnectionFactory(connectionFactory);
         return template;
     }
 }
