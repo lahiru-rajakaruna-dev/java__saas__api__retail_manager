@@ -36,24 +36,24 @@ public class AuthenticationService {
 
         Tenant tenant = tenantRepo.findByPhone(phoneNumber)
                                   .orElse(null);
-        Shop shop = tenant.getShop();
-
         /*
          * THIS IS TO MATCH THE TIME WITH NON-REGISTERED PHONE NUMBERS TO REGISTERED PHONE NUMBER
          * HASHING ALGORITHM TAKES TIME TO MATCH. SO IF THERE IS NO TENANT HASHING ALGORITHM HAS NOTHING TO HASH AND
          * COMPARE AGAINST. BY PROVIDING A DUMMY HASH IT ADDS A DUMMY HASHING TIME.
          * */
+
         String hash = tenant != null ? tenant.getPasswordHash() : DUMMY_HASH;
 
-        if (!passwordEncoder.matches(password, hash)) {
+        if (tenant == null || !passwordEncoder.matches(password, hash)) {
             throw new RuntimeException("Invalid Credentials");
         }
 
+        Shop shop = tenant.getShop();
         String token = UUID.randomUUID()
                            .toString();
 
         AuthSession session = new AuthSession(tenant.getId(), shop != null ? shop
-                                                                             .getId() : null, tenant.getPhone(), UserRole.TENANT);
+                                                                             .getId() : null, tenant.getPhoneNumber(), UserRole.TENANT);
         sessionManager.set(token, session);
         return token;
     }
