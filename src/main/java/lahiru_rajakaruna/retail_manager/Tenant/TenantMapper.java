@@ -19,8 +19,8 @@ public class TenantMapper {
     }
 
     public static Tenant convertToTenant(CreateTenantDTO dto, PasswordEncoder passwordEncoder) {
-        if (dto.getPhone() == null || dto.getPhone()
-                                         .isBlank()) {
+        if (dto.getPhoneNumber() == null || dto.getPhoneNumber()
+                                               .isBlank()) {
             throw new IllegalArgumentException("Cannot Convert: Must provided a valid phone number");
         }
         if (dto.getPassword() == null || dto.getPassword()
@@ -30,7 +30,7 @@ public class TenantMapper {
 
         Tenant t = new Tenant();
 
-        t.setPhone(dto.getPhone());
+        t.setPhoneNumber(dto.getPhoneNumber());
         t.setState(EActiveState.INACTIVE);
 
         String encodedPassword = passwordEncoder.encode(dto
@@ -42,12 +42,8 @@ public class TenantMapper {
     }
 
     public static ResponseDTO convertToResponseDTO(Tenant entity) {
-        if (entity.getName() == null || entity.getName()
-                                              .isBlank()) {
-            throw new IllegalArgumentException("Cannot Convert: Must provided a valid name");
-        }
-        if (entity.getPhone() == null || entity.getPhone()
-                                               .isBlank()) {
+        if (entity.getPhoneNumber() == null || entity.getPhoneNumber()
+                                                     .isBlank()) {
             throw new IllegalArgumentException("Cannot Convert: Must provided a valid phone number");
         }
         if (entity.getPasswordHash() == null || entity.getPasswordHash()
@@ -57,7 +53,7 @@ public class TenantMapper {
 
         ResponseDTO dto = new ResponseDTO();
         dto.setId(entity.getId());
-        dto.setPhone(entity.getPhone());
+        dto.setPhone(entity.getPhoneNumber());
         dto.setActiveState(entity.getState());
 
         if (entity.getShop() != null && entity.getShop()

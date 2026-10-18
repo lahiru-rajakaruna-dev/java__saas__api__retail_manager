@@ -35,7 +35,7 @@ public class TenantService {
     public ResponseDTO createTenant(CreateTenantDTO tenantData) {
         checkIfInternalComponentsNull();
 
-        if (tenantData.getPhone() == null) {
+        if (tenantData.getPhoneNumber() == null) {
             throw new IllegalArgumentException("Phone not provided");
         }
         if (tenantData.getPassword() == null) {
@@ -91,7 +91,7 @@ public class TenantService {
         Tenant tenant = findTenantByIdOrThrow(id);
 
         if (hasPhoneField) {
-            tenant.setPhone(updates.getPhone());
+            tenant.setPhoneNumber(updates.getPhone());
         }
         if (hasPasswordField) {
             String passwordHash = passwordEncoder.encode(updates
