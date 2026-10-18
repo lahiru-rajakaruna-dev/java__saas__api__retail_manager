@@ -33,14 +33,7 @@ spring:
       allow-pool-suspension: false
       maximum-pool-size: 5
   flyway:
-    enabled: true
-    table: production_flyway_migrations
-    output-query-results: true
-    out-of-order: false
-    locations:
-      - classpath:db/migration
-    execute-in-transaction: true
-    validate-on-migrate: true
+    enabled: false
   jpa:
     show-sql: true
     hibernate:
