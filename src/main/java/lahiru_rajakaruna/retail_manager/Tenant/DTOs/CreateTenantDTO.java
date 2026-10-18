@@ -19,7 +19,7 @@ import lombok.Setter;
 @Setter
 public class CreateTenantDTO {
 
-    private String phone;
+    private String phoneNumber;
     private String password;
 
     public void setPassword(String password) {
@@ -42,13 +42,14 @@ public class CreateTenantDTO {
 
     }
 
-    public void setPhone(String phone) {
-        boolean isAPhoneNumber = phone
-                .matches("\\+94(7[0-9])\\s(\\d{3})\\s(\\d{4})");
+    public void setPhoneNumber(String phoneNumber) {
+        phoneNumber = phoneNumber.replaceAll(" ", "");
+        boolean isAPhoneNumber = phoneNumber
+                .matches("\\+94(7[0-9])(\\d{3})(\\d{4})");
         if (!isAPhoneNumber) {
-            throw new IllegalArgumentException("Phone number does not match the enforced pattern: +947[0-9] XXX XXXX");
+            throw new IllegalArgumentException("Phone number does not match the enforced pattern: +947[0-9]XXXXXXX");
         }
 
-        this.phone = phone;
+        this.phoneNumber = phoneNumber;
     }
 }
