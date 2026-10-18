@@ -21,9 +21,6 @@ public class Tenant extends BaseEntity {
     @JoinColumn(name = "shop_id", referencedColumnName = "id")
     private Shop shop;
 
-    @Column(name = "name", nullable = false, updatable = true)
-    private String name;
-
     @Column(name = "password_hash", nullable = false, updatable = true)
     private String passwordHash;
 
