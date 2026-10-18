@@ -53,7 +53,7 @@ public class AuthController {
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String register(@ModelAttribute CreateTenantDTO registerPayload, HttpServletResponse response, Model model) {
-        this.authService.register(registerPayload.getPhone(), registerPayload.getPassword());
+        this.authService.register(registerPayload.getPhoneNumber(), registerPayload.getPassword());
         model.addAttribute("message", "Registration Successful");
         return "redirect:/auth/login#login";
     }
