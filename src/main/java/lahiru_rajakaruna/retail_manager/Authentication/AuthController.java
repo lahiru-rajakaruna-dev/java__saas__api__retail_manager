@@ -55,6 +55,6 @@ public class AuthController {
     public String register(@ModelAttribute CreateTenantDTO registerPayload, HttpServletResponse response, Model model) {
         this.authService.register(registerPayload.getPhoneNumber(), registerPayload.getPassword());
         model.addAttribute("message", "Registration Successful");
-        return "redirect:/auth/login#login";
+        return "redirect:/auth/login?registered=true";
     }
 }
