@@ -67,6 +67,27 @@ public class AuthenticationService {
         tenantService.createTenant(new CreateTenantDTO(phoneNumber, passwordHash));
     }
 
+    private void requireStrongPassword(String password) {
+        boolean hasNumbers = password.matches("(.*\\d.*)+");
+        boolean hasSpecialCharacters = password.matches("(.*[!@#$%^&*()\\-_=+\\[\\]{}|;:,.<>/?~].*)");
+        boolean hasSimpleCaseLetters = password.matches("(.*[a-z].*)+");
+        boolean hasUpperCaseLetters = password.matches("(.*[A-Z].*)");
+
+        if (!hasNumbers || !hasSpecialCharacters || !hasSimpleCaseLetters || !hasUpperCaseLetters) {
+            throw new RuntimeException("Weak Password");
+        }
+    }
+
+    private void requireNonRegisteredPhone(String phoneNumber) {
+        Tenant tenant = tenantRepo.findByPhone(phoneNumber)
+                                  .orElse(null);
+
+        if (tenant != null) {
+            throw new RuntimeException("Require non registered phone number");
+        }
+
+    }
+
     private void requireNonNull(Object o, String message) {
         if (o == null) {
             throw new IllegalArgumentException("Null Parameter: %s".formatted(message));
