@@ -15,4 +15,6 @@ public class AuthSession {
     private UUID shopId;
     private String phone;
     private UserRole role;
+    private String rawCsrf;
+    private String encodedCsrf;
 }
