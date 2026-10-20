@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
+import java.util.UUID;
+
+@RestController
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthenticationService authService;
@@ -51,10 +53,10 @@ public class AuthController {
         return "redirect:/";
     }
 
-    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String register(@ModelAttribute CreateTenantDTO registerPayload, HttpServletResponse response, Model model) {
+    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> register(@RequestBody() CreateTenantDTO registerPayload) {
         this.authService.register(registerPayload.getPhoneNumber(), registerPayload.getPassword());
-        model.addAttribute("message", "Registration Successful");
-        return "redirect:/auth/login?registered=true";
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(new ResponsePayload("Registration Successful"));
     }
 }
