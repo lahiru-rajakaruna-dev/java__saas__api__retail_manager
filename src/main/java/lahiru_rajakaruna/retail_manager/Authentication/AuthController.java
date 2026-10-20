@@ -1,17 +1,12 @@
 package lahiru_rajakaruna.retail_manager.Authentication;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import lahiru_rajakaruna.retail_manager.Authentication.DTOs.LoginPayloadDTO;
-import lahiru_rajakaruna.retail_manager.Common.JSONEncoderDecoder;
+import lahiru_rajakaruna.retail_manager.Authentication.DTOs.*;
+import lahiru_rajakaruna.retail_manager.Common.ResponsePayload;
+import lahiru_rajakaruna.retail_manager.Common.SessionManager;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateTenantDTO;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -19,23 +14,67 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthenticationService authService;
-    private final JSONEncoderDecoder jwtEncoder;
+    private final SessionManager sessionManager;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(AuthenticationService authService, JSONEncoderDecoder jwtEncoder) {
+    public AuthController(AuthenticationService authService, RedisSessionManager redisSessionManager, PasswordEncoder passwordEncoder) {
         this.authService = authService;
-        this.jwtEncoder = jwtEncoder;
+        this.sessionManager = redisSessionManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/login")
-    public String sendLoginPage(Model model) {
-        model.addAttribute("Title", "Login");
-        return "authentication";
-    }
+    @GetMapping("/can-i")
+    public ResponseEntity<Object> canIAccess(@CookieValue(value = "__Host-sid", required = false) String sessionId) {
 
-    @GetMapping("/register")
-    public String sendRegisterPage(Model model) {
-        model.addAttribute("Title", "Register");
-        return "authentication";
+//        HAS SESSION
+        if (sessionId != null) {
+            AuthSession session = sessionManager.get(sessionId);
+//            EXPIRED SESSION
+            if (session == null) {
+                String newGuestSessionToken = UUID.randomUUID()
+                                                  .toString();
+                AuthSession guestAuthSession = new AuthSession(null, null, null, null, null, null);
+                sessionManager.set(newGuestSessionToken, guestAuthSession);
+                ResponseCookie newGuestCookieForExpiredSession = ResponseCookie.from("__Host-sid", newGuestSessionToken)
+                                                                               .httpOnly(true)
+                                                                               .path("/")
+                                                                               .maxAge(10 * 60)
+                                                                               .secure(true)
+                                                                               .sameSite("Lax")
+                                                                               .build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                     .header(HttpHeaders.SET_COOKIE, newGuestCookieForExpiredSession.toString())
+                                     .body(new CanIResponseDTO(null, null, "Not Authenticated"));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK)
+                                 .header(HttpHeaders.CACHE_CONTROL, "no-store")
+                                 .body(new CanIResponseDTO(null, session.getRawCsrf(), "OK"));
+        }
+
+//        NO SESSION => GUEST SESSION FOR AUTHENTICATION WITH CSRF
+        String rawCsrfToken = UUID.randomUUID()
+                                  .toString();
+        String _csrfToken = passwordEncoder.encode(rawCsrfToken);
+        String sessionToken = UUID.randomUUID()
+                                  .toString();
+
+        AuthSession guestSession = new AuthSession(null, null, null, UserRole.GUEST, rawCsrfToken, _csrfToken);
+        sessionManager.set(sessionToken, guestSession);
+
+        ResponseCookie guestSessionIdCookie = ResponseCookie.from("__Host-sid", sessionToken)
+                                                            .httpOnly(true)
+                                                            .secure(true)
+                                                            .path("/")
+                                                            .sameSite("Lax")
+                                                            .maxAge(10 * 60)
+                                                            .build();
+
+
+        return ResponseEntity.ok()
+                             .header(HttpHeaders.SET_COOKIE, guestSessionIdCookie.toString())
+                             .header(HttpHeaders.CACHE_CONTROL, "no-store")
+                             .body(new CanIResponseDTO(ResponseErrorType.Unauthenticated, rawCsrfToken, "Not Authenticated"));
     }
 
 
