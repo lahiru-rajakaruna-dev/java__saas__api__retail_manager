@@ -38,19 +38,21 @@ public class AuthController {
         return "authentication";
     }
 
-    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String login(@ModelAttribute LoginPayloadDTO loginPayload, HttpServletResponse response) {
-        String token = authService.login(loginPayload.getPhoneNumber(), loginPayload.getPassword());
-//        GET JWT
-        String jwt = jwtEncoder.encode(token);
-//        REDIRECT WITH AUTH COOKIE
-        Cookie authCookie = new Cookie(SecurityConstants.AUTH_COOKIE_NAME.getValue(), jwt);
-        authCookie.setPath("/api");
-        authCookie.setHttpOnly(true);
-        authCookie.setSecure(true);
-        authCookie.setMaxAge(12 * 24 * 60 * 60);
-        response.addCookie(authCookie);
-        return "redirect:/";
+
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoginSuccessPayload> login(@ModelAttribute LoginPayloadDTO loginPayload) {
+        LoginResult loginResult = authService.login(loginPayload.getPhoneNumber(), loginPayload.getPassword());
+
+        ResponseCookie sessionCookie = ResponseCookie.from(SecurityConstants.SESSION_COOKIE_NAME, loginResult.sessionToken())
+                                                     .path("/")
+                                                     .secure(true)
+                                                     .httpOnly(true)
+                                                     .maxAge(SecurityConstants.DEFAULT_SESSION_TTL)
+                                                     .sameSite("Lax")
+                                                     .build();
+        return ResponseEntity.status(HttpStatus.OK)
+                             .header(HttpHeaders.SET_COOKIE, sessionCookie.toString())
+                             .body(new LoginSuccessPayload("Login Successful", loginResult.csrfToken()));
     }
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
