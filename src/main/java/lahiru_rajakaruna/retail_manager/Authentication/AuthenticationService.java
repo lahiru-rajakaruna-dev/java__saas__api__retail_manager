@@ -62,6 +62,8 @@ public class AuthenticationService {
     public void register(String phoneNumber, String password) {
         requireNonNull(phoneNumber, "Phone number is not provided");
         requireNonNull(password, "Password is not provided");
+        requireNonRegisteredPhone(phoneNumber);
+        requireStrongPassword(password);
 
         String passwordHash = passwordEncoder.encode(password);
         tenantService.createTenant(new CreateTenantDTO(phoneNumber, passwordHash));
