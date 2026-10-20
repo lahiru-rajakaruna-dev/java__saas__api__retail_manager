@@ -8,10 +8,6 @@ spring:
     allow-circular-references: false
     lazy-initialization: false
     log-startup-info: false
-  security:
-    jwt:
-      key: "${JWT_KEY:development_random_jwt_signing_key_123}"
-      ttl: "${JWT_TTL:30}"
   docker:
     compose:
       enabled: false
