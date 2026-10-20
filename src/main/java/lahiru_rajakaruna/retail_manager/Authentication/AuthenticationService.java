@@ -2,6 +2,7 @@ package lahiru_rajakaruna.retail_manager.Authentication;
 
 import jakarta.transaction.Transactional;
 import lahiru_rajakaruna.retail_manager.Authentication.DTOs.AuthSession;
+import lahiru_rajakaruna.retail_manager.Authentication.DTOs.LoginResult;
 import lahiru_rajakaruna.retail_manager.Common.SessionManager;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateTenantDTO;
@@ -30,7 +31,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public String login(String phoneNumber, String password) {
+    public LoginResult login(String phoneNumber, String password) {
         requireNonNull(phoneNumber, "Phone Number Not Provided");
         requireNonNull(password, "Password Not Provided");
 
@@ -43,19 +44,24 @@ public class AuthenticationService {
          * */
 
         String hash = tenant != null ? tenant.getPasswordHash() : DUMMY_HASH;
+        boolean passwordMatches = passwordEncoder.matches(password, hash);
 
-        if (tenant == null || !passwordEncoder.matches(password, hash)) {
+        if (tenant == null || !passwordMatches) {
             throw new RuntimeException("Invalid Credentials");
         }
 
         Shop shop = tenant.getShop();
-        String token = UUID.randomUUID()
-                           .toString();
+        String sessionToken = UUID.randomUUID()
+                                  .toString();
+        String rawCSRFToken = UUID.randomUUID()
+                                  .toString();
+//        TO RATE LIMIT AT /can-i
+        String hashedCSRFToken = passwordEncoder.encode(rawCSRFToken);
 
-        AuthSession session = new AuthSession(tenant.getId(), shop != null ? shop
-                                                                             .getId() : null, tenant.getPhoneNumber(), UserRole.TENANT);
-        sessionManager.set(token, session);
-        return token;
+        AuthSession session = new AuthSession(tenant.getId(), (shop != null) ? shop
+                                                                               .getId() : null, tenant.getPhoneNumber(), UserRole.TENANT, rawCSRFToken, hashedCSRFToken);
+        sessionManager.set(sessionToken, session);
+        return new LoginResult(rawCSRFToken, sessionToken);
     }
 
     @Transactional
