@@ -6,10 +6,10 @@ import lahiru_rajakaruna.retail_manager.Common.SecureTokenGenerator;
 import lahiru_rajakaruna.retail_manager.Common.SessionManager;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateTenantDTO;
 import org.springframework.http.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -80,7 +80,7 @@ public class AuthController {
     public ResponseEntity<LoginSuccessPayload> login(@CookieValue(SecurityConstants.SESSION_COOKIE_NAME) String guestSessionToken, @RequestBody LoginPayloadDTO loginPayload) {
 
         LoginResult loginResult = authService.login(loginPayload.getPhoneNumber(), loginPayload.getPassword());
-
+        sessionManager.delete(guestSessionToken);
         ResponseCookie sessionCookie = ResponseCookie.from(SecurityConstants.SESSION_COOKIE_NAME, loginResult.sessionToken())
                                                      .path("/")
                                                      .secure(true)
