@@ -49,7 +49,7 @@ public class AuthController {
             }
             return ResponseEntity.status(HttpStatus.OK)
                                  .header(HttpHeaders.CACHE_CONTROL, "no-store")
-                                 .body(new CanIResponseDTO(null, session.getRawCsrf(), "OK"));
+                                 .body(new CanIResponseDTO(null, session.getCsrfToken(), "OK"));
         }
 //        NO SESSION => GUEST SESSION FOR AUTHENTICATION WITH CSRF
         String rawCsrfToken = UUID.randomUUID()
