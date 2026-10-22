@@ -36,7 +36,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSec) {
         httpSec
-                .authorizeHttpRequests((authReq) -> authReq.requestMatchers("/error", "/auth/**", "/public/**", "/h2-console")
+                .authorizeHttpRequests((authReq) -> authReq.requestMatchers("/error", "/auth/**", "/public/**")
                                                            .permitAll()
                                                            .anyRequest()
                                                            .authenticated())
