@@ -2,6 +2,10 @@ package lahiru_rajakaruna.retail_manager.Config;
 
 import lahiru_rajakaruna.retail_manager.Authentication.CustomAccessDeniedHandler;
 import lahiru_rajakaruna.retail_manager.Authentication.CustomAuthenticationEntryPoint;
+import lahiru_rajakaruna.retail_manager.Authentication.Filters.UserAuthorizationFilter;
+import lahiru_rajakaruna.retail_manager.Authentication.RedisSessionManager;
+import lahiru_rajakaruna.retail_manager.Common.SecureTokenGenerator;
+import lahiru_rajakaruna.retail_manager.DefaultSecureTokenGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -52,4 +56,10 @@ public class SecurityConfig {
 
         return httpSec.build();
     }
+
+    @Bean
+    public SecureTokenGenerator secureTokenGenerator() {
+        return new DefaultSecureTokenGenerator();
+    }
+
 }
