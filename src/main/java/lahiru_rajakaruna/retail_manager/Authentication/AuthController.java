@@ -25,8 +25,7 @@ public class AuthController {
     }
 
     @GetMapping("/can-i")
-    public ResponseEntity<Object> canIAccess(@CookieValue(value = "__Host-sid", required = false) String sessionId) {
-
+    public ResponseEntity<Object> canIAccess(@CookieValue(value = SecurityConstants.SESSION_COOKIE_NAME, required = false) String sessionId) {
 //        HAS SESSION
         if (sessionId != null) {
             AuthSession session = sessionManager.get(sessionId);
