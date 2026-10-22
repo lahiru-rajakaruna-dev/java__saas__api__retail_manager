@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -15,6 +16,5 @@ public class AuthSession {
     private UUID shopId;
     private String phone;
     private UserRole role;
-    private String rawCsrf;
-    private String encodedCsrf;
+    private String csrfToken;
 }
