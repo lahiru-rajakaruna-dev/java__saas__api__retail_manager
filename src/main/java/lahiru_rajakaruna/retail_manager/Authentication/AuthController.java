@@ -2,6 +2,7 @@ package lahiru_rajakaruna.retail_manager.Authentication;
 
 import lahiru_rajakaruna.retail_manager.Authentication.DTOs.*;
 import lahiru_rajakaruna.retail_manager.Common.ResponsePayload;
+import lahiru_rajakaruna.retail_manager.Common.SecureTokenGenerator;
 import lahiru_rajakaruna.retail_manager.Common.SessionManager;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateTenantDTO;
 import org.springframework.http.*;
@@ -15,12 +16,12 @@ import java.util.UUID;
 public class AuthController {
     private final AuthenticationService authService;
     private final SessionManager sessionManager;
-    private final PasswordEncoder passwordEncoder;
+    private final SecureTokenGenerator secureTokenGenerator;
 
-    public AuthController(AuthenticationService authService, RedisSessionManager redisSessionManager, PasswordEncoder passwordEncoder) {
+    public AuthController(AuthenticationService authService, RedisSessionManager redisSessionManager, SecureTokenGenerator secureTokenGenerator) {
         this.authService = authService;
         this.sessionManager = redisSessionManager;
-        this.passwordEncoder = passwordEncoder;
+        this.secureTokenGenerator = secureTokenGenerator;
     }
 
     @GetMapping("/can-i")
@@ -31,9 +32,9 @@ public class AuthController {
             AuthSession session = sessionManager.get(sessionId);
 //            EXPIRED SESSION
             if (session == null) {
-                String newGuestSessionToken = UUID.randomUUID()
-                                                  .toString();
-                AuthSession guestAuthSession = new AuthSession(null, null, null, null, null, null);
+                String newGuestSessionToken = secureTokenGenerator.getToken(32);
+                String rawCSRFToken = secureTokenGenerator.getToken(32);
+                AuthSession guestAuthSession = new AuthSession(null, null, null, null, rawCSRFToken);
                 sessionManager.set(newGuestSessionToken, guestAuthSession);
                 ResponseCookie newGuestCookieForExpiredSession = ResponseCookie.from("__Host-sid", newGuestSessionToken)
                                                                                .httpOnly(true)
