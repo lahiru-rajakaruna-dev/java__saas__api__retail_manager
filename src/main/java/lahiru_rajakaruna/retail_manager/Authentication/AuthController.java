@@ -42,8 +42,9 @@ public class AuthController {
                                                                                .secure(true)
                                                                                .sameSite("Lax")
                                                                                .build();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                      .header(HttpHeaders.SET_COOKIE, newGuestCookieForExpiredSession.toString())
+                                     .header(HttpHeaders.CACHE_CONTROL, "no-store")
                                      .body(new CanIResponseDTO(null, null, "Not Authenticated"));
             }
 
