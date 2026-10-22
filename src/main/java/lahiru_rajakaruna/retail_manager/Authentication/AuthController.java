@@ -47,16 +47,13 @@ public class AuthController {
                                      .header(HttpHeaders.CACHE_CONTROL, "no-store")
                                      .body(new CanIResponseDTO(null, null, "Not Authenticated"));
             }
-
             return ResponseEntity.status(HttpStatus.OK)
                                  .header(HttpHeaders.CACHE_CONTROL, "no-store")
                                  .body(new CanIResponseDTO(null, session.getRawCsrf(), "OK"));
         }
-
 //        NO SESSION => GUEST SESSION FOR AUTHENTICATION WITH CSRF
         String rawCsrfToken = UUID.randomUUID()
                                   .toString();
-        String _csrfToken = passwordEncoder.encode(rawCsrfToken);
         String sessionToken = UUID.randomUUID()
                                   .toString();
 
@@ -80,7 +77,8 @@ public class AuthController {
 
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginSuccessPayload> login(@ModelAttribute LoginPayloadDTO loginPayload) {
+    public ResponseEntity<LoginSuccessPayload> login(@CookieValue(SecurityConstants.SESSION_COOKIE_NAME) String guestSessionToken, @RequestBody LoginPayloadDTO loginPayload) {
+
         LoginResult loginResult = authService.login(loginPayload.getPhoneNumber(), loginPayload.getPassword());
 
         ResponseCookie sessionCookie = ResponseCookie.from(SecurityConstants.SESSION_COOKIE_NAME, loginResult.sessionToken())
@@ -93,6 +91,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                              .header(HttpHeaders.SET_COOKIE, sessionCookie.toString())
                              .body(new LoginSuccessPayload("Login Successful", loginResult.csrfToken()));
+
     }
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
