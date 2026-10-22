@@ -57,7 +57,7 @@ public class AuthController {
         String sessionToken = UUID.randomUUID()
                                   .toString();
 
-        AuthSession guestSession = new AuthSession(null, null, null, UserRole.GUEST, rawCsrfToken, _csrfToken);
+        AuthSession guestSession = new AuthSession(null, null, null, UserRole.GUEST, rawCsrfToken);
         sessionManager.set(sessionToken, guestSession);
 
         ResponseCookie guestSessionIdCookie = ResponseCookie.from("__Host-sid", sessionToken)
