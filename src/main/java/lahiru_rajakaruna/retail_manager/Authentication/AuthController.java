@@ -85,7 +85,7 @@ public class AuthController {
                                                      .path("/")
                                                      .secure(true)
                                                      .httpOnly(true)
-                                                     .maxAge(SecurityConstants.DEFAULT_SESSION_TTL)
+                                                     .maxAge(SecurityConstants.DEFAULT_SESSION_TTL_24)
                                                      .sameSite("Lax")
                                                      .build();
         return ResponseEntity.status(HttpStatus.OK)
