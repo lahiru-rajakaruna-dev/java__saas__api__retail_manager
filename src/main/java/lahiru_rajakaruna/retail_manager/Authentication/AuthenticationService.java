@@ -3,6 +3,7 @@ package lahiru_rajakaruna.retail_manager.Authentication;
 import jakarta.transaction.Transactional;
 import lahiru_rajakaruna.retail_manager.Authentication.DTOs.AuthSession;
 import lahiru_rajakaruna.retail_manager.Authentication.DTOs.LoginResult;
+import lahiru_rajakaruna.retail_manager.Common.SecureTokenGenerator;
 import lahiru_rajakaruna.retail_manager.Common.SessionManager;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateTenantDTO;
@@ -12,7 +13,6 @@ import lahiru_rajakaruna.retail_manager.Tenant.TenantService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
 
 @Service
 public class AuthenticationService {
@@ -21,12 +21,14 @@ public class AuthenticationService {
     private final TenantService tenantService;
     private final PasswordEncoder passwordEncoder;
     private final SessionManager sessionManager;
+    private final SecureTokenGenerator secureTokenGenerator;
 
-    public AuthenticationService(TenantService tenantService, ITenantRepository tenantRepo, PasswordEncoder passwordEncoder, SessionManager sessionManager) {
+    public AuthenticationService(TenantService tenantService, ITenantRepository tenantRepo, PasswordEncoder passwordEncoder, SessionManager sessionManager, SecureTokenGenerator secureTokenGenerator) {
         this.tenantService = tenantService;
         this.tenantRepo = tenantRepo;
         this.passwordEncoder = passwordEncoder;
         this.sessionManager = sessionManager;
+        this.secureTokenGenerator = secureTokenGenerator;
         DUMMY_HASH = passwordEncoder.encode("DUMMY_HASH_TO_FIX_TIME_GAP");
     }
 
@@ -51,15 +53,10 @@ public class AuthenticationService {
         }
 
         Shop shop = tenant.getShop();
-        String sessionToken = UUID.randomUUID()
-                                  .toString();
-        String rawCSRFToken = UUID.randomUUID()
-                                  .toString();
-//        TO RATE LIMIT AT /can-i
-        String hashedCSRFToken = passwordEncoder.encode(rawCSRFToken);
-
+        String sessionToken = secureTokenGenerator.getToken(32);
+        String rawCSRFToken = secureTokenGenerator.getToken(32);
         AuthSession session = new AuthSession(tenant.getId(), (shop != null) ? shop
-                                                                               .getId() : null, tenant.getPhoneNumber(), UserRole.TENANT, rawCSRFToken, hashedCSRFToken);
+                                                                               .getId() : null, tenant.getPhoneNumber(), UserRole.TENANT, rawCSRFToken);
         sessionManager.set(sessionToken, session);
         return new LoginResult(rawCSRFToken, sessionToken);
     }
