@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
+
 @Service
 public class RedisSessionManager implements SessionManager {
     private final RedisTemplate<String, AuthSession> redis;
@@ -15,11 +16,16 @@ public class RedisSessionManager implements SessionManager {
         this.redis = redis;
     }
 
+    @Override
     public void set(String token, AuthSession session) {
-        redis.opsForValue()
-             .set(token, session, Duration.ofHours(12));
+        this.set(token, session, SecurityConstants.DEFAULT_SESSION_TTL_24);
     }
 
+    public void set(String token, AuthSession session, int ttl) {
+        redis.opsForValue()
+             .set(token, session, Duration.ofHours(ttl));
+    }
+    
     public AuthSession get(String token) {
         return redis.opsForValue()
                     .get(token);
