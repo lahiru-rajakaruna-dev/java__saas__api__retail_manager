@@ -1,0 +1,20 @@
+name: test-on-push-to-main.yaml
+on:
+  push:
+    branches:
+      - main
+jobs:
+  run_tests:
+    name: Test Codebase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          java-package: "jdk"
+          distribution: "temurin"
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Run Tests
+        run: "./mvnw clean test"
