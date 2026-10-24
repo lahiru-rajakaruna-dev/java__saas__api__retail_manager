@@ -2,157 +2,217 @@ package lahiru_rajakaruna.retail_manager.TenantTests;
 
 import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
+import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.CreateTenantDTO;
+import lahiru_rajakaruna.retail_manager.Tenant.DTOs.PatchDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.DTOs.ResponseDTO;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
 import lahiru_rajakaruna.retail_manager.Tenant.TenantService;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@ActiveProfiles("test")
-@ExtendWith(MockitoExtension.class)
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {TenantService.class, BCryptPasswordEncoder.class, IShopRepository.class})
 public class TenantServiceTests {
 
-    private CreateTenantDTO sampleTenantDTO;
-    private Tenant sampleTenant;
-    private UUID generatedID;
+    public final String dummyPhone = "+9471 00 00 0000";
+    public final String dummyPassword = "dummy-password";
+    public final CreateTenantDTO createTenantDTO = new CreateTenantDTO(dummyPhone, dummyPassword);
 
-    @Mock
+    @MockitoSpyBean
     private PasswordEncoder passwordEncoder;
-    @Mock
+
+    @MockitoBean
     private ITenantRepository tenantRepo;
-    @Mock
+
+    @MockitoBean
     private IShopRepository shopRepo;
 
-    @InjectMocks
+    @Autowired
     private TenantService tenantService;
 
     public TenantServiceTests() {
     }
 
-    @BeforeEach
-    public void setup() {
-        createSampleDTO();
-        createSampleEntity();
+    @Test
+    public void createTenantShouldThrowWhenArgumentsAreNull() {
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.createTenant(new CreateTenantDTO(null, "password"));
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
+
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.createTenant(new CreateTenantDTO(dummyPhone, null));
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
     }
-
-    public void createSampleEntity() {
-        sampleTenant = new Tenant();
-        sampleTenant.setState(EActiveState.INACTIVE);
-        sampleTenant.setPhoneNumber("000-0000-000");
-        sampleTenant.setPasswordHash("hashed-password");
-
-        generatedID = new UUID(9, 1);
-        sampleTenant.setId(generatedID);
-    }
-
-    public void createSampleDTO() {
-        sampleTenantDTO = new CreateTenantDTO();
-        sampleTenantDTO.setPhoneNumber("222-2222-222");
-
-        sampleTenant.setState(EActiveState.INACTIVE);
-    }
-
 
     @Test
-    public void shouldReturnTheEntityWhenIdIsProvided() {
-        Mockito.when(tenantRepo.findById(ArgumentMatchers.any(UUID.class)))
-               .thenReturn(Optional.of(sampleTenant));
+    public void createTenantShouldHaveEncodedRawPassword() {
+        Mockito.when(tenantRepo.saveAndFlush(Mockito.any()))
+               .thenReturn(new Tenant(null, "password-hash", dummyPhone, EActiveState.ACTIVE));
 
-        ResponseDTO tenant = tenantService.getTenantById(generatedID);
-        Assertions.assertThat(tenant)
+        this.tenantService.createTenant(createTenantDTO);
+
+        Mockito.verify(passwordEncoder, Mockito.atMostOnce())
+               .encode(Mockito.eq(dummyPassword));
+    }
+
+    @Test
+    public void getTenantByIdShouldThrowWhenArgumentIsNull() {
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.getTenantById(null);
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void getTenantByIdShouldReturnInstanceOfResponseDTO() {
+        Mockito.when(tenantRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(new Tenant(null, "password_hash", dummyPhone, EActiveState.ACTIVE)));
+
+        Object result = this.tenantService.getTenantById(UUID.randomUUID());
+
+        Assertions.assertThat(result)
                   .isNotNull();
-        Assertions.assertThat(tenant.getId())
+
+        Assertions.assertThat(result)
+                  .isInstanceOf(ResponseDTO.class);
+    }
+
+    @Test
+    public void getTenantByPhoneShouldThrowWhenArgumentIsNull() {
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.getTenantByPhone(null);
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void getTenantByPhoneShouldHaveCalledRepoFindByPhone() {
+        Mockito.when(tenantRepo.findByPhone(Mockito.any()))
+               .thenReturn(Optional.ofNullable(new Tenant(null, "password_hash", dummyPhone, EActiveState.ACTIVE)));
+
+        this.tenantService.getTenantByPhone(dummyPhone);
+
+        Mockito.verify(tenantRepo, Mockito.atLeastOnce())
+               .findByPhone(Mockito.any());
+    }
+
+    @Test
+    public void getTenantByPhoneShouldReturnAnInstanceResponseDTO() {
+        Mockito.when(tenantRepo.findByPhone(Mockito.any())).
+               thenReturn(Optional.ofNullable(new Tenant(null, "password_hash", dummyPhone, EActiveState.ACTIVE)));
+
+        Object result = this.tenantService.getTenantByPhone(dummyPhone);
+
+        Assertions.assertThat(result)
                   .isNotNull();
-        Assertions.assertThat(tenant.getId())
-                  .isEqualByComparingTo(generatedID);
+        Assertions.assertThat(result)
+                  .isInstanceOf(ResponseDTO.class);
     }
 
     @Test
-    public void shouldThrowWhenQueryingWithNullId() {
-        UUID id = null;
-        Assertions.assertThatThrownBy(() -> tenantService.getTenantById(id))
-                  .isInstanceOf(RuntimeException.class);
+    public void patchProfileByIdShouldThrowWhenParametersAreNull() {
+        PatchDTO patchDTO = new PatchDTO("+9472 00 11 2233", "password", null, EActiveState.ACTIVE);
+
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.patchProfileById(null, patchDTO);
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
+
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.patchProfileById(UUID.randomUUID(), null);
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
+
     }
 
     @Test
-    public void shouldCreateTenantWhenAllRequiredDataIsProvided() {
-        Mockito.when(passwordEncoder.encode(ArgumentMatchers.anyString()))
-               .thenReturn("encoded-password");
+    public void patchProfileByDTOShouldHaveCallFindById() {
+        PatchDTO patchDTO = new PatchDTO("+9472 00 11 2233", "password", null, EActiveState.ACTIVE);
 
-        Mockito.lenient()
-               .when(tenantRepo.save(ArgumentMatchers.any(Tenant.class)))
-               .thenReturn(sampleTenant);
+        Tenant tenant = new Tenant(null, "password_hash", dummyPhone, EActiveState.ACTIVE);
 
-        ResponseDTO tenant = tenantService.createTenant(sampleTenantDTO);
+        Mockito.when(tenantRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(tenant));
 
-        Assertions.assertThat(tenant)
+        Mockito.when(tenantRepo.saveAndFlush(Mockito.any()))
+               .thenReturn(tenant);
+
+        this.tenantService.patchProfileById(UUID.randomUUID(), patchDTO);
+
+        Mockito.verify(tenantRepo, Mockito.times(1))
+               .findById(Mockito.any());
+    }
+
+    @Test
+    public void patchProfileByDTOShouldHaveCallShopRepoFindByIDWhenShopIsPresent() {
+        PatchDTO patchDTO = new PatchDTO(null, null, UUID.randomUUID(), null);
+        Shop shop = new Shop("shop", EActiveState.ACTIVE);
+        Tenant tenant = new Tenant(null, "password_hash", dummyPhone, EActiveState.ACTIVE);
+
+        Mockito.when(tenantRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(tenant));
+        Mockito.when(shopRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(shop));
+        Mockito.when(tenantRepo.saveAndFlush(Mockito.any()))
+               .thenReturn(tenant);
+
+        this.tenantService.patchProfileById(UUID.randomUUID(), patchDTO);
+
+        Mockito.verify(shopRepo, Mockito.times(1))
+               .findById(Mockito.any());
+
+    }
+
+    @Test
+    public void patchProfileByIdShouldHaveCalledSaveAndFlush() {
+        PatchDTO patchDTO = new PatchDTO(null, "new-password", null, null);
+        Tenant tenant = new Tenant(null, "password_hash", dummyPhone, EActiveState.ACTIVE);
+
+        Mockito.when(tenantRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(tenant));
+        Mockito.when(tenantRepo.saveAndFlush(Mockito.any()))
+               .thenReturn(tenant);
+
+        this.tenantService.patchProfileById(UUID.randomUUID(), patchDTO);
+
+        Mockito.verify(tenantRepo, Mockito.times(1))
+               .saveAndFlush(Mockito.any());
+    }
+
+    @Test
+    public void patchProfileByIdShouldReturnAnInstanceOfResponseDTO() {
+        Tenant tenant = new Tenant(null, "password_hash", dummyPhone, EActiveState.ACTIVE);
+        PatchDTO patchDTO = new PatchDTO("+94 00 11 2233", null, null, null);
+
+        Mockito.when(tenantRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(tenant));
+        Mockito.when(tenantRepo.saveAndFlush(Mockito.any()))
+               .thenReturn(tenant);
+
+        Object result = this.tenantService.patchProfileById(UUID.randomUUID(), patchDTO);
+
+        Assertions.assertThat(result)
                   .isNotNull();
-        Assertions.assertThat(tenant.getId())
-                  .isEqualByComparingTo(generatedID);
-        Assertions.assertThat(tenant.getPhone())
-                  .isEqualTo(sampleTenant.getPhoneNumber());
+        Assertions.assertThat(result)
+                  .isInstanceOf(ResponseDTO.class);
+
     }
 
-
-    @Test
-    public void shouldThrowWhenCreatingWithoutPhone() {
-        sampleTenantDTO.setPhoneNumber(null);
-        Assertions.assertThatThrownBy(() -> tenantService.createTenant(
-                          sampleTenantDTO))
-                  .isInstanceOf(RuntimeException.class);
-    }
-
-
-    @Test
-    public void shouldUpdatePhone() {
-        Mockito.when(tenantRepo.findById(ArgumentMatchers.any(UUID.class)))
-               .thenReturn(Optional.of(sampleTenant));
-
-        Mockito.lenient()
-               .when(tenantRepo.save(ArgumentMatchers.any(Tenant.class)))
-               .thenReturn(sampleTenant);
-
-        String updatedPhone = "111-1111-111-11";
-/*
-        ResponseDTO dto = tenantService.updatePhoneById(generatedID,
-                                                        updatedPhone);
-        Assertions.assertThat(dto.getPhone()
-                                 .isPresent())
-                  .isEqualTo(true);
-        Assertions.assertThat(dto.getPhone()
-                                 .get())
-                  .isEqualTo(updatedPhone);
-*/
-    }
-
-    @Test
-    public void shouldThrowWhenUpdatingPhoneWithoutId() {
-        String updatedPhone = "111-1111-111-11";
-//        Assertions.assertThatThrownBy(() -> tenantService.updatePhoneById(null,
-//                                                                          updatedPhone))
-//                  .isInstanceOf(RuntimeException.class);
-    }
-
-    @Test
-    public void shouldThrowWhenUpdatingPhoneWithNullPhone() {
-        String updatedPhone = null;
-//        Assertions.assertThatThrownBy(() -> tenantService.updatePhoneById(
-//                          generatedID,
-//                          null))
-//                  .isInstanceOf(RuntimeException.class);
-    }
 }

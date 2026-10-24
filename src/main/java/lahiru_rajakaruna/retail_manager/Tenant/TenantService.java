@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+
 @Service
 public class TenantService {
 
@@ -84,6 +85,13 @@ public class TenantService {
 
     @Transactional()
     public ResponseDTO patchProfileById(UUID id, PatchDTO updates) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID parameter is null");
+        }
+        if (updates == null) {
+            throw new IllegalArgumentException("Updates parameter is null");
+        }
+
         boolean hasPhoneField = updates.getPhone() != null;
         boolean hasPasswordField = updates.getPassword() != null;
         boolean hasShopId = updates.getShopId() != null;
