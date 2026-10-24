@@ -5,10 +5,12 @@ import lombok.*;
 
 import java.util.UUID;
 
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
+@ToString
 @EqualsAndHashCode
 public class ResponseDTO {
     private UUID id = null;
