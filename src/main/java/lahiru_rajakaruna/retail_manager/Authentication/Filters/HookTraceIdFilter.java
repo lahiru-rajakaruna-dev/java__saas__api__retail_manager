@@ -10,6 +10,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.UUID;
 
+
 public class HookTraceIdFilter extends OncePerRequestFilter {
     private String LOG_HEADER = "[>>>] INCOMING REQUEST: %s";
     private String LOG_FOOTER = "[<<<] RESPONSE LEFT THE SERVER: %s\n";
@@ -19,7 +20,7 @@ public class HookTraceIdFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
 
         UUID traceId = UUID.randomUUID();
-        request.setAttribute(SecurityConstants.TRACE_ID.getValue(), traceId);
+        request.setAttribute(SecurityConstants.TRACE_ID, traceId);
 
         System.out.println(LOG_HEADER.formatted(traceId));
         filterChain.doFilter(request, response);
