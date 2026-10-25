@@ -136,7 +136,7 @@ public class TenantService {
 
         tenant.setShop(shop);
         return TenantMapper
-                .convertToResponseDTO(tenantRepo.save(tenant));
+                .convertToResponseDTO(tenantRepo.saveAndFlush(tenant));
     }
 
     public ResponseDTO disableTenantProfileById(UUID id) {
