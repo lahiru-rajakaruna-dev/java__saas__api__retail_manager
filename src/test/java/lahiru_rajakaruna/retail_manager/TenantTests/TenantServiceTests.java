@@ -215,4 +215,84 @@ public class TenantServiceTests {
 
     }
 
+    @Test
+    public void setShopByIdShouldThrowWhenParametersAreNull() {
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.setShopById(null, UUID.randomUUID());
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
+
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.setShopById(UUID.randomUUID(), null);
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void setShopByIdShouldThrowWhenShopIdIsInvalid() {
+        Tenant tenant = new Tenant(null, "password_hash", dummyPhone, EActiveState.ACTIVE);
+
+        Mockito.when(shopRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(null));
+        Mockito.when(tenantRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(tenant));
+
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.setShopById(UUID.randomUUID(), UUID.randomUUID());
+                  })
+                  .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    public void setShopByIdShouldThrowWhenTenantIdIsInvalid() {
+        Shop shop = new Shop("SHOP", EActiveState.ACTIVE);
+
+        Mockito.when(shopRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(shop));
+        Mockito.when(tenantRepo.findById(Mockito.any()))
+               .thenReturn(Optional.ofNullable(null));
+
+        Assertions.assertThatThrownBy(() -> {
+                      this.tenantService.setShopById(UUID.randomUUID(), UUID.randomUUID());
+                  })
+                  .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    public void setShopByIdShouldHaveCalledSaveAndFlush() {
+        Tenant tenant = new Tenant(null, "password_hash", dummyPhone, EActiveState.ACTIVE);
+        Shop shop = new Shop();
+        shop.setId(UUID.randomUUID());
+
+        Mockito.when(tenantRepo.findById(Mockito.any(UUID.class)))
+               .thenReturn(Optional.ofNullable(tenant));
+        Mockito.when(shopRepo.findById(Mockito.any(UUID.class)))
+               .thenReturn(Optional.ofNullable(shop));
+        Mockito.when(tenantRepo.saveAndFlush(Mockito.any(Tenant.class)))
+               .thenReturn(tenant);
+
+
+        this.tenantService.setShopById(UUID.randomUUID(), UUID.randomUUID());
+
+        Mockito.verify(tenantRepo, Mockito.times(1))
+               .saveAndFlush(Mockito.any(Tenant.class));
+    }
+
+    @Test
+    public void setShopByIdShouldReturnAnInstanceOfResponseDTOOnSuccessfulOperation() {
+        Mockito.when(tenantRepo.findById(Mockito.any(UUID.class)))
+               .thenReturn(Optional.ofNullable(new Tenant()));
+        Mockito.when(shopRepo.findById(Mockito.any(UUID.class)))
+               .thenReturn(Optional.ofNullable(new Shop()));
+        Mockito.when(tenantRepo.saveAndFlush(Mockito.any(Tenant.class)))
+               .thenReturn(new Tenant(null, "password-hash", dummyPhone, EActiveState.ACTIVE));
+
+        Object result = this.tenantService.setShopById(UUID.randomUUID(), UUID.randomUUID());
+
+        Assertions.assertThat(result)
+                  .isNotNull();
+        Assertions.assertThat(result)
+                  .isInstanceOf(ResponseDTO.class);
+    }
+
 }
