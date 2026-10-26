@@ -1,4 +1,5 @@
 name: build-local-image
+run-name: BUILD ON NEW OK COMMIT
 on:
   workflow_run:
     workflows: [ "test-on-push-to-main" ]
