@@ -115,11 +115,12 @@ public class TestAuthService {
     public void loginShouldReturnLoginResultDTOOnSuccessfulLogin() {
         Mockito.when(tenantRepo.findByPhone(Mockito.eq(dummyPhone)))
                .thenReturn(Optional.ofNullable(dummyTenant));
-        
+
         LoginResult result = authService.login(dummyPhone, dummyPassword);
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.csrfToken());
         Assertions.assertNotNull(result.sessionToken());
     }
 
+//    TODO: ADD  REGISTRATION ENDPOINT TESTS
 }
