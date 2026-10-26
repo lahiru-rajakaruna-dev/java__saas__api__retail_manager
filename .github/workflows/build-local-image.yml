@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Docker Image
         run: "docker build \
-              -t ${{ steps.image_name_generator.outputs.image_tag_base }}/${{ env.image_name }}:build-${{ github.run_number }}\
+              -t ${{ steps.image_name_generator.outputs.image_tag_base }}/${{ env.image_name }}:build-${{ github.run_number }} \
                -t  ${{ steps.image_name_generator.outputs.image_tag_base }}/${{ env.image_name }}:sha-${{ github.sha }} \
                -t ${{ steps.image_name_generator.outputs.image_tag_base }}/${{ env.image_name }}:latest .
         "
