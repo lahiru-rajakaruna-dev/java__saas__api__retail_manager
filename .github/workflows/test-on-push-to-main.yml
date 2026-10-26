@@ -1,4 +1,4 @@
-name: test-on-push-to-main.yaml
+name: test-on-push-to-main
 on:
   push:
     branches:
