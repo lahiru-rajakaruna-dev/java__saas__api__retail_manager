@@ -14,6 +14,10 @@ env:
   token: ${{ secrets.GITHUB_TOKEN }}
   image_name: retail_manager_api
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build_and_push_to_gcr:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
