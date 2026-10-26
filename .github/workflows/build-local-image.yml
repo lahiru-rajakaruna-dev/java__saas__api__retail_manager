@@ -1,4 +1,4 @@
-name: build-local-image.yaml
+name: build-local-image
 on:
   workflow_run:
     workflows: [ "test-on-push-to-main" ]
