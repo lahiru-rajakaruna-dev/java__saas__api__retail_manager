@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Duration;
@@ -126,6 +127,54 @@ public class TestAuthService {
     public void registrationShouldThrowWhenCredentialsAreNull() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             authService.register(null, null);
+        });
+    }
+
+    @Test
+    public void registrationShouldThrowForWeakPasswords() {
+//        NUMBERS ONLY
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register(dummyPhone, "12345678");
+        });
+//        LETTERS ONLY
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register(dummyPhone, "AABBCCDD");
+        });
+//        LESS THAN 8 CHARS
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register(dummyPhone, "123");
+        });
+//        NO UPPERCASE
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register(dummyPhone, "aa88**cc");
+        });
+//        NO LOWERCASE
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register(dummyPhone, "AA88**CC");
+        });
+//        NO SPECIAL CHARS
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register(dummyPhone, "AA88CCdd");
+        });
+    }
+
+    @Test
+    public void registrationShouldThrowForNonValidPhoneNumberPatterns() {
+//        INVALID COUNTRY CODE
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register("+172 00 00 000", "password");
+        });
+//        INVALID MOBILE IDENTIFIER
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register("+9462 00 00 000", "password");
+        });
+//        INVALID NETWORK OPERATOR IDENTIFIER
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register("+9479 00 00 000", "password");
+        });
+//        INVALID LENGTH
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register("+9479 00 00 0000", "password");
         });
     }
 }
