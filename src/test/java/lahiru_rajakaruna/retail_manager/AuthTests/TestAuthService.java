@@ -61,12 +61,6 @@ public class TestAuthService {
         this.dummyTenant = new Tenant(null, dummyPasswordHash, dummyPhone, EActiveState.ACTIVE);
     }
 
-    @Test
-    public void registrationShouldThrowWhenCredentialsAreNull() {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register(null, null);
-        });
-    }
 
     @Test
     public void loginShouldThrowWhenCredentialsAreNull() {
@@ -125,5 +119,11 @@ public class TestAuthService {
         Assertions.assertNotNull(result.sessionToken());
     }
 
-//    TODO: ADD  REGISTRATION ENDPOINT TESTS
+    //    TODO: ADD  REGISTRATION ENDPOINT TESTS
+    @Test
+    public void registrationShouldThrowWhenCredentialsAreNull() {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.register(null, null);
+        });
+    }
 }
