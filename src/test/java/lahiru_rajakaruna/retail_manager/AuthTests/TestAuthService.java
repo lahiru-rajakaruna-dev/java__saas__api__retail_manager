@@ -40,7 +40,7 @@ public class TestAuthService {
     @MockitoBean
     private IShopRepository shopRepo;
 
-    @Autowired
+    @MockitoSpyBean
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -83,6 +83,7 @@ public class TestAuthService {
         Instant login_attempt_1_end = Instant.now();
         Duration valid_cred_login_process_duration = Duration.between(login_attempt_1_start, login_attempt_1_end);
 
+
         Instant login_attempt_2_start = Instant.now();
         Assertions.assertThrows(RuntimeException.class, () -> {
             authService.login(nonRegisteredPhone, "strong-password");
@@ -90,8 +91,9 @@ public class TestAuthService {
         Instant login_attempt_2_end = Instant.now();
         Duration invalid_cred_login_process_duration = Duration.between(login_attempt_2_start, login_attempt_2_end);
 
+
         long processTimeDifference = Math.abs(valid_cred_login_process_duration.toMillis() - invalid_cred_login_process_duration.toMillis());
-        Assertions.assertTrue(processTimeDifference > 30L, "Execution time difference was too large");
+        Assertions.assertTrue(processTimeDifference < 5L, "Execution time difference was too large");
     }
 
     @Test
