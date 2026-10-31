@@ -100,8 +100,11 @@ public class TestAuthService {
                .thenReturn(Optional.ofNullable(dummyTenant));
 
         RuntimeException exceptionThrownForInvalidPassword = Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.login(dummyPhone, "password");
+            authService.login(dummyPhone, "wrong-password");
         });
+
+        Mockito.when(tenantRepo.findByPhone(Mockito.any(String.class)))
+               .thenReturn(Optional.empty());
 
         RuntimeException exceptionThrownForNonRegisteredPhone = Assertions.assertThrows(RuntimeException.class, () -> {
             authService.login("+9400 00 00 000", dummyPassword);
@@ -122,7 +125,6 @@ public class TestAuthService {
         Assertions.assertNotNull(result.sessionToken());
     }
 
-    //    TODO: ADD  REGISTRATION ENDPOINT TESTS
     @Test
     public void registrationShouldThrowWhenCredentialsAreNull() {
         Assertions.assertThrows(RuntimeException.class, () -> {
