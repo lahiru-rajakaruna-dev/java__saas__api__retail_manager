@@ -95,17 +95,19 @@ public class TestAuthService {
 
     @Test
     public void loginShouldThrowWithSameMessageForInvalidCredentials() {
-        RuntimeException exception_1 = Assertions.assertThrows(RuntimeException.class, () -> {
+        Mockito.when(tenantRepo.findByPhone(Mockito.eq(dummyPhone)))
+               .thenReturn(Optional.ofNullable(dummyTenant));
+
+        RuntimeException exceptionThrownForInvalidPassword = Assertions.assertThrows(RuntimeException.class, () -> {
             authService.login(dummyPhone, "password");
         });
 
-        RuntimeException exception_2 = Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.login("+9400 00 00 000", "password");
+        RuntimeException exceptionThrownForNonRegisteredPhone = Assertions.assertThrows(RuntimeException.class, () -> {
+            authService.login("+9400 00 00 000", dummyPassword);
         });
 
-        Assertions.assertTrue(exception_1.getMessage()
-                                         .contentEquals(exception_2.getMessage()));
-
+        Assertions.assertTrue(exceptionThrownForInvalidPassword.getMessage()
+                                                               .contentEquals(exceptionThrownForNonRegisteredPhone.getMessage()));
     }
 
     @Test
