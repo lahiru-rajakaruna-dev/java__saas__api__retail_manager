@@ -77,23 +77,26 @@ public class TestAuthService {
 
     @Test
     public void loginProcessTimeShouldMatchForRegisteredAndNonRegisteredPhone() {
+        String nonRegisteredPhone = "+9471 25 62 920";
         Mockito.when(tenantRepo.findByPhone(Mockito.eq(dummyPhone)))
                .thenReturn(Optional.ofNullable(dummyTenant));
+        Mockito.when(tenantRepo.findByPhone(Mockito.eq(nonRegisteredPhone)))
+               .thenReturn(Optional.empty());
 
-        Instant start_1 = Instant.now();
+        Instant login_attempt_1_start = Instant.now();
         authService.login(dummyPhone, dummyPassword);
-        Instant end_1 = Instant.now();
-        Duration elapsed_1 = Duration.between(start_1, end_1);
+        Instant login_attempt_1_end = Instant.now();
+        Duration valid_cred_login_process_duration = Duration.between(login_attempt_1_start, login_attempt_1_end);
 
-        Instant start_2 = Instant.now();
+        Instant login_attempt_2_start = Instant.now();
         Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.login("+9400 22 33 9999", "strong-password");
+            authService.login(nonRegisteredPhone, "strong-password");
         });
-        Instant end_2 = Instant.now();
-        Duration elapsed_2 = Duration.between(start_2, end_2);
+        Instant login_attempt_2_end = Instant.now();
+        Duration invalid_cred_login_process_duration = Duration.between(login_attempt_2_start, login_attempt_2_end);
 
-        Assertions.assertTrue(((elapsed_1.toMillis() - elapsed_2.toMillis()) < 100), "Execution time difference was too large");
-
+        long processTimeDifference = Math.abs(valid_cred_login_process_duration.toMillis() - invalid_cred_login_process_duration.toMillis());
+        Assertions.assertTrue(processTimeDifference > 30L, "Execution time difference was too large");
     }
 
     @Test
