@@ -10,7 +10,7 @@ import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.ITenantRepository;
 import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
 import lahiru_rajakaruna.retail_manager.Tenant.TenantService;
-import org.junit.jupiter.api.Assertions;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,9 +65,10 @@ public class TestAuthService {
 
     @Test
     public void loginShouldThrowWhenCredentialsAreNull() {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.login(null, null);
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.login(null, null);
+                  })
+                  .isInstanceOf(RuntimeException.class);
     }
 
     @Test
@@ -85,15 +86,17 @@ public class TestAuthService {
 
 
         Instant login_attempt_2_start = Instant.now();
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.login(nonRegisteredPhone, "strong-password");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.login(nonRegisteredPhone, "strong-password");
+                  })
+                  .isInstanceOf(RuntimeException.class);
         Instant login_attempt_2_end = Instant.now();
         Duration invalid_cred_login_process_duration = Duration.between(login_attempt_2_start, login_attempt_2_end);
 
 
         long processTimeDifference = Math.abs(valid_cred_login_process_duration.toMillis() - invalid_cred_login_process_duration.toMillis());
-        Assertions.assertTrue(processTimeDifference < 5L, "Execution time difference was too large");
+        Assertions.assertThat(processTimeDifference)
+                  .isLessThan(5);
     }
 
     @Test
@@ -101,19 +104,21 @@ public class TestAuthService {
         Mockito.when(tenantRepo.findByPhone(Mockito.eq(dummyPhone)))
                .thenReturn(Optional.ofNullable(dummyTenant));
 
-        RuntimeException exceptionThrownForInvalidPassword = Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.login(dummyPhone, "wrong-password");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.login(dummyPhone, "wrong-password");
+                  })
+                  .isInstanceOf(RuntimeException.class)
+                  .hasMessage(("Invalid Credentials"));
 
         Mockito.when(tenantRepo.findByPhone(Mockito.any(String.class)))
                .thenReturn(Optional.empty());
 
-        RuntimeException exceptionThrownForNonRegisteredPhone = Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.login("+9400 00 00 000", dummyPassword);
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.login("+9400 00 00 000", dummyPassword);
+                  })
+                  .isInstanceOf(RuntimeException.class)
+                  .hasMessage("Invalid Credentials");
 
-        Assertions.assertTrue(exceptionThrownForInvalidPassword.getMessage()
-                                                               .contentEquals(exceptionThrownForNonRegisteredPhone.getMessage()));
     }
 
     @Test
@@ -122,64 +127,78 @@ public class TestAuthService {
                .thenReturn(Optional.ofNullable(dummyTenant));
 
         LoginResult result = authService.login(dummyPhone, dummyPassword);
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.csrfToken());
-        Assertions.assertNotNull(result.sessionToken());
+        Assertions.assertThat(result)
+                  .isNotNull();
+        Assertions.assertThat(result.csrfToken())
+                  .isNotNull();
+        Assertions.assertThat(result.sessionToken())
+                  .isNotNull();
     }
 
     @Test
     public void registrationShouldThrowWhenCredentialsAreNull() {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register(null, null);
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register(null, null);
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void registrationShouldThrowForWeakPasswords() {
 //        NUMBERS ONLY
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register(dummyPhone, "12345678");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register(dummyPhone, "12345678");
+                  })
+                  .isInstanceOf(RuntimeException.class);
 //        LETTERS ONLY
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register(dummyPhone, "AABBCCDD");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register(dummyPhone, "AABBCCDD");
+                  })
+                  .isInstanceOf(RuntimeException.class);
 //        LESS THAN 8 CHARS
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register(dummyPhone, "123");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register(dummyPhone, "123");
+                  })
+                  .isInstanceOf(RuntimeException.class);
 //        NO UPPERCASE
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register(dummyPhone, "aa88**cc");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register(dummyPhone, "aa88**cc");
+                  })
+                  .isInstanceOf(RuntimeException.class);
 //        NO LOWERCASE
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register(dummyPhone, "AA88**CC");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register(dummyPhone, "AA88**CC");
+                  })
+                  .isInstanceOf(RuntimeException.class);
 //        NO SPECIAL CHARS
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register(dummyPhone, "AA88CCdd");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register(dummyPhone, "AA88CCdd");
+                  })
+                  .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     public void registrationShouldThrowForNonValidPhoneNumberPatterns() {
 //        INVALID COUNTRY CODE
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register("+172 00 00 000", "password");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register("+172 00 00 000", "password");
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
 //        INVALID MOBILE IDENTIFIER
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register("+9462 00 00 000", "password");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register("+9462 00 00 000", "password");
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
 //        INVALID NETWORK OPERATOR IDENTIFIER
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register("+9479 00 00 000", "password");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register("+9479 00 00 000", "password");
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
 //        INVALID LENGTH
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            authService.register("+9479 00 00 0000", "password");
-        });
+        Assertions.assertThatThrownBy(() -> {
+                      authService.register("+9479 00 00 0000", "password");
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
     }
 }
 
