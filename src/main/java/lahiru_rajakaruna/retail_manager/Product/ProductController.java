@@ -11,8 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+
 
 /**
  * @author bl4z3
@@ -42,16 +44,17 @@ public class ProductController {
                              .body(products);
     }
 
+    //    TODO: FIX THIS METHOD: PARAMETERS ARE INVALID
     @PostMapping
     public ResponseEntity<ResponseProductDTO> createProduct(@RequestBody CreateProductDTO productData) {
-        ResponseProductDTO product = productService.createProduct(productData);
+        ResponseProductDTO product = productService.createProduct(productData.getShopId(), productData.getName(), productData.getPrice(), productData.getQuantity(), productData.getUnit(), BigDecimal.ONE);
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(product);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ResponseProductDTO> patchProduct(@PathVariable UUID id,
-                                                           @RequestBody PatchProductDTO updates) {
+            @RequestBody PatchProductDTO updates) {
         ResponseProductDTO product = productService.patchById(id, updates);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(product);

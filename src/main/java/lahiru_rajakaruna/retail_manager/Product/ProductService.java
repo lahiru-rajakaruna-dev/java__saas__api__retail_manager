@@ -6,7 +6,6 @@ package lahiru_rajakaruna.retail_manager.Product;
 
 import jakarta.transaction.Transactional;
 import lahiru_rajakaruna.retail_manager.Common.EActiveState;
-import lahiru_rajakaruna.retail_manager.Product.DTOs.CreateProductDTO;
 import lahiru_rajakaruna.retail_manager.Product.DTOs.PatchProductDTO;
 import lahiru_rajakaruna.retail_manager.Product.DTOs.ResponseProductDTO;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
@@ -17,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
 
 /**
  *
@@ -29,7 +29,7 @@ public class ProductService {
     private final IShopRepository shopRepo;
 
     public ProductService(IProductRepository productRepo,
-                          IShopRepository shopRepo) {
+            IShopRepository shopRepo) {
         this.productRepo = productRepo;
         this.shopRepo = shopRepo;
         checkInternalComponentsPresence();
@@ -37,33 +37,39 @@ public class ProductService {
 
     private void checkInternalComponentsPresence() {
         Objects.requireNonNull(productRepo,
-                "Product Repository Not Found");
+                               "Product Repository Not Found");
     }
 
 
     @Transactional
-    public ResponseProductDTO createProduct(CreateProductDTO dto) {
-        requireNonNull(dto.getName(), "Must provide a name for the product");
-        requireNonNull(dto.getShopId(),
-                "Must provide a shop for the product");
-        requireNonNull(dto.getPrice(),
-                "Must provide a price for the product");
-        requireNonNull(dto.getQuantity(),
-                "Must provide a quantity for the product");
-        requireNonNull(dto.getUnit(),
-                "Must provide a measurement unit for the product");
+    public ResponseProductDTO createProduct(UUID shopID, String productName, BigDecimal unitPrice, BigDecimal quantity, EMessurmentUnit unit, BigDecimal saleUnit) {
+        requireNonNull(productName, "Must provide a name for the product");
+        requireNonNull(shopID,
+                       "Must provide a shop for the product");
+        requireNonNull(unitPrice,
+                       "Must provide a price for the product");
+        requireNonNull(quantity,
+                       "Must provide a quantity for the product");
+        requireNonNull(unit,
+                       "Must provide a measurement unit for the product");
+        requireNonNull(saleUnit,
+                       "Must provide a sale unit for the product");
+        requireNonNegative(unitPrice, "Must provided a valid price");
+        requireNonNegative(quantity, "Must provided a valid quantity");
+        requireNonNegative(saleUnit, "Must provided a valid sale unit");
 
-        Shop shop = shopRepo.findById(dto.getShopId())
+
+        Shop shop = shopRepo.findById(shopID)
                             .orElseThrow(
                                     () -> new RuntimeException(
                                             String.format(
                                                     "Could not find shop with ID: %s",
-                                                    dto.getShopId()
+                                                    shopID
                                             )
                                     )
                             );
 
-        Product product = ProductMapper.convertToProduct(dto, shop);
+        Product product = new Product(shop, productName, unitPrice, quantity, unit, EActiveState.INACTIVE);
         Product savedProduct = productRepo.saveAndFlush(product);
         return ProductMapper.convertToDTO(savedProduct);
     }
