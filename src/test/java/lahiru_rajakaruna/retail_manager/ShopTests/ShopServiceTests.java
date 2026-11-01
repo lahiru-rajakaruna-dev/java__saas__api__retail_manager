@@ -177,17 +177,13 @@ public class ShopServiceTests {
         shopService.patchShopById(shopID, patch);
         Mockito.verify(shopRepo)
                .saveAndFlush(shopCaptor.capture());
+        Shop savedShopEntity = shopCaptor.getValue();
 
-        Shop passedInArgument = shopCaptor.getValue();
-        boolean isNamePatched = passedInArgument.getName()
-                                                .equals(patch.getName());
-        boolean isActiveStatePatched = passedInArgument.getActiveState()
-                                                       .equals(patch.getActiveState());
 
-        Assertions.assertThat(isNamePatched)
-                  .isTrue();
-        Assertions.assertThat(isActiveStatePatched)
-                  .isTrue();
+        Assertions.assertThat(savedShopEntity.getName())
+                  .isEqualTo(patch.getName());
+        Assertions.assertThat(savedShopEntity.getActiveState())
+                  .isEqualTo(patch.getActiveState());
     }
 
     public void patchShopByIdShouldReturnDTOOnSuccessfulOperation() {
