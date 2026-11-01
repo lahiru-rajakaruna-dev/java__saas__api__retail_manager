@@ -182,3 +182,5 @@ public class TestAuthService {
         });
     }
 }
+
+// TODO: ADD TEST CASES FOR ACTIVE AND INACTIVE STATES OF TENANTS
