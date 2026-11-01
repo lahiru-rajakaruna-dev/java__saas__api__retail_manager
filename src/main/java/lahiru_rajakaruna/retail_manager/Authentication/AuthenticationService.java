@@ -13,6 +13,8 @@ import lahiru_rajakaruna.retail_manager.Tenant.TenantService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Pattern;
+
 
 @Service
 public class AuthenticationService {
@@ -65,11 +67,20 @@ public class AuthenticationService {
     public void register(String phoneNumber, String password) {
         requireNonNull(phoneNumber, "Phone number is not provided");
         requireNonNull(password, "Password is not provided");
+        requireValidPhoneNumber(phoneNumber);
         requireNonRegisteredPhone(phoneNumber);
         requireStrongPassword(password);
 
         String passwordHash = passwordEncoder.encode(password);
         tenantService.createTenant(new CreateTenantDTO(phoneNumber, passwordHash));
+    }
+
+    private void requireValidPhoneNumber(String phone) {
+        boolean validPhone = Pattern.matches("\\+947[24680] [0-9]{2} [0-9]{2} [0-9]{3}", phone);
+
+        if (!validPhone) {
+            throw new IllegalArgumentException("Invalid phone");
+        }
     }
 
     private void requireStrongPassword(String password) {
