@@ -167,6 +167,8 @@ public class ShopServiceTests {
 
         Mockito.when(shopRepo.findById(Mockito.any(UUID.class)))
                .thenReturn(Optional.of(fakeShop));
+        Mockito.when(shopRepo.saveAndFlush(Mockito.any(Shop.class)))
+               .thenReturn(fakeShop);
 
 
         ArgumentCaptor<Shop> shopCaptor = ArgumentCaptor.forClass(Shop.class);
