@@ -2,6 +2,7 @@ package lahiru_rajakaruna.retail_manager.ShopTests;
 
 import lahiru_rajakaruna.retail_manager.Common.EActiveState;
 import lahiru_rajakaruna.retail_manager.Shop.DTOs.CreateShopDTO;
+import lahiru_rajakaruna.retail_manager.Shop.DTOs.PatchShopDTO;
 import lahiru_rajakaruna.retail_manager.Shop.DTOs.ShopResponseDTO;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
@@ -11,6 +12,7 @@ import lahiru_rajakaruna.retail_manager.Tenant.Tenant;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -113,12 +115,77 @@ public class ShopServiceTests {
 
 //    TODO: TEST CREATE TENANT TRANSACTIONAL INTEGRITY
 
+    @Test
     public void patchShopByIdShouldThrowWhenIdIsNull() {
+        Assertions.assertThatThrownBy(() -> {
+                      shopService.patchShopById(null, new PatchShopDTO());
+                  })
+                  .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
     public void patchShopByIdShouldUpdateTheEntityWithOnePropertyPatch() {
+        Shop shop = new Shop("SHOP", EActiveState.ACTIVE);
+        Mockito.when(shopRepo.findById(Mockito.any(UUID.class)))
+               .thenReturn(Optional.of(shop));
+
+//        PATCH NAME
+        ArgumentCaptor<Shop> shopCaptor_1 = ArgumentCaptor.forClass(Shop.class);
+        PatchShopDTO patch = new PatchShopDTO("SHOP UPDATE", null);
+        shopService.patchShopById(UUID.randomUUID(), patch);
+
+        Mockito.verify(shopRepo)
+               .saveAndFlush(shopCaptor_1.capture());
+        Shop passedInArgument = shopCaptor_1.getValue();
+        boolean isPatchAppliedToSavingEntity = passedInArgument.getName()
+                                                               .equals(patch.getName());
+        Assertions.assertThat(isPatchAppliedToSavingEntity)
+                  .isTrue();
+
+
+//        PATCH ACTIVE STATE
+        ArgumentCaptor<Shop> shopCaptor_2 = ArgumentCaptor.forClass(Shop.class);
+        PatchShopDTO patch_2 = new PatchShopDTO(null, EActiveState.INACTIVE);
+        shopService.patchShopById(UUID.randomUUID(), patch_2);
+
+        Mockito.verify(shopRepo)
+               .saveAndFlush(shopCaptor_2.capture());
+        Shop passedInArgument_2 = shopCaptor_2.getValue();
+        boolean isPatchAppliedToEntity = passedInArgument_2.getActiveState()
+                                                           .equals(patch_2.getActiveState());
+        Assertions.assertThat(isPatchAppliedToEntity)
+                  .isTrue();
     }
+
+    @Test
     public void patchShopByIdShouldUpdateTheEntityWithMultiPropertyPatch() {
+        UUID shopID = UUID.randomUUID();
+        Shop fakeShop = new Shop("SHOP", EActiveState.INACTIVE);
+        fakeShop.setId(shopID);
+
+        Mockito.when(shopRepo.findById(Mockito.any(UUID.class)))
+               .thenReturn(Optional.of(fakeShop));
+
+
+        ArgumentCaptor<Shop> shopCaptor = ArgumentCaptor.forClass(Shop.class);
+
+        PatchShopDTO patch = new PatchShopDTO("UPDATED SHOP NAME", EActiveState.ACTIVE);
+        shopService.patchShopById(shopID, patch);
+        Mockito.verify(shopRepo)
+               .saveAndFlush(shopCaptor.capture());
+
+        Shop passedInArgument = shopCaptor.getValue();
+        boolean isNamePatched = passedInArgument.getName()
+                                                .equals(patch.getName());
+        boolean isActiveStatePatched = passedInArgument.getActiveState()
+                                                       .equals(patch.getActiveState());
+
+        Assertions.assertThat(isNamePatched)
+                  .isTrue();
+        Assertions.assertThat(isActiveStatePatched)
+                  .isTrue();
     }
+
     public void patchShopByIdShouldReturnDTOOnSuccessfulOperation() {
     }
 //    TODO: TEST FOR PATCH SHOP TRANSACTIONAL INTEGRITY
