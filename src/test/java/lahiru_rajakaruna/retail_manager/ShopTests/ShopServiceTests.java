@@ -131,6 +131,10 @@ public class ShopServiceTests {
 
         Mockito.when(shopRepo.findById(Mockito.any(UUID.class)))
                .thenReturn(Optional.of(shop));
+        Mockito.when(shopRepo.saveAndFlush(Mockito.any(Shop.class)))
+               .thenReturn(shop);
+
+        ArgumentCaptor<Shop> shopCaptor = ArgumentCaptor.forClass(Shop.class);
 
 //        PATCH NAME
         ArgumentCaptor<Shop> shopCaptor_1 = ArgumentCaptor.forClass(Shop.class);
