@@ -186,7 +186,25 @@ public class ShopServiceTests {
                   .isEqualTo(patch.getActiveState());
     }
 
+    @Test
     public void patchShopByIdShouldReturnDTOOnSuccessfulOperation() {
+        UUID shopID = UUID.randomUUID();
+        Shop fakeShop = new Shop("Shop", EActiveState.INACTIVE);
+        fakeShop.setId(shopID);
+
+        Mockito.when(shopRepo.findById(Mockito.any(UUID.class)))
+               .thenReturn(Optional.of(fakeShop));
+        Mockito.when(shopRepo.saveAndFlush(Mockito.any(Shop.class)))
+               .thenReturn(fakeShop);
+
+        PatchShopDTO patch = new PatchShopDTO("Updated Name", EActiveState.ACTIVE);
+
+        Object result = shopService.patchShopById(shopID, patch);
+
+        Assertions.assertThat(result)
+                  .isNotNull();
+        Assertions.assertThat(result)
+                  .isInstanceOf(ShopResponseDTO.class);
     }
 //    TODO: TEST FOR PATCH SHOP TRANSACTIONAL INTEGRITY
 }
