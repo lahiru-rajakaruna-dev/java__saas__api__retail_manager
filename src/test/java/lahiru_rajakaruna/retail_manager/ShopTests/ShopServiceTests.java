@@ -125,7 +125,10 @@ public class ShopServiceTests {
 
     @Test
     public void patchShopByIdShouldUpdateTheEntityWithOnePropertyPatch() {
+        UUID shopID = UUID.randomUUID();
         Shop shop = new Shop("SHOP", EActiveState.ACTIVE);
+        shop.setId(shopID);
+
         Mockito.when(shopRepo.findById(Mockito.any(UUID.class)))
                .thenReturn(Optional.of(shop));
 
