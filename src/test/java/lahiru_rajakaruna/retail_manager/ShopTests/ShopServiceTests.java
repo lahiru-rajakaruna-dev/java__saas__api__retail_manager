@@ -137,31 +137,26 @@ public class ShopServiceTests {
         ArgumentCaptor<Shop> shopCaptor = ArgumentCaptor.forClass(Shop.class);
 
 //        PATCH NAME
-        ArgumentCaptor<Shop> shopCaptor_1 = ArgumentCaptor.forClass(Shop.class);
-        PatchShopDTO patch = new PatchShopDTO("SHOP UPDATE", null);
+        PatchShopDTO patch = new PatchShopDTO("SHOP NAME UPDATE", null);
         shopService.patchShopById(UUID.randomUUID(), patch);
+        Mockito.verify(shopRepo, Mockito.times(1))
+               .saveAndFlush(shopCaptor.capture());
 
-        Mockito.verify(shopRepo)
-               .saveAndFlush(shopCaptor_1.capture());
-        Shop passedInArgument = shopCaptor_1.getValue();
-        boolean isPatchAppliedToSavingEntity = passedInArgument.getName()
-                                                               .equals(patch.getName());
-        Assertions.assertThat(isPatchAppliedToSavingEntity)
-                  .isTrue();
+        Shop passedInArgument = shopCaptor.getValue();
+        Assertions.assertThat(passedInArgument.getName())
+                  .isEqualTo(patch.getName());
 
+        Mockito.clearInvocations(shopRepo);
 
 //        PATCH ACTIVE STATE
-        ArgumentCaptor<Shop> shopCaptor_2 = ArgumentCaptor.forClass(Shop.class);
         PatchShopDTO patch_2 = new PatchShopDTO(null, EActiveState.INACTIVE);
         shopService.patchShopById(UUID.randomUUID(), patch_2);
 
-        Mockito.verify(shopRepo)
-               .saveAndFlush(shopCaptor_2.capture());
-        Shop passedInArgument_2 = shopCaptor_2.getValue();
-        boolean isPatchAppliedToEntity = passedInArgument_2.getActiveState()
-                                                           .equals(patch_2.getActiveState());
-        Assertions.assertThat(isPatchAppliedToEntity)
-                  .isTrue();
+        Mockito.verify(shopRepo, Mockito.times(1))
+               .saveAndFlush(shopCaptor.capture());
+        Shop passedInArgument_2 = shopCaptor.getValue();
+        Assertions.assertThat(passedInArgument_2.getActiveState())
+                  .isEqualTo(patch_2.getActiveState());
     }
 
     @Test
