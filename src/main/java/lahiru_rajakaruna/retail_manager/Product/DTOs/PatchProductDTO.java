@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,12 +21,6 @@ public class PatchProductDTO {
     private EMessurmentUnit unit;
     private EActiveState state;
 
-    private void requireNonNull(Object o, String message) {
-        if (o == null) {
-            throw new IllegalArgumentException(message);
-        }
-    }
-
     private void requireZeroOrPositive(BigDecimal value, String message) {
         if (value.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException(message);
@@ -33,14 +28,16 @@ public class PatchProductDTO {
     }
 
     public void setPrice(BigDecimal value) {
-        requireNonNull(value, "Price cannot be null");
-        requireZeroOrPositive(value, "Price cannot be negative");
+        if (value != null) {
+            requireZeroOrPositive(value, "Price cannot be negative");
+        }
         this.price = value;
     }
 
     public void setQuantity(BigDecimal value) {
-        requireNonNull(value, "Quantity cannot be null");
-        requireZeroOrPositive(value, "Quantity cannot be negative");
+        if (value != null) {
+            requireZeroOrPositive(value, "Quantity cannot be negative");
+        }
         this.quantity = value;
     }
 }
