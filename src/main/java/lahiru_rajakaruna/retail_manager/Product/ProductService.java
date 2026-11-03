@@ -93,22 +93,28 @@ public class ProductService {
     @Transactional
     public ResponseProductDTO patchById(UUID id, PatchProductDTO updates) {
         requireNonNull(id, "ID parameter is null");
+        boolean entityModified = false;
         Product product = findProductOrThrow(id);
 
         if (updates.getName() != null) {
+            entityModified = true;
             updateProductName(product, updates.getName());
         }
         if (updates.getPrice() != null) {
+            entityModified = true;
             updateProductPrice(product, updates.getPrice());
         }
         if (updates.getQuantity() != null) {
+            entityModified = true;
             updateProductQuantity(product, updates.getQuantity());
         }
         if (updates.getUnit() != null) {
+            entityModified = true;
             updateProductUnit(product, updates.getUnit());
         }
 
         if (updates.getState() != null) {
+            entityModified = true;
             if (EActiveState.ACTIVE.equals(updates.getState())) {
                 activateProductById(product);
             } else if (EActiveState.INACTIVE.equals(updates.getState())) {
@@ -118,8 +124,11 @@ public class ProductService {
             }
         }
 
-        Product savedProduct = productRepo.saveAndFlush(product);
-        return ProductMapper.convertToDTO(savedProduct);
+        Product savedProduct = null;
+        if (entityModified) {
+            savedProduct = productRepo.saveAndFlush(product);
+        }
+        return ProductMapper.convertToDTO(savedProduct != null ? savedProduct : product);
     }
 
     private Product updateProductName(Product product, String name) {
