@@ -33,6 +33,7 @@ public class ProductServiceTests {
     private static final BigDecimal PRICE = BigDecimal.valueOf(100L);
     private static final BigDecimal QUANTITY = BigDecimal.valueOf(230L);
     private static final EMessurmentUnit UNIT = EMessurmentUnit.G;
+    private static final BigDecimal SALE_UNIT = BigDecimal.ONE;
 
     @Autowired
     private ProductService productService;
@@ -46,7 +47,7 @@ public class ProductServiceTests {
     public ProductServiceTests() {
     }
 
-    // ---------- helpers ----------
+    // ========== HELPERS ==============
 
     private Shop newShop() {
         Shop shop = new Shop("Shop 1", EActiveState.ACTIVE);
@@ -66,36 +67,29 @@ public class ProductServiceTests {
         return product;
     }
 
-    /**
-     * Builds a patch DTO through the setters, so the tests keep compiling if PatchProductDTO gains fields.
-     * Null arguments are skipped because the price/quantity setters reject null.
-     */
-    private PatchProductDTO patch(String name, BigDecimal price, BigDecimal quantity, EMessurmentUnit unit,
-            EActiveState state) {
+
+    private PatchProductDTO patch(String name, BigDecimal price, BigDecimal quantity, EMessurmentUnit unit, EActiveState state) {
         PatchProductDTO dto = new PatchProductDTO();
-        if (name != null) dto.setName(name);
-        if (price != null) dto.setPrice(price);
-        if (quantity != null) dto.setQuantity(quantity);
-        if (unit != null) dto.setUnit(unit);
-        if (state != null) dto.setState(state);
+        dto.setName(name);
+        dto.setPrice(price);
+        dto.setQuantity(quantity);
+        dto.setUnit(unit);
+        dto.setState(state);
         return dto;
     }
 
-    private void stubSaveToReturnArgument() {
+    private void stubSaveAndFlush() {
         Mockito.when(productRepo.saveAndFlush(Mockito.any(Product.class)))
                .thenAnswer(invocation -> invocation.getArgument(0));
     }
 
-    private void stubFindProduct(Product product) {
+    private void stubFindById(Product product) {
         Mockito.when(productRepo.findById(product.getId()))
                .thenReturn(Optional.of(product));
     }
 
-    // ---------- CREATE PRODUCT ----------
 
-    private static final BigDecimal SALE_UNIT = BigDecimal.ONE;
-
-    private void stubSaveAssigningId() {
+    private void stubSaveAndFlushWithIDAssignedReturn() {
         Mockito.when(productRepo.saveAndFlush(Mockito.any(Product.class)))
                .thenAnswer(invocation -> {
                    Product p = invocation.getArgument(0);
@@ -104,27 +98,23 @@ public class ProductServiceTests {
                });
     }
 
+//   ============== TESTS =================
+
     @Test
     public void createProductShouldThrowWhenParametersAreNull() {
         UUID shopId = UUID.randomUUID();
 
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(null, NAME, PRICE, QUANTITY, UNIT, SALE_UNIT))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(null, NAME, PRICE, QUANTITY, UNIT, SALE_UNIT))
                   .isInstanceOf(IllegalArgumentException.class);
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(shopId, null, PRICE, QUANTITY, UNIT, SALE_UNIT))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(shopId, null, PRICE, QUANTITY, UNIT, SALE_UNIT))
                   .isInstanceOf(IllegalArgumentException.class);
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(shopId, NAME, null, QUANTITY, UNIT, SALE_UNIT))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(shopId, NAME, null, QUANTITY, UNIT, SALE_UNIT))
                   .isInstanceOf(IllegalArgumentException.class);
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(shopId, NAME, PRICE, null, UNIT, SALE_UNIT))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(shopId, NAME, PRICE, null, UNIT, SALE_UNIT))
                   .isInstanceOf(IllegalArgumentException.class);
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(shopId, NAME, PRICE, QUANTITY, null, SALE_UNIT))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(shopId, NAME, PRICE, QUANTITY, null, SALE_UNIT))
                   .isInstanceOf(IllegalArgumentException.class);
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(shopId, NAME, PRICE, QUANTITY, UNIT, null))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(shopId, NAME, PRICE, QUANTITY, UNIT, null))
                   .isInstanceOf(IllegalArgumentException.class);
 
         Mockito.verify(productRepo, Mockito.never())
@@ -136,9 +126,7 @@ public class ProductServiceTests {
         Mockito.when(shopRepo.findById(Mockito.any(UUID.class)))
                .thenReturn(Optional.empty());
 
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(UUID.randomUUID(), NAME, PRICE, QUANTITY, UNIT,
-                                                             SALE_UNIT))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(UUID.randomUUID(), NAME, PRICE, QUANTITY, UNIT, SALE_UNIT))
                   .isInstanceOf(RuntimeException.class);
 
         Mockito.verify(productRepo, Mockito.never())
@@ -151,9 +139,7 @@ public class ProductServiceTests {
         Mockito.when(shopRepo.findById(shop.getId()))
                .thenReturn(Optional.of(shop));
 
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(shop.getId(), NAME, BigDecimal.valueOf(-30L), QUANTITY,
-                                                             UNIT, SALE_UNIT))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(shop.getId(), NAME, BigDecimal.valueOf(-30L), QUANTITY, UNIT, SALE_UNIT))
                   .isInstanceOf(IllegalArgumentException.class);
 
         Mockito.verify(productRepo, Mockito.never())
@@ -166,9 +152,7 @@ public class ProductServiceTests {
         Mockito.when(shopRepo.findById(shop.getId()))
                .thenReturn(Optional.of(shop));
 
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(shop.getId(), NAME, PRICE, BigDecimal.valueOf(-500L),
-                                                             UNIT, SALE_UNIT))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(shop.getId(), NAME, PRICE, BigDecimal.valueOf(-500L), UNIT, SALE_UNIT))
                   .isInstanceOf(IllegalArgumentException.class);
 
         Mockito.verify(productRepo, Mockito.never())
@@ -181,9 +165,7 @@ public class ProductServiceTests {
         Mockito.when(shopRepo.findById(shop.getId()))
                .thenReturn(Optional.of(shop));
 
-        Assertions.assertThatThrownBy(
-                          () -> productService.createProduct(shop.getId(), NAME, PRICE, QUANTITY, UNIT,
-                                                             BigDecimal.valueOf(-10L)))
+        Assertions.assertThatThrownBy(() -> productService.createProduct(shop.getId(), NAME, PRICE, QUANTITY, UNIT, BigDecimal.valueOf(-10L)))
                   .isInstanceOf(IllegalArgumentException.class);
 
         Mockito.verify(productRepo, Mockito.never())
@@ -195,7 +177,7 @@ public class ProductServiceTests {
         Shop shop = newShop();
         Mockito.when(shopRepo.findById(shop.getId()))
                .thenReturn(Optional.of(shop));
-        stubSaveAssigningId();
+        stubSaveAndFlushWithIDAssignedReturn();
 
         productService.createProduct(shop.getId(), NAME, PRICE, QUANTITY, UNIT, SALE_UNIT);
 
@@ -223,10 +205,9 @@ public class ProductServiceTests {
         Shop shop = newShop();
         Mockito.when(shopRepo.findById(shop.getId()))
                .thenReturn(Optional.of(shop));
-        stubSaveAssigningId();
+        stubSaveAndFlushWithIDAssignedReturn();
 
-        ResponseProductDTO result = productService.createProduct(shop.getId(), NAME, PRICE, QUANTITY, UNIT,
-                                                                 SALE_UNIT);
+        ResponseProductDTO result = productService.createProduct(shop.getId(), NAME, PRICE, QUANTITY, UNIT, SALE_UNIT);
 
         Assertions.assertThat(result.getId())
                   .isNotNull();
@@ -243,8 +224,6 @@ public class ProductServiceTests {
         Assertions.assertThat(result.getState())
                   .isEqualTo(EActiveState.INACTIVE);
     }
-
-    // ---------- FIND BY ID ----------
 
     @Test
     public void findByIdShouldThrowWhenIdIsNull() {
@@ -265,7 +244,8 @@ public class ProductServiceTests {
     @Test
     public void findByIdShouldReturnResponseProductDTOWhenMatched() {
         Product product = newProduct(newShop());
-        stubFindProduct(product);
+        Mockito.when(productRepo.findById(Mockito.eq(product.getId())))
+               .thenReturn(Optional.of(product));
 
         ResponseProductDTO result = productService.findById(product.getId());
 
@@ -277,8 +257,6 @@ public class ProductServiceTests {
         Assertions.assertThat(result.getName())
                   .isEqualTo(NAME);
     }
-
-    // ---------- FIND BY SHOP ID ----------
 
     @Test
     public void findByShopIdShouldThrowWhenIdIsNull() {
@@ -300,11 +278,12 @@ public class ProductServiceTests {
     @Test
     public void findByShopIdShouldReturnListOfResponseProductDTOsWhenMatched() {
         Shop shop = newShop();
-        Product first = newProduct(shop);
-        Product second = newProduct(shop);
-        second.setName("Product 2");
+        Product product_1 = newProduct(shop);
+        Product product_2 = newProduct(shop);
+        product_2.setName("Product 2");
+
         Mockito.when(productRepo.findAllByShopId(shop.getId()))
-               .thenReturn(List.of(first, second));
+               .thenReturn(List.of(product_1, product_2));
 
         List<ResponseProductDTO> result = productService.findByShopId(shop.getId());
 
@@ -318,9 +297,6 @@ public class ProductServiceTests {
                                                .isEqualTo(shop.getId()));
     }
 
-    // ---------- PATCH BY ID ----------
-    // The update*/activate/deactivate methods are private delegates of patchById,
-    // so every field-level behaviour is exercised through it.
 
     private ArgumentCaptor<Product> verifySavedOnce() {
         ArgumentCaptor<Product> captor = ArgumentCaptor.forClass(Product.class);
@@ -350,8 +326,7 @@ public class ProductServiceTests {
         Mockito.when(productRepo.findById(Mockito.any(UUID.class)))
                .thenReturn(Optional.empty());
 
-        Assertions.assertThatThrownBy(
-                          () -> productService.patchById(UUID.randomUUID(), patch("New name", null, null, null, null)))
+        Assertions.assertThatThrownBy(() -> productService.patchById(UUID.randomUUID(), patch("New name", null, null, null, null)))
                   .isInstanceOf(RuntimeException.class)
                   .hasMessageContaining("Could not find product");
 
@@ -362,7 +337,7 @@ public class ProductServiceTests {
     @Test
     public void patchByIdShouldNotSaveAnythingWhenNoFieldsAreProvided() {
         Product product = newProduct(newShop());
-        stubFindProduct(product);
+        stubFindById(product);
 
         ResponseProductDTO result = productService.patchById(product.getId(), new PatchProductDTO());
 
@@ -372,15 +347,18 @@ public class ProductServiceTests {
                   .isEqualTo(NAME);
     }
 
-    // ----- name -----
 
     @Test
     public void patchByIdShouldThrowWhenNameIsEmptyOrBlank() {
-        UUID id = UUID.randomUUID();
+        Shop shop = newShop();
+        Product product = newProduct(shop);
+        Mockito.when(productRepo.findById(Mockito.eq(product.getId())))
+               .thenReturn(Optional.of(product));
 
-        Assertions.assertThatThrownBy(() -> productService.patchById(id, patch("", null, null, null, null)))
+
+        Assertions.assertThatThrownBy(() -> productService.patchById(product.getId(), patch("", null, null, null, null)))
                   .isInstanceOf(IllegalArgumentException.class);
-        Assertions.assertThatThrownBy(() -> productService.patchById(id, patch("   ", null, null, null, null)))
+        Assertions.assertThatThrownBy(() -> productService.patchById(product.getId(), patch("   ", null, null, null, null)))
                   .isInstanceOf(IllegalArgumentException.class);
 
         Mockito.verify(productRepo, Mockito.never())
@@ -390,14 +368,13 @@ public class ProductServiceTests {
     @Test
     public void patchByIdShouldSaveAndReturnTheUpdatedName() {
         Product product = newProduct(newShop());
-        stubFindProduct(product);
-        stubSaveToReturnArgument();
+        stubFindById(product);
+        stubSaveAndFlush();
 
         ResponseProductDTO result = productService.patchById(product.getId(), patch("New name", null, null, null, null));
 
-        Assertions.assertThat(verifySavedOnce()
-                                      .getValue()
-                                      .getName())
+        Assertions.assertThat(verifySavedOnce().getValue()
+                                               .getName())
                   .isEqualTo("New name");
         Assertions.assertThat(result.getId())
                   .isEqualTo(product.getId());
@@ -405,14 +382,17 @@ public class ProductServiceTests {
                   .isEqualTo("New name");
     }
 
-    // ----- price -----
 
     @Test
     public void patchByIdShouldThrowWhenPriceIsNegative() {
-        // all-args constructor on purpose: the DTO setter would reject the value before the service sees it
+        Shop shop = newShop();
+        Product product = newProduct(shop);
+        Mockito.when(productRepo.findById(Mockito.eq(product.getId())))
+               .thenReturn(Optional.of(product));
+
         PatchProductDTO updates = new PatchProductDTO(null, BigDecimal.valueOf(-1L), null, null, null);
 
-        Assertions.assertThatThrownBy(() -> productService.patchById(UUID.randomUUID(), updates))
+        Assertions.assertThatThrownBy(() -> productService.patchById(product.getId(), updates))
                   .isInstanceOf(IllegalArgumentException.class);
 
         Mockito.verify(productRepo, Mockito.never())
@@ -421,28 +401,34 @@ public class ProductServiceTests {
 
     @Test
     public void patchByIdShouldSaveAndReturnTheUpdatedPrice() {
-        Product product = newProduct(newShop());
-        stubFindProduct(product);
-        stubSaveToReturnArgument();
+        Shop shop = newShop();
+        Product product = newProduct(shop);
+        Mockito.when(productRepo.findById(Mockito.eq(product.getId())))
+               .thenReturn(Optional.of(product));
+
+        stubFindById(product);
+        stubSaveAndFlush();
         BigDecimal newPrice = BigDecimal.valueOf(999L);
 
         ResponseProductDTO result = productService.patchById(product.getId(), patch(null, newPrice, null, null, null));
 
-        Assertions.assertThat(verifySavedOnce()
-                                      .getValue()
-                                      .getPrice())
+        Assertions.assertThat(verifySavedOnce().getValue()
+                                               .getPrice())
                   .isEqualByComparingTo(newPrice);
         Assertions.assertThat(result.getPrice())
                   .isEqualByComparingTo(newPrice);
     }
 
-    // ----- quantity -----
 
     @Test
     public void patchByIdShouldThrowWhenQuantityIsNegative() {
+        Product product = newProduct(newShop());
+        stubFindById(product);
+        stubSaveAndFlush();
+
         PatchProductDTO updates = new PatchProductDTO(null, null, BigDecimal.valueOf(-1L), null, null);
 
-        Assertions.assertThatThrownBy(() -> productService.patchById(UUID.randomUUID(), updates))
+        Assertions.assertThatThrownBy(() -> productService.patchById(product.getId(), updates))
                   .isInstanceOf(IllegalArgumentException.class);
 
         Mockito.verify(productRepo, Mockito.never())
@@ -452,55 +438,47 @@ public class ProductServiceTests {
     @Test
     public void patchByIdShouldSaveAndReturnTheUpdatedQuantity() {
         Product product = newProduct(newShop());
-        stubFindProduct(product);
-        stubSaveToReturnArgument();
+        stubFindById(product);
+        stubSaveAndFlush();
         BigDecimal newQuantity = BigDecimal.valueOf(5L);
 
-        ResponseProductDTO result = productService.patchById(product.getId(),
-                                                             patch(null, null, newQuantity, null, null));
+        ResponseProductDTO result = productService.patchById(product.getId(), patch(null, null, newQuantity, null, null));
 
-        Assertions.assertThat(verifySavedOnce()
-                                      .getValue()
-                                      .getQuantity())
+        Assertions.assertThat(verifySavedOnce().getValue()
+                                               .getQuantity())
                   .isEqualByComparingTo(newQuantity);
         Assertions.assertThat(result.getQuantity())
                   .isEqualByComparingTo(newQuantity);
     }
 
-    // ----- unit -----
 
     @Test
     public void patchByIdShouldSaveAndReturnTheUpdatedUnit() {
         Product product = newProduct(newShop());
-        stubFindProduct(product);
-        stubSaveToReturnArgument();
+        stubFindById(product);
+        stubSaveAndFlush();
 
-        ResponseProductDTO result = productService.patchById(product.getId(),
-                                                             patch(null, null, null, EMessurmentUnit.KG, null));
+        ResponseProductDTO result = productService.patchById(product.getId(), patch(null, null, null, EMessurmentUnit.KG, null));
 
-        Assertions.assertThat(verifySavedOnce()
-                                      .getValue()
-                                      .getUnit())
+        Assertions.assertThat(verifySavedOnce().getValue()
+                                               .getUnit())
                   .isEqualTo(EMessurmentUnit.KG);
         Assertions.assertThat(result.getUnit())
                   .isEqualTo(EMessurmentUnit.KG);
     }
 
-    // ----- state (activate / deactivate) -----
 
     @Test
     public void patchByIdShouldActivateAnInactiveProduct() {
         Product product = newProduct(newShop());
         product.setActiveState(EActiveState.INACTIVE);
-        stubFindProduct(product);
-        stubSaveToReturnArgument();
+        stubFindById(product);
+        stubSaveAndFlush();
 
-        ResponseProductDTO result = productService.patchById(product.getId(),
-                                                             patch(null, null, null, null, EActiveState.ACTIVE));
+        ResponseProductDTO result = productService.patchById(product.getId(), patch(null, null, null, null, EActiveState.ACTIVE));
 
-        Assertions.assertThat(verifySavedOnce()
-                                      .getValue()
-                                      .getActiveState())
+        Assertions.assertThat(verifySavedOnce().getValue()
+                                               .getActiveState())
                   .isEqualTo(EActiveState.ACTIVE);
         Assertions.assertThat(result.getState())
                   .isEqualTo(EActiveState.ACTIVE);
@@ -510,29 +488,25 @@ public class ProductServiceTests {
     public void patchByIdShouldDeactivateAnActiveProduct() {
         Product product = newProduct(newShop());
         product.setActiveState(EActiveState.ACTIVE);
-        stubFindProduct(product);
-        stubSaveToReturnArgument();
+        stubFindById(product);
+        stubSaveAndFlush();
 
-        ResponseProductDTO result = productService.patchById(product.getId(),
-                                                             patch(null, null, null, null, EActiveState.INACTIVE));
+        ResponseProductDTO result = productService.patchById(product.getId(), patch(null, null, null, null, EActiveState.INACTIVE));
 
-        Assertions.assertThat(verifySavedOnce()
-                                      .getValue()
-                                      .getActiveState())
+        Assertions.assertThat(verifySavedOnce().getValue()
+                                               .getActiveState())
                   .isEqualTo(EActiveState.INACTIVE);
         Assertions.assertThat(result.getState())
                   .isEqualTo(EActiveState.INACTIVE);
     }
 
-    // ----- several fields at once -----
 
     @Test
     public void patchByIdShouldApplyEveryProvidedField() {
         Product product = newProduct(newShop());
-        stubFindProduct(product);
-        stubSaveToReturnArgument();
-        PatchProductDTO updates = patch("Renamed", BigDecimal.valueOf(55L), BigDecimal.valueOf(7L),
-                                        EMessurmentUnit.KG, EActiveState.ACTIVE);
+        stubFindById(product);
+        stubSaveAndFlush();
+        PatchProductDTO updates = patch("Renamed", BigDecimal.valueOf(55L), BigDecimal.valueOf(7L), EMessurmentUnit.KG, EActiveState.ACTIVE);
 
         ResponseProductDTO result = productService.patchById(product.getId(), updates);
 
@@ -551,11 +525,10 @@ public class ProductServiceTests {
     @Test
     public void patchByIdShouldOnlyChangeTheProvidedFields() {
         Product product = newProduct(newShop());
-        stubFindProduct(product);
-        stubSaveToReturnArgument();
+        stubFindById(product);
+        stubSaveAndFlush();
 
-        ResponseProductDTO result = productService.patchById(product.getId(),
-                                                             patch(null, BigDecimal.valueOf(55L), null, null, null));
+        ResponseProductDTO result = productService.patchById(product.getId(), patch(null, BigDecimal.valueOf(55L), null, null, null));
 
         Assertions.assertThat(result.getPrice())
                   .isEqualByComparingTo(BigDecimal.valueOf(55L));
