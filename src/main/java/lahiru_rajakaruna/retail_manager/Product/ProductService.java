@@ -93,109 +93,76 @@ public class ProductService {
     @Transactional
     public ResponseProductDTO patchById(UUID id, PatchProductDTO updates) {
         requireNonNull(id, "ID parameter is null");
+        Product product = findProductOrThrow(id);
 
         if (updates.getName() != null) {
-            updateProductName(id, updates.getName());
+            updateProductName(product, updates.getName());
         }
         if (updates.getPrice() != null) {
-            updateProductPrice(id, updates.getPrice());
+            updateProductPrice(product, updates.getPrice());
         }
         if (updates.getQuantity() != null) {
-            updateProductQuantity(id, updates.getQuantity());
+            updateProductQuantity(product, updates.getQuantity());
         }
         if (updates.getUnit() != null) {
-            updateProductUnit(id, updates.getUnit());
+            updateProductUnit(product, updates.getUnit());
         }
 
         if (updates.getState() != null) {
             if (EActiveState.ACTIVE.equals(updates.getState())) {
-                activateProductById(id);
+                activateProductById(product);
             } else if (EActiveState.INACTIVE.equals(updates.getState())) {
-                deactivateProductById(id);
+                deactivateProductById(product);
             } else {
                 throw new IllegalArgumentException("Illegal product state");
             }
         }
 
-        return findById(id);
+        Product savedProduct = productRepo.saveAndFlush(product);
+        return ProductMapper.convertToDTO(savedProduct);
     }
 
-    @Transactional
-    public ResponseProductDTO updateProductName(UUID id, String name) {
-        requireNonNull(id, "ID parameter is null");
+    private Product updateProductName(Product product, String name) {
+        requireNonNull(product, "Product parameter is null");
         requireNonNull(name, "Name parameter is null");
         requireNonEmptyAndNonBlank(name, "Invalid name");
-
-        Product product = findProductOrThrow(id);
         product.setName(name);
-
-        Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductMapper.convertToDTO(updatedProduct);
+        return product;
     }
 
-    @Transactional
-    public ResponseProductDTO updateProductPrice(UUID id, BigDecimal price) {
-
-        requireNonNull(id, "ID parameter is null");
+    private Product updateProductPrice(Product product, BigDecimal price) {
+        requireNonNull(product, "Product parameter is null");
         requireNonNull(price, "Price parameter is null");
         requireNonNegative(price, "Price cannot be negative");
-
-        Product product = findProductOrThrow(id);
         product.setPrice(price);
-
-        Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductMapper.convertToDTO(updatedProduct);
+        return product;
     }
 
-    @Transactional
-    public ResponseProductDTO updateProductQuantity(UUID id, BigDecimal quantity) {
-
-        requireNonNull(id, "ID parameter is null");
+    private Product updateProductQuantity(Product product, BigDecimal quantity) {
+        requireNonNull(product, "Product parameter is null");
         requireNonNull(quantity, "Quantity parameter is null");
         requireNonNegative(quantity, "Quantity cannot be negative");
-
-        Product product = findProductOrThrow(id);
         product.setQuantity(quantity);
-
-        Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductMapper.convertToDTO(updatedProduct);
+        return product;
     }
 
-    @Transactional
-    public ResponseProductDTO updateProductUnit(UUID id, EMessurmentUnit unit) {
-
-        requireNonNull(id, "ID parameter is null");
+    private Product updateProductUnit(Product product, EMessurmentUnit unit) {
+        requireNonNull(product, "Product parameter is null");
         requireNonNull(unit, "Unit parameter is null");
-
-        Product product = findProductOrThrow(id);
         product.setUnit(unit);
-
-        Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductMapper.convertToDTO(updatedProduct);
+        return product;
     }
 
-    @Transactional
-    public ResponseProductDTO activateProductById(UUID id) {
-
-        requireNonNull(id, "ID parameter is null");
-
-        Product product = findProductOrThrow(id);
+    private Product activateProductById(Product product) {
+        requireNonNull(product, "Product parameter is null");
         product.setActiveState(EActiveState.ACTIVE);
-
-        Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductMapper.convertToDTO(updatedProduct);
+        return product;
     }
 
-    @Transactional
-    public ResponseProductDTO deactivateProductById(UUID id) {
-
-        requireNonNull(id, "ID parameter is null");
-
-        Product product = findProductOrThrow(id);
+    private Product deactivateProductById(Product product) {
+        requireNonNull(product, "Product parameter is null");
         product.setActiveState(EActiveState.INACTIVE);
-
-        Product updatedProduct = productRepo.saveAndFlush(product);
-        return ProductMapper.convertToDTO(updatedProduct);
+        return product;
     }
 
     private void requireNonNegative(BigDecimal value, String message) {
