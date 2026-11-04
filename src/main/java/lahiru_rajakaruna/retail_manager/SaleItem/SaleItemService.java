@@ -9,6 +9,8 @@ import lahiru_rajakaruna.retail_manager.Sale.Sale;
 import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.CreateSaleItemDTO;
 import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.PatchSaleItemDTO;
 import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.SaleItemResponseDTO;
+import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
+import lahiru_rajakaruna.retail_manager.Shop.Shop;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,11 +22,16 @@ import java.util.UUID;
 public class SaleItemService {
 
     private final ISaleItemRepository saleItemRepo;
+    private final IShopRepository shopRepo;
     private final ISaleRepository saleRepo;
     private final IProductRepository productRepo;
 
-    public SaleItemService(ISaleItemRepository saleItemRepo, ISaleRepository saleRepo, IProductRepository productRepo) {
+    public SaleItemService(
+            ISaleItemRepository saleItemRepo, ISaleRepository saleRepo,
+            IProductRepository productRepo, IShopRepository shopRepo
+                          ) {
         this.saleItemRepo = saleItemRepo;
+        this.shopRepo = shopRepo;
         this.saleRepo = saleRepo;
         this.productRepo = productRepo;
         checkInternalComponentsPresence();
@@ -55,27 +62,32 @@ public class SaleItemService {
     }
 
     @Transactional
-    public SaleItemResponseDTO addItem(UUID saleId, CreateSaleItemDTO dto) {
+    public SaleItemResponseDTO addItem(
+            UUID saleId, UUID shopId, UUID productId, BigDecimal price,
+            BigDecimal quantity, BigDecimal discount, BigDecimal total
+                                      ) {
         requireNonNull(saleId, "Sale ID parameter is null");
-        requireNonNull(dto, "Sale item data is null");
-        requireNonNull(dto.getProductId(), "Must provide a product for the sale item");
-        requireNonNull(dto.getPrice(), "Must provide a price for the sale item");
-        requireNonNull(dto.getQuantity(), "Must provide a quantity for the sale item");
+        requireNonNull(shopId, "Sale item data is null");
+        requireNonNull(productId, "Must provide a product for the sale item");
+        requireNonNull(price, "Must provide a price for the sale item");
+        requireNonNull(quantity, "Must provide a quantity for the sale item");
+        requireNonNull(discount, "Must provide a quantity for the sale item");
+        requireNonNull(total, "Must provide a quantity for the sale item");
 
         Sale sale = findSaleOrThrow(saleId);
         assertSaleIsOpen(sale);
 
-        Product product = productRepo.findById(dto.getProductId())
-                                     .orElseThrow(() -> new RuntimeException("Could not find product with ID: %s".formatted(dto.getProductId())));
+        Product product = findProductOrThrow(saleId);
+        Shop shop = findShopThrow(shopId);
 
-        BigDecimal discount = dto.getDiscount() != null ? dto.getDiscount() : BigDecimal.ZERO;
+        BigDecimal finalDiscount = discount !=
+                                   null ? discount : BigDecimal.ZERO;
 
-        dto.setDiscount(discount);
-        dto.setTotal(calculateLineTotal(dto.getPrice(), dto.getQuantity(), discount));
+        BigDecimal calculatedTotal = calculateLineTotal(price,
+                                                        quantity,
+                                                        discount);
 
-        SaleItem item = SaleItemMapper.convertToSaleItem(dto, sale.getShop(), sale);
-        item.setProduct(product);
-
+        SaleItem item = new SaleItem(shop,sale,product,price,quantity,finalDiscount,calculatedTotal);
         SaleItem savedItem = saleItemRepo.saveAndFlush(item);
         recalculateSaleTotal(sale);
 
