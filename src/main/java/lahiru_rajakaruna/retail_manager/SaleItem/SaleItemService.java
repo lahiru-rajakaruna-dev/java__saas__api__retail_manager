@@ -6,7 +6,6 @@ import lahiru_rajakaruna.retail_manager.Product.IProductRepository;
 import lahiru_rajakaruna.retail_manager.Product.Product;
 import lahiru_rajakaruna.retail_manager.Sale.ISaleRepository;
 import lahiru_rajakaruna.retail_manager.Sale.Sale;
-import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.CreateSaleItemDTO;
 import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.PatchSaleItemDTO;
 import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.SaleItemResponseDTO;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
@@ -95,7 +94,10 @@ public class SaleItemService {
     }
 
     @Transactional
-    public SaleItemResponseDTO patchItem(UUID saleId, UUID itemId, PatchSaleItemDTO updates) {
+    public SaleItemResponseDTO patchItem(
+            UUID saleId, UUID itemId,
+            PatchSaleItemDTO updates
+                                        ) {
         requireNonNull(saleId, "Sale ID parameter is null");
         requireNonNull(itemId, "Item ID parameter is null");
         requireNonNull(updates, "Updates are null");
@@ -117,7 +119,9 @@ public class SaleItemService {
 
         // Any change to price/quantity/discount invalidates the stored total,
         // so recompute it (a client-supplied total is ignored).
-        item.setTotal(calculateLineTotal(item.getPrice(), item.getQuantity(), item.getDiscount()));
+        item.setTotal(calculateLineTotal(item.getPrice(),
+                                         item.getQuantity(),
+                                         item.getDiscount()));
 
         SaleItem savedItem = saleItemRepo.saveAndFlush(item);
         recalculateSaleTotal(sale);
@@ -139,11 +143,13 @@ public class SaleItemService {
         recalculateSaleTotal(sale);
     }
 
-    private BigDecimal calculateLineTotal(BigDecimal price, BigDecimal quantity, BigDecimal discount) {
+    private BigDecimal calculateLineTotal(
+            BigDecimal price, BigDecimal quantity, BigDecimal discount) {
         BigDecimal total = price.multiply(quantity)
                                 .subtract(discount);
         if (total.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Discount cannot exceed the item amount (price x quantity)");
+            throw new IllegalArgumentException(
+                    "Discount cannot exceed the item amount (price x quantity)");
         }
         return total;
     }
@@ -151,12 +157,13 @@ public class SaleItemService {
     private void recalculateSaleTotal(Sale sale) {
         BigDecimal newTotal = saleItemRepo.getSaleItemsBySaleId(sale.getId())
                                           .stream()
-                                          .map((SaleItem item) ->
-                                                  item.getPrice()
-                                                      .multiply(item.getQuantity())
-                                                      .subtract(item.getDiscount())
-                                          )
-                                          .reduce(BigDecimal.ZERO, BigDecimal::add);
+                                          .map((SaleItem item) -> item.getPrice()
+                                                                      .multiply(
+                                                                              item.getQuantity())
+                                                                      .subtract(
+                                                                              item.getDiscount()))
+                                          .reduce(BigDecimal.ZERO,
+                                                  BigDecimal::add);
 
         sale.setTotal(newTotal);
         saleRepo.saveAndFlush(sale);
@@ -177,23 +184,30 @@ public class SaleItemService {
 
     private void assertSaleIsOpen(Sale sale) {
         if (!ESaleState.OPEN.equals(sale.getSaleState())) {
-            throw new IllegalStateException("Cannot modify the items of a sale that is not open");
+            throw new IllegalStateException(
+                    "Cannot modify the items of a sale that is not open");
         }
     }
 
     private Sale findSaleOrThrow(UUID saleId) {
         return saleRepo.findById(saleId)
-                       .orElseThrow(() -> new RuntimeException("Could not find sale with ID: %s".formatted(saleId)));
+                       .orElseThrow(() -> new RuntimeException(
+                               "Could not find sale with ID: %s".formatted(
+                                       saleId)));
     }
 
     private SaleItem findItemInSaleOrThrow(UUID saleId, UUID itemId) {
         SaleItem item = saleItemRepo.findById(itemId)
-                                    .orElseThrow(() -> new RuntimeException("Could not find sale item with ID: %s".formatted(itemId)));
+                                    .orElseThrow(() -> new RuntimeException(
+                                            "Could not find sale item with ID: %s".formatted(
+                                                    itemId)));
 
         if (!item.getSale()
                  .getId()
                  .equals(saleId)) {
-            throw new RuntimeException("Sale item %s does not belong to sale %s".formatted(itemId, saleId));
+            throw new RuntimeException("Sale item %s does not belong to sale %s".formatted(
+                    itemId,
+                    saleId));
         }
         return item;
     }
