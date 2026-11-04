@@ -162,6 +162,19 @@ public class SaleItemService {
         saleRepo.saveAndFlush(sale);
     }
 
+    private Product findProductOrThrow(UUID id) {
+        return productRepo.findById(id)
+                          .orElseThrow(() -> new RuntimeException(
+                                  "Could not find product with ID: %s".formatted(
+                                          id)));
+    }
+
+    private Shop findShopThrow(UUID id) {
+        return shopRepo.findById(id)
+                       .orElseThrow(() -> new RuntimeException(
+                               "Could not find shop with ID: %s".formatted(id)));
+    }
+
     private void assertSaleIsOpen(Sale sale) {
         if (!ESaleState.OPEN.equals(sale.getSaleState())) {
             throw new IllegalStateException("Cannot modify the items of a sale that is not open");
