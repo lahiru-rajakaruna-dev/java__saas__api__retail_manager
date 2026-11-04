@@ -148,6 +148,12 @@ public class SaleItemService {
         recalculateSaleTotal(sale);
     }
 
+    private void requireNonNegative(BigDecimal value, String message) {
+        if (value.compareTo(BigDecimal.ZERO) < 0) {
+            throw new RuntimeException(message);
+        }
+    }
+
     private BigDecimal calculateLineTotal(
             BigDecimal price, BigDecimal quantity, BigDecimal discount) {
         BigDecimal total = price.multiply(quantity)
