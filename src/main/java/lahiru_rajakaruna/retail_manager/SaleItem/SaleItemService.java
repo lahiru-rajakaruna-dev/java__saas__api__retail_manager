@@ -62,13 +62,13 @@ public class SaleItemService {
 
     @Transactional
     public SaleItemResponseDTO addItem(
-            UUID saleId, UUID shopId, UUID productId, BigDecimal price,
-            BigDecimal quantity, BigDecimal discount, BigDecimal total
+            UUID saleId, UUID shopId, UUID productId, BigDecimal quantity,
+            BigDecimal discount, BigDecimal total
                                       ) {
         requireNonNull(saleId, "Sale ID parameter is null");
         requireNonNull(shopId, "Sale item data is null");
         requireNonNull(productId, "Must provide a product for the sale item");
-        requireNonNull(price, "Must provide a price for the sale item");
+
         requireNonNull(quantity, "Must provide a quantity for the sale item");
         requireNonNull(discount, "Must provide a quantity for the sale item");
         requireNonNull(total, "Must provide a quantity for the sale item");
@@ -79,14 +79,19 @@ public class SaleItemService {
         Product product = findProductOrThrow(productId);
         Shop shop = findShopThrow(shopId);
 
-        BigDecimal finalDiscount = discount !=
-                                   null ? discount : BigDecimal.ZERO;
+        BigDecimal finalDiscount = (discount != null) ? discount : BigDecimal.ZERO;
 
-        BigDecimal calculatedTotal = calculateLineTotal(price,
+        BigDecimal calculatedTotal = calculateLineTotal(product.getPrice(),
                                                         quantity,
                                                         discount);
 
-        SaleItem item = new SaleItem(shop,sale,product,price,quantity,finalDiscount,calculatedTotal);
+        SaleItem item = new SaleItem(shop,
+                                     sale,
+                                     product,
+                                     product.getPrice(),
+                                     quantity,
+                                     finalDiscount,
+                                     calculatedTotal);
         SaleItem savedItem = saleItemRepo.saveAndFlush(item);
         recalculateSaleTotal(sale);
 
