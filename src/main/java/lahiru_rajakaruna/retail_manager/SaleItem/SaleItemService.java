@@ -76,7 +76,7 @@ public class SaleItemService {
         Sale sale = findSaleOrThrow(saleId);
         assertSaleIsOpen(sale);
 
-        Product product = findProductOrThrow(saleId);
+        Product product = findProductOrThrow(productId);
         Shop shop = findShopThrow(shopId);
 
         BigDecimal finalDiscount = discount !=
