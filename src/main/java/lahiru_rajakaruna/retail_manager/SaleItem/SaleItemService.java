@@ -63,7 +63,7 @@ public class SaleItemService {
     @Transactional
     public SaleItemResponseDTO addItem(
             UUID saleId, UUID shopId, UUID productId, BigDecimal quantity,
-            BigDecimal discount, BigDecimal total
+            BigDecimal discount
                                       ) {
         requireNonNull(saleId, "Sale ID parameter is null");
         requireNonNull(shopId, "Sale item data is null");
@@ -71,7 +71,9 @@ public class SaleItemService {
 
         requireNonNull(quantity, "Must provide a quantity for the sale item");
         requireNonNull(discount, "Must provide a quantity for the sale item");
-        requireNonNull(total, "Must provide a quantity for the sale item");
+
+        requireNonNegative(quantity, "Quantity cannot be less than zero");
+        requireNonNegative(discount, "Discount cannot be less that zero");
 
         Sale sale = findSaleOrThrow(saleId);
         assertSaleIsOpen(sale);
