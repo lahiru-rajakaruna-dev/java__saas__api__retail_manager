@@ -73,7 +73,8 @@ public class SaleItemMapper {
                               .getId());
         dto.setProductId(saleItem.getProduct()
                                  .getId());
-        dto.setPrice(saleItem.getPrice());
+        dto.setPrice(saleItem.getProduct()
+                             .getPrice());
         dto.setQuantity(saleItem.getQuantity());
         dto.setDiscount(saleItem.getDiscount());
         dto.setTotal(saleItem.getTotal());
@@ -107,7 +108,8 @@ public class SaleItemMapper {
 
         SaleItem saleItem = new SaleItem();
 
-        saleItem.setPrice(dto.getPrice());
+        saleItem.getProduct()
+                .setPrice(dto.getPrice());
         saleItem.setQuantity(dto.getQuantity());
         saleItem.setDiscount(dto.getDiscount());
         saleItem.setTotal(dto.getTotal());
