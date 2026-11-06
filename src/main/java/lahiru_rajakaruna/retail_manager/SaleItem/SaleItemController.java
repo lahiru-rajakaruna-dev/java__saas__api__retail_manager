@@ -58,7 +58,8 @@ public class SaleItemController {
                                                         ) {
         SaleItemResponseDTO updated = saleItemService.patchItem(saleId,
                                                                 itemId,
-                                                                updates);
+                                                                updates.getQuantity(),
+                                                                updates.getDiscount());
         return ResponseEntity.status(HttpStatus.OK)
                              .body(updated);
     }
