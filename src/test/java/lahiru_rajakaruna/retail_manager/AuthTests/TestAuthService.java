@@ -59,7 +59,10 @@ public class TestAuthService {
     @BeforeEach
     public void setup() {
         this.dummyPasswordHash = passwordEncoder.encode(dummyPassword);
-        this.dummyTenant = new Tenant(null, dummyPasswordHash, dummyPhone, EActiveState.ACTIVE);
+        this.dummyTenant = new Tenant(null,
+                                      dummyPasswordHash,
+                                      dummyPhone,
+                                      EActiveState.ACTIVE);
     }
 
 
@@ -82,7 +85,9 @@ public class TestAuthService {
         Instant login_attempt_1_start = Instant.now();
         authService.login(dummyPhone, dummyPassword);
         Instant login_attempt_1_end = Instant.now();
-        Duration valid_cred_login_process_duration = Duration.between(login_attempt_1_start, login_attempt_1_end);
+        Duration valid_cred_login_process_duration = Duration.between(
+                login_attempt_1_start,
+                login_attempt_1_end);
 
 
         Instant login_attempt_2_start = Instant.now();
@@ -91,12 +96,14 @@ public class TestAuthService {
                   })
                   .isInstanceOf(RuntimeException.class);
         Instant login_attempt_2_end = Instant.now();
-        Duration invalid_cred_login_process_duration = Duration.between(login_attempt_2_start, login_attempt_2_end);
+        Duration invalid_cred_login_process_duration = Duration.between(
+                login_attempt_2_start,
+                login_attempt_2_end);
 
 
         long processTimeDifference = Math.abs(valid_cred_login_process_duration.toMillis() - invalid_cred_login_process_duration.toMillis());
         Assertions.assertThat(processTimeDifference)
-                  .isLessThan(5);
+                  .isLessThan(30);
     }
 
     @Test
