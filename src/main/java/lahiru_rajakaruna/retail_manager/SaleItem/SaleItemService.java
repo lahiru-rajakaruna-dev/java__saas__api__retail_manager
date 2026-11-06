@@ -152,7 +152,7 @@ public class SaleItemService {
 
     private void requireNonNegative(BigDecimal value, String message) {
         if (value.compareTo(BigDecimal.ZERO) < 0) {
-            throw new RuntimeException(message);
+            throw new IllegalArgumentException(message);
         }
     }
 
