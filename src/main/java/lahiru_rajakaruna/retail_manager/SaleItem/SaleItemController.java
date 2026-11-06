@@ -22,14 +22,18 @@ public class SaleItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SaleItemResponseDTO>> getItems(@PathVariable UUID saleId) {
-        List<SaleItemResponseDTO> items = saleItemService.getItemsBySaleId(saleId);
+    public ResponseEntity<List<SaleItemResponseDTO>> getItems(
+            @PathVariable UUID saleId
+                                                             ) {
+        List<SaleItemResponseDTO> items = saleItemService.getItemsBySaleId(
+                saleId);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(items);
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<SaleItemResponseDTO> getItem(@PathVariable UUID saleId, @PathVariable UUID itemId) {
+    public ResponseEntity<SaleItemResponseDTO> getItem(
+            @PathVariable UUID saleId, @PathVariable UUID itemId) {
         SaleItemResponseDTO item = saleItemService.getItemById(saleId, itemId);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(item);
@@ -44,15 +48,22 @@ public class SaleItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<SaleItemResponseDTO> patchItem(@PathVariable UUID saleId, @PathVariable UUID itemId,
-                                                         @RequestBody PatchSaleItemDTO updates) {
-        SaleItemResponseDTO updated = saleItemService.patchItem(saleId, itemId, updates);
+    public ResponseEntity<SaleItemResponseDTO> patchItem(
+            @PathVariable UUID saleId, @PathVariable UUID itemId,
+            @RequestBody PatchSaleItemDTO updates
+                                                        ) {
+        SaleItemResponseDTO updated = saleItemService.patchItem(saleId,
+                                                                itemId,
+                                                                updates);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(updated);
     }
 
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<Void> removeItem(@PathVariable UUID saleId, @PathVariable UUID itemId) {
+    public ResponseEntity<Void> removeItem(
+            @PathVariable UUID saleId,
+            @PathVariable UUID itemId
+                                          ) {
         saleItemService.removeItem(saleId, itemId);
         return ResponseEntity.noContent()
                              .build();
