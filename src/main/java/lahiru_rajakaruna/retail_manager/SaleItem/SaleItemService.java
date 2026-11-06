@@ -90,7 +90,6 @@ public class SaleItemService {
         SaleItem item = new SaleItem(shop,
                                      sale,
                                      product,
-                                     product.getPrice(),
                                      quantity,
                                      finalDiscount,
                                      calculatedTotal);
@@ -113,9 +112,6 @@ public class SaleItemService {
         Sale sale = item.getSale();
         assertSaleIsOpen(sale);
 
-        if (updates.getPrice() != null) {
-            item.setPrice(updates.getPrice());
-        }
         if (updates.getQuantity() != null) {
             // PatchSaleItemDTO uses Integer while the entity uses BigDecimal
             item.setQuantity(BigDecimal.valueOf(updates.getQuantity()));
@@ -126,7 +122,8 @@ public class SaleItemService {
 
         // Any change to price/quantity/discount invalidates the stored total,
         // so recompute it (a client-supplied total is ignored).
-        item.setTotal(calculateLineTotal(item.getPrice(),
+        item.setTotal(calculateLineTotal(item.getProduct()
+                                             .getPrice(),
                                          item.getQuantity(),
                                          item.getDiscount()));
 
@@ -170,7 +167,8 @@ public class SaleItemService {
     private void recalculateSaleTotal(Sale sale) {
         BigDecimal newTotal = saleItemRepo.getSaleItemsBySaleId(sale.getId())
                                           .stream()
-                                          .map((SaleItem item) -> item.getPrice()
+                                          .map((SaleItem item) -> item.getProduct()
+                                                                      .getPrice()
                                                                       .multiply(
                                                                               item.getQuantity())
                                                                       .subtract(
