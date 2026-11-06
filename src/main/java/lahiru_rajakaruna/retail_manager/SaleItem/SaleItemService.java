@@ -6,7 +6,6 @@ import lahiru_rajakaruna.retail_manager.Product.IProductRepository;
 import lahiru_rajakaruna.retail_manager.Product.Product;
 import lahiru_rajakaruna.retail_manager.Sale.ISaleRepository;
 import lahiru_rajakaruna.retail_manager.Sale.Sale;
-import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.PatchSaleItemDTO;
 import lahiru_rajakaruna.retail_manager.SaleItem.DTOs.SaleItemResponseDTO;
 import lahiru_rajakaruna.retail_manager.Shop.IShopRepository;
 import lahiru_rajakaruna.retail_manager.Shop.Shop;
@@ -101,23 +100,21 @@ public class SaleItemService {
 
     @Transactional
     public SaleItemResponseDTO patchItem(
-            UUID saleId, UUID itemId,
-            PatchSaleItemDTO updates
+            UUID saleId, UUID itemId, BigDecimal quantity,
+            BigDecimal discount
                                         ) {
         requireNonNull(saleId, "Sale ID parameter is null");
         requireNonNull(itemId, "Item ID parameter is null");
-        requireNonNull(updates, "Updates are null");
 
         SaleItem item = findItemInSaleOrThrow(saleId, itemId);
         Sale sale = item.getSale();
         assertSaleIsOpen(sale);
 
-        if (updates.getQuantity() != null) {
-            // PatchSaleItemDTO uses Integer while the entity uses BigDecimal
-            item.setQuantity(BigDecimal.valueOf(updates.getQuantity()));
+        if (quantity != null) {
+            item.setQuantity(quantity);
         }
-        if (updates.getDiscount() != null) {
-            item.setDiscount(updates.getDiscount());
+        if (discount != null) {
+            item.setDiscount(discount);
         }
 
         // Any change to price/quantity/discount invalidates the stored total,
