@@ -31,9 +31,6 @@ public class SaleItem extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false, updatable = false)
     private Product product;
 
-    @Column(name = "price", nullable = false, updatable = true)
-    private BigDecimal price;
-
     @Column(name = "quantity", nullable = false, updatable = true)
     private BigDecimal quantity;
 
