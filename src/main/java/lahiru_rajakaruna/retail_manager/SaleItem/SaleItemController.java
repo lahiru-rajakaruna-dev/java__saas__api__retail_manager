@@ -40,9 +40,13 @@ public class SaleItemController {
     }
 
     @PostMapping
-    public ResponseEntity<SaleItemResponseDTO> addItem(@PathVariable UUID saleId,
-                                                       @RequestBody CreateSaleItemDTO dto) {
-        SaleItemResponseDTO created = saleItemService.addItem(saleId, dto);
+    public ResponseEntity<SaleItemResponseDTO> addItem(
+            @PathVariable UUID saleId, @RequestBody CreateSaleItemDTO dto) {
+        SaleItemResponseDTO created = saleItemService.addItem(saleId,
+                                                              dto.getShopId(),
+                                                              dto.getProductId(),
+                                                              dto.getQuantity(),
+                                                              dto.getDiscount());
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(created);
     }
