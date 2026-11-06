@@ -14,7 +14,8 @@ public class SaleItemMapper {
     private SaleItemMapper() {
     }
 
-    private static <T> boolean isPropertyOrValueNull(T parent, Function<T, ?> property) {
+    private static <T> boolean isPropertyOrValueNull(
+            T parent, Function<T, ?> property) {
         return parent == null || property.apply(parent) == null;
     }
 
@@ -25,41 +26,52 @@ public class SaleItemMapper {
     public static SaleItemResponseDTO convertToDTO(SaleItem saleItem) {
 
         if (saleItem == null) {
-            throw new IllegalArgumentException("Cannot Convert: SaleItem cannot be null");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: SaleItem cannot be null");
         }
 
         boolean isIdNull = saleItem.getId() == null;
 
 
-        boolean isShopInvalid = isPropertyOrValueNull(saleItem.getShop(), Shop::getId);
-        boolean isSaleInvalid = isPropertyOrValueNull(saleItem.getSale(), Sale::getId);
-        boolean isProductInvalid = isPropertyOrValueNull(saleItem.getProduct(), Product::getId);
+        boolean isShopInvalid = isPropertyOrValueNull(saleItem.getShop(),
+                                                      Shop::getId);
+        boolean isSaleInvalid = isPropertyOrValueNull(saleItem.getSale(),
+                                                      Sale::getId);
+        boolean isProductInvalid = isPropertyOrValueNull(saleItem.getProduct(),
+                                                         Product::getId);
 
-        boolean isPriceInvalid = isValueNullOrNegative(saleItem.getPrice());
+        boolean isPriceInvalid = isValueNullOrNegative(saleItem.getProduct()
+                                                               .getPrice());
         boolean isQuantityInvalid = isValueNullOrNegative(saleItem.getQuantity());
         boolean isDiscountInvalid = isValueNullOrNegative(saleItem.getDiscount());
         boolean isTotalInvalid = isValueNullOrNegative(saleItem.getTotal());
 
         if (isIdNull) {
-            throw new IllegalArgumentException("Cannot Convert: Id cannot be null");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Id cannot be null");
         }
         if (isShopInvalid) {
-            throw new IllegalArgumentException("Cannot Convert: Shop or ShopId cannot be null");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Shop or ShopId cannot be null");
         }
         if (isSaleInvalid) {
-            throw new IllegalArgumentException("Cannot Convert: Sale or SaleId cannot be null");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Sale or SaleId cannot be null");
         }
         if (isProductInvalid) {
-            throw new IllegalArgumentException("Cannot Convert: Product or ProductId cannot be null");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Product or ProductId cannot be null");
         }
         if (isPriceInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Invalid price");
         }
         if (isQuantityInvalid) {
-            throw new IllegalArgumentException("Cannot Convert: Invalid quantity");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Invalid quantity");
         }
         if (isDiscountInvalid) {
-            throw new IllegalArgumentException("Cannot Convert: Invalid discount");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Invalid discount");
         }
         if (isTotalInvalid) {
             throw new IllegalArgumentException("Cannot Convert: Invalid total");
@@ -82,10 +94,12 @@ public class SaleItemMapper {
         return dto;
     }
 
-    public static SaleItem convertToSaleItem(CreateSaleItemDTO dto, Shop shop, Sale sale) {
+    public static SaleItem convertToSaleItem(
+            CreateSaleItemDTO dto, Shop shop, Sale sale) {
 
         if (dto == null) {
-            throw new IllegalArgumentException("Cannot Convert: DTO cannot be null");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: DTO cannot be null");
         }
 
         boolean isPriceInvalid = isValueNullOrNegative(dto.getPrice());
@@ -94,16 +108,20 @@ public class SaleItemMapper {
         boolean isTotalInvalid = isValueNullOrNegative(dto.getTotal());
 
         if (isPriceInvalid) {
-            throw new IllegalArgumentException("Cannot Convert: Must provide a valid price");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Must provide a valid price");
         }
         if (isQuantityInvalid) {
-            throw new IllegalArgumentException("Cannot Convert: Must provide a valid quantity");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Must provide a valid quantity");
         }
         if (isDiscountInvalid) {
-            throw new IllegalArgumentException("Cannot Convert: Must provide a valid discount");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Must provide a valid discount");
         }
         if (isTotalInvalid) {
-            throw new IllegalArgumentException("Cannot Convert: Must provide a valid total");
+            throw new IllegalArgumentException(
+                    "Cannot Convert: Must provide a valid total");
         }
 
         SaleItem saleItem = new SaleItem();
