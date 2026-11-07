@@ -499,7 +499,440 @@ public class SaleItemTests {
                   .isInstanceOf(IllegalStateException.class);
     }
 
-//    ============= PATH ITEM ==========
+//    ============= PATCH ITEM ==========
+
+    @Test
+    public void patchItemShouldThrowWhenSaleIdOrItemIdIsNull() {
+        Assertions.assertThatThrownBy(() -> saleItemService.patchItem(null,
+                                                                      UUID.randomUUID(),
+                                                                      BigDecimal.valueOf(
+                                                                              10L),
+                                                                      BigDecimal.valueOf(
+                                                                              50L)))
+                  .isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(() -> saleItemService.patchItem(UUID.randomUUID(),
+                                                                      null,
+                                                                      BigDecimal.valueOf(
+                                                                              10L),
+                                                                      BigDecimal.valueOf(
+                                                                              50L)))
+                  .isInstanceOf(IllegalArgumentException.class);
+        ;
+    }
+
+    @Test
+    public void patchItemShouldThrowWhenTryingToModifyClosedSale() {
+        Shop fakeShop = newShop();
+        fakeShop.setId(UUID.randomUUID());
+
+        Product fakeProduct = newProduct(fakeShop);
+        fakeProduct.setId(UUID.randomUUID());
+
+        Sale fakeSale = newSale(fakeShop);
+        fakeSale.setId(UUID.randomUUID());
+        fakeSale.setSaleState(ESaleState.CLOSED);
+
+        SaleItem fakeSaleItem = newSaleItem(fakeShop,
+                                            fakeSale,
+                                            fakeProduct,
+                                            SALE_ITEM_QUANTITY,
+                                            SALE_ITEM_DISCOUNT);
+        fakeSaleItem.setId(UUID.randomUUID());
+
+        Mockito.when(saleRepo.findById(Mockito.eq(fakeSale.getId())))
+               .thenReturn(Optional.of(fakeSale));
+        Mockito.when(productRepo.findById(Mockito.eq(fakeProduct.getId())))
+               .thenReturn(Optional.of(fakeProduct));
+        Mockito.when(saleItemRepo.findById(Mockito.eq(fakeSaleItem.getId())))
+               .thenReturn(Optional.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.getSaleItemsBySaleId(Mockito.eq(fakeSale.getId())))
+               .thenReturn(List.of(fakeSaleItem));
+
+        Assertions.assertThatThrownBy(() -> saleItemService.patchItem(fakeSale.getId(),
+                                                                      fakeSaleItem.getId(),
+                                                                      BigDecimal.valueOf(
+                                                                              100L),
+                                                                      BigDecimal.valueOf(
+                                                                              300L)))
+                  .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void patchItemShouldThrowWhenModifyingItemNotInSale() {
+        Shop fakeShop = newShop();
+        fakeShop.setId(UUID.randomUUID());
+
+        Product fakeProduct = newProduct(fakeShop);
+        fakeProduct.setId(UUID.randomUUID());
+
+        Sale fakeSale = newSale(fakeShop);
+        fakeSale.setId(UUID.randomUUID());
+        fakeSale.setSaleState(ESaleState.CLOSED);
+
+        SaleItem fakeSaleItem = newSaleItem(fakeShop,
+                                            fakeSale,
+                                            fakeProduct,
+                                            SALE_ITEM_QUANTITY,
+                                            SALE_ITEM_DISCOUNT);
+
+        Mockito.when(saleRepo.findById(Mockito.eq(fakeSale.getId())))
+               .thenReturn(Optional.of(fakeSale));
+        Mockito.when(productRepo.findById(Mockito.eq(fakeProduct.getId())))
+               .thenReturn(Optional.of(fakeProduct));
+        Mockito.when(saleItemRepo.findById(Mockito.eq(fakeSaleItem.getId())))
+               .thenReturn(Optional.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.getSaleItemsBySaleId(Mockito.eq(fakeSale.getId())))
+               .thenReturn(List.of());
+
+        Assertions.assertThatThrownBy(() -> saleItemService.patchItem(fakeSale.getId(),
+                                                                      fakeSaleItem.getId(),
+                                                                      BigDecimal.valueOf(
+                                                                              100L),
+                                                                      BigDecimal.valueOf(
+                                                                              300L)))
+                  .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void patchItemShouldThrowIfAnyNumericalValueIsLessThanZero() {
+        Shop fakeShop = newShop();
+        fakeShop.setId(UUID.randomUUID());
+
+        Product fakeProduct = newProduct(fakeShop);
+        fakeProduct.setId(UUID.randomUUID());
+
+        Sale fakeSale = newSale(fakeShop);
+        fakeSale.setId(UUID.randomUUID());
+        fakeSale.setSaleState(ESaleState.CLOSED);
+
+        SaleItem fakeSaleItem = newSaleItem(fakeShop,
+                                            fakeSale,
+                                            fakeProduct,
+                                            SALE_ITEM_QUANTITY,
+                                            SALE_ITEM_DISCOUNT);
+
+        Mockito.when(saleRepo.findById(Mockito.eq(fakeSale.getId())))
+               .thenReturn(Optional.of(fakeSale));
+        Mockito.when(productRepo.findById(Mockito.eq(fakeProduct.getId())))
+               .thenReturn(Optional.of(fakeProduct));
+        Mockito.when(saleItemRepo.findById(Mockito.eq(fakeSaleItem.getId())))
+               .thenReturn(Optional.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.getSaleItemsBySaleId(Mockito.eq(fakeSale.getId())))
+               .thenReturn(List.of());
+
+        Assertions.assertThatThrownBy(() -> saleItemService.patchItem(fakeSale.getId(),
+                                                                      fakeSaleItem.getId(),
+                                                                      BigDecimal.valueOf(
+                                                                              -100L),
+                                                                      BigDecimal.valueOf(
+                                                                              300L)))
+                  .isInstanceOf(IllegalArgumentException.class);
+
+        Assertions.assertThatThrownBy(() -> saleItemService.patchItem(fakeSale.getId(),
+                                                                      fakeSaleItem.getId(),
+                                                                      BigDecimal.valueOf(
+                                                                              100L),
+                                                                      BigDecimal.valueOf(
+                                                                              -300L)))
+                  .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    public void patchItemShouldHaveCalledFindSaleByIdOnce() {
+        Shop fakeShop = newShop();
+        fakeShop.setId(UUID.randomUUID());
+
+        Product fakeProduct = newProduct(fakeShop);
+        fakeProduct.setId(UUID.randomUUID());
+
+        Sale fakeSale = newSale(fakeShop);
+        fakeSale.setId(UUID.randomUUID());
+        fakeSale.setSaleState(ESaleState.OPEN);
+
+        SaleItem fakeSaleItem = newSaleItem(fakeShop,
+                                            fakeSale,
+                                            fakeProduct,
+                                            SALE_ITEM_QUANTITY,
+                                            SALE_ITEM_DISCOUNT);
+        fakeSaleItem.setId(UUID.randomUUID());
+
+        Mockito.when(saleRepo.findById(Mockito.eq(fakeSale.getId())))
+               .thenReturn(Optional.of(fakeSale));
+        Mockito.when(productRepo.findById(Mockito.eq(fakeProduct.getId())))
+               .thenReturn(Optional.of(fakeProduct));
+        Mockito.when(saleItemRepo.findById(Mockito.eq(fakeSaleItem.getId())))
+               .thenReturn(Optional.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.getSaleItemsBySaleId(Mockito.eq(fakeSale.getId())))
+               .thenReturn(List.of());
+        Mockito.when(saleItemRepo.saveAndFlush(Mockito.any(SaleItem.class)))
+               .thenReturn(fakeSaleItem);
+
+        saleItemService.patchItem(fakeSale.getId(),
+                                  fakeSaleItem.getId(),
+                                  BigDecimal.valueOf(100L),
+                                  BigDecimal.valueOf(300L));
+
+        Mockito.verify(saleRepo, Mockito.times(1))
+               .findById(Mockito.eq(fakeSale.getId()));
+    }
+
+    @Test
+    public void patchItemsShouldHaveCalledGetItemsBySaleOnce() {
+        Shop fakeShop = newShop();
+        fakeShop.setId(UUID.randomUUID());
+
+        Product fakeProduct = newProduct(fakeShop);
+        fakeProduct.setId(UUID.randomUUID());
+
+        Sale fakeSale = newSale(fakeShop);
+        fakeSale.setId(UUID.randomUUID());
+        fakeSale.setSaleState(ESaleState.OPEN);
+
+        SaleItem fakeSaleItem = newSaleItem(fakeShop,
+                                            fakeSale,
+                                            fakeProduct,
+                                            SALE_ITEM_QUANTITY,
+                                            SALE_ITEM_DISCOUNT);
+        fakeSaleItem.setId(UUID.randomUUID());
+
+        Mockito.when(saleRepo.findById(Mockito.eq(fakeSale.getId())))
+               .thenReturn(Optional.of(fakeSale));
+        Mockito.when(productRepo.findById(Mockito.eq(fakeProduct.getId())))
+               .thenReturn(Optional.of(fakeProduct));
+        Mockito.when(saleItemRepo.findById(Mockito.eq(fakeSaleItem.getId())))
+               .thenReturn(Optional.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.getSaleItemsBySaleId(Mockito.eq(fakeSale.getId())))
+               .thenReturn(List.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.saveAndFlush(Mockito.any(SaleItem.class)))
+               .thenReturn(fakeSaleItem);
+
+        saleItemService.patchItem(fakeSale.getId(),
+                                  fakeSaleItem.getId(),
+                                  BigDecimal.valueOf(100L),
+                                  BigDecimal.valueOf(300L));
+
+        Mockito.verify(saleItemRepo, Mockito.times(1))
+               .getSaleItemsBySaleId(Mockito.eq(fakeSale.getId()));
+    }
+
+    @Test
+    public void patchItemShouldUpdateItemTotal() {
+        Shop fakeShop = newShop();
+        fakeShop.setId(UUID.randomUUID());
+
+        Product fakeProduct = newProduct(fakeShop);
+        fakeProduct.setId(UUID.randomUUID());
+
+        Sale fakeSale = newSale(fakeShop);
+        fakeSale.setId(UUID.randomUUID());
+        fakeSale.setSaleState(ESaleState.OPEN);
+
+        SaleItem fakeSaleItem = newSaleItem(fakeShop,
+                                            fakeSale,
+                                            fakeProduct,
+                                            SALE_ITEM_QUANTITY,
+                                            SALE_ITEM_DISCOUNT);
+        fakeSaleItem.setId(UUID.randomUUID());
+
+        Mockito.when(saleRepo.findById(Mockito.eq(fakeSale.getId())))
+               .thenReturn(Optional.of(fakeSale));
+        Mockito.when(productRepo.findById(Mockito.eq(fakeProduct.getId())))
+               .thenReturn(Optional.of(fakeProduct));
+        Mockito.when(saleItemRepo.findById(Mockito.eq(fakeSaleItem.getId())))
+               .thenReturn(Optional.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.getSaleItemsBySaleId(Mockito.eq(fakeSale.getId())))
+               .thenReturn(List.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.saveAndFlush(Mockito.any(SaleItem.class)))
+               .thenReturn(fakeSaleItem);
+
+        BigDecimal updatedQuantity = BigDecimal.valueOf(100L);
+        BigDecimal updatedDiscount = BigDecimal.valueOf(300L);
+
+        saleItemService.patchItem(fakeSale.getId(),
+                                  fakeSaleItem.getId(),
+                                  updatedQuantity,
+                                  updatedDiscount);
+
+        ArgumentCaptor<SaleItem> argumentCaptor = ArgumentCaptor.forClass(
+                SaleItem.class);
+
+        Mockito.verify(saleItemRepo, Mockito.times(1))
+               .saveAndFlush(argumentCaptor.capture());
+
+        Object argument = argumentCaptor.getValue();
+        Assertions.assertThat(argument)
+                  .isNotNull();
+        Assertions.assertThat(argument)
+                  .isInstanceOf(SaleItem.class);
+
+        SaleItem savedSaleItem = (SaleItem) argument;
+
+        Assertions.assertThat(savedSaleItem.getQuantity())
+                  .isEqualByComparingTo(updatedQuantity);
+        Assertions.assertThat(savedSaleItem.getDiscount())
+                  .isEqualByComparingTo(updatedDiscount);
+        Assertions.assertThat(savedSaleItem.getTotal())
+                  .isEqualByComparingTo(fakeProduct.getPrice()
+                                                   .multiply(updatedQuantity)
+                                                   .subtract(updatedDiscount));
+    }
+
+    @Test
+    public void patchItemsShouldSaveUpdatedSaleItem() {
+        Shop fakeShop = newShop();
+        fakeShop.setId(UUID.randomUUID());
+
+        Product fakeProduct = newProduct(fakeShop);
+        fakeProduct.setId(UUID.randomUUID());
+
+        Sale fakeSale = newSale(fakeShop);
+        fakeSale.setId(UUID.randomUUID());
+        fakeSale.setSaleState(ESaleState.OPEN);
+
+        SaleItem fakeSaleItem = newSaleItem(fakeShop,
+                                            fakeSale,
+                                            fakeProduct,
+                                            SALE_ITEM_QUANTITY,
+                                            SALE_ITEM_DISCOUNT);
+        fakeSaleItem.setId(UUID.randomUUID());
+
+        Mockito.when(saleRepo.findById(Mockito.eq(fakeSale.getId())))
+               .thenReturn(Optional.of(fakeSale));
+        Mockito.when(productRepo.findById(Mockito.eq(fakeProduct.getId())))
+               .thenReturn(Optional.of(fakeProduct));
+        Mockito.when(saleItemRepo.findById(Mockito.eq(fakeSaleItem.getId())))
+               .thenReturn(Optional.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.getSaleItemsBySaleId(Mockito.eq(fakeSale.getId())))
+               .thenReturn(List.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.saveAndFlush(Mockito.any(SaleItem.class)))
+               .thenReturn(fakeSaleItem);
+
+        BigDecimal updatedQuantity = BigDecimal.valueOf(100L);
+        BigDecimal updatedDiscount = BigDecimal.valueOf(300L);
+
+        saleItemService.patchItem(fakeSale.getId(),
+                                  fakeSaleItem.getId(),
+                                  updatedQuantity,
+                                  updatedDiscount);
+
+
+        Mockito.verify(saleRepo, Mockito.times(1))
+               .saveAndFlush(Mockito.any(Sale.class));
+    }
+
+    @Test
+    public void patchItemShouldUpdateSaleTotal() {
+        Shop fakeShop = newShop();
+        fakeShop.setId(UUID.randomUUID());
+
+        Product fakeProduct = newProduct(fakeShop);
+        fakeProduct.setId(UUID.randomUUID());
+
+        Sale fakeSale = newSale(fakeShop);
+        fakeSale.setId(UUID.randomUUID());
+        fakeSale.setSaleState(ESaleState.OPEN);
+
+        SaleItem fakeSaleItem = newSaleItem(fakeShop,
+                                            fakeSale,
+                                            fakeProduct,
+                                            SALE_ITEM_QUANTITY,
+                                            SALE_ITEM_DISCOUNT);
+        fakeSaleItem.setId(UUID.randomUUID());
+
+        Mockito.when(saleRepo.findById(Mockito.eq(fakeSale.getId())))
+               .thenReturn(Optional.of(fakeSale));
+        Mockito.when(productRepo.findById(Mockito.eq(fakeProduct.getId())))
+               .thenReturn(Optional.of(fakeProduct));
+        Mockito.when(saleItemRepo.findById(Mockito.eq(fakeSaleItem.getId())))
+               .thenReturn(Optional.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.getSaleItemsBySaleId(Mockito.eq(fakeSale.getId())))
+               .thenReturn(List.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.saveAndFlush(Mockito.any(SaleItem.class)))
+               .thenReturn(fakeSaleItem);
+
+        BigDecimal updatedQuantity = BigDecimal.valueOf(100L);
+        BigDecimal updatedDiscount = BigDecimal.valueOf(300L);
+
+        saleItemService.patchItem(fakeSale.getId(),
+                                  fakeSaleItem.getId(),
+                                  updatedQuantity,
+                                  updatedDiscount);
+
+        ArgumentCaptor<Sale> argumentCaptor = ArgumentCaptor.forClass(Sale.class);
+
+        Mockito.verify(saleRepo, Mockito.times(1))
+               .saveAndFlush(argumentCaptor.capture());
+
+        Object argument = argumentCaptor.getValue();
+        Assertions.assertThat(argument)
+                  .isNotNull();
+        Assertions.assertThat(argument)
+                  .isInstanceOf(Sale.class);
+
+        Sale savedSale = (Sale) argument;
+
+        Assertions.assertThat(savedSale.getTotal())
+                  .isEqualByComparingTo(fakeProduct.getPrice()
+                                                   .multiply(updatedQuantity)
+                                                   .subtract(updatedDiscount));
+    }
+
+
+    @Test
+    public void patchItemShouldReturnDTORepresentingUpdateOnSuccessfulOperation() {
+        Shop fakeShop = newShop();
+        fakeShop.setId(UUID.randomUUID());
+
+        Product fakeProduct = newProduct(fakeShop);
+        fakeProduct.setId(UUID.randomUUID());
+
+        Sale fakeSale = newSale(fakeShop);
+        fakeSale.setId(UUID.randomUUID());
+        fakeSale.setSaleState(ESaleState.OPEN);
+
+        SaleItem fakeSaleItem = newSaleItem(fakeShop,
+                                            fakeSale,
+                                            fakeProduct,
+                                            SALE_ITEM_QUANTITY,
+                                            SALE_ITEM_DISCOUNT);
+        fakeSaleItem.setId(UUID.randomUUID());
+
+        Mockito.when(saleRepo.findById(Mockito.eq(fakeSale.getId())))
+               .thenReturn(Optional.of(fakeSale));
+        Mockito.when(productRepo.findById(Mockito.eq(fakeProduct.getId())))
+               .thenReturn(Optional.of(fakeProduct));
+        Mockito.when(saleItemRepo.findById(Mockito.eq(fakeSaleItem.getId())))
+               .thenReturn(Optional.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.getSaleItemsBySaleId(Mockito.eq(fakeSale.getId())))
+               .thenReturn(List.of(fakeSaleItem));
+        Mockito.when(saleItemRepo.saveAndFlush(Mockito.any(SaleItem.class)))
+               .thenReturn(fakeSaleItem);
+
+        BigDecimal updatedQuantity = BigDecimal.valueOf(100L);
+        BigDecimal updatedDiscount = BigDecimal.valueOf(300L);
+
+        Object result = saleItemService.patchItem(fakeSale.getId(),
+                                                  fakeSaleItem.getId(),
+                                                  updatedQuantity,
+                                                  updatedDiscount);
+
+
+        Assertions.assertThat(result)
+                  .isNotNull();
+        Assertions.assertThat(result)
+                  .isInstanceOf(SaleItemResponseDTO.class);
+
+        SaleItemResponseDTO updateResponse = (SaleItemResponseDTO) result;
+
+        Assertions.assertThat(updateResponse.getQuantity())
+                  .isEqualByComparingTo(updatedQuantity);
+        Assertions.assertThat(updateResponse.getDiscount())
+                  .isEqualByComparingTo(updatedDiscount);
+        Assertions.assertThat(updateResponse.getTotal())
+                  .isEqualByComparingTo(fakeProduct.getPrice()
+                                                   .multiply(updatedQuantity)
+                                                   .subtract(updatedDiscount));
+    }
+
 //    ============= GET ITEM ===========
 //    ============= REMOVE ITEM ========
 }
